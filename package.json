@@ -1,0 +1,125 @@
+{
+  "name": "markdown-showdown-preview",
+  "displayName": "%displayname%",
+  "description": "%description%",
+  "version": "0.1.0",
+  "publisher": "Jhuix <jhuix0117@gmail.com>",
+  "engines": {
+    "vscode": "^1.39.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "vscode",
+    "markdown",
+    "showdown",
+    "html",
+    "preview",
+    "MDSP"
+  ],
+  "icon": "./media/rightpane.png",
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onCommand:markdown-showdown-preview.openPreview"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "markdown-showdown-preview.openPreview",
+        "title": "%mdsp.openPreview%",
+        "category": "Markdown",
+        "icon": {
+          "light": "./media/rightpane-16-light.png",
+          "dark": "./media/rightpane-16-dark.png"
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "markdown-showdown-preview.openPreview",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == markdown"
+      },
+      {
+        "command": "markdown-showdown-preview.syncPreview",
+        "key": "ctrl+shift+s",
+        "when": "editorLangId == markdown"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "markdown-showdown-preview.openPreview",
+          "when": "editorLangId == markdown",
+          "group": "markdown-showdown-preview"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "markdown-showdown-preview.openPreview",
+          "when": "editorLangId == markdown",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "%mdsp%",
+      "properties": {
+        "markdown-showdown-preview.scrollSync": {
+          "description": "Automatic scroll sync. This is now partially supported.",
+          "default": true,
+          "type": "boolean"
+        },
+        "markdown-showdown-preview.usePuppeteerCore": {
+          "description": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
+          "default": true,
+          "type": "boolean"
+        },
+        "markdown-showdown-preview.puppeteerWaitForTimeout": {
+          "description": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
+          "default": 0,
+          "type": "number"
+        },
+        "markdown-showdown-preview.chromePath": {
+          "description": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.",
+          "default": "",
+          "type": "string",
+          "scope": "machine"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mkdirp": "^0.5.2",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^12.0.0",
+    "@types/vscode": "^1.39.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode-test": "^1.2.0"
+  },
+  "dependencies": {
+    "@jhuix/showdowns": "^0.2.0",
+    "mkdirp": "^0.5.1",
+    "puppeteer-core": "^2.0.0",
+    "throttle-debounce": "^2.1.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jhuix/markdown-shaowdown-preview"
+  },
+  "homepage": "https://github.com/jhuix/markdown-shaowdown-preview/blob/master/README.md"
+}

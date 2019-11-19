@@ -1,0 +1,6 @@
+{
+  "displayname": "MarkDown Showdown Preview (MDSP)",
+  "description": "A vscode markdown preview extension for showdown.js",
+  "mdsp": "MDSP - MarkDown 文件预览",
+  "mdsp.openPreview": "预览MD文件"
+}
