@@ -2,7 +2,7 @@
   "name": "markdown-showdown-preview",
   "displayName": "%displayname%",
   "description": "%description%",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "Jhuix <jhuix0117@gmail.com>",
   "engines": {
     "vscode": "^1.39.0"

@@ -10,7 +10,7 @@
 
 "use strict";
 
-import zlib from "zlib";
+import * as zlib from "zlib";
 
 function encode64(data) {
   var r = "";

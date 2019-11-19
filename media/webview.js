@@ -95,6 +95,7 @@
       this.sourceUri = "";
       this.totalLines = 0;
       this.currentLine = -1;
+      this.syncScroll = -1;
       this.config = { vscode: isVscode };
       const previewElement = document.createElement("div");
       previewElement.classList.add("workspace-container");
@@ -250,15 +251,18 @@
         }
       });
       window.addEventListener("wasm", event => {
-        const mdel = document.getElementById("md-data");
-        if (mdel) {
-          const mdtype = mdel.getAttribute("data-type");
-          const mddata = mdel.getAttribute("data");
-          this.sourceUri = mdel.getAttribute("data-uri");
-          this.updateMarkdown({ type: mdtype, content: mddata });
-          this.totalLines = parseInt(mdel.getAttribute("data-lines"), 10);
-          this.scrollToLine(parseInt(mdel.getAttribute("data-currline"), 10));
+        if (event.detail.name === "wasm_brotli_browser_bg.wasm") {
+          this.postMessage("webviewLoaded", [document.title]);
         }
+        //const mdel = document.getElementById("md-data");
+        //if (mdel) {
+        //  const mdtype = mdel.getAttribute("data-type");
+        //  const mddata = mdel.getAttribute("data");
+        //  this.sourceUri = mdel.getAttribute("data-uri");
+        //  this.updateMarkdown({ type: mdtype, content: mddata });
+        //  this.totalLines = parseInt(mdel.getAttribute("data-lines"), 10);
+        //  this.scrollToLine(parseInt(mdel.getAttribute("data-currline"), 10));
+        //}
       });
     }
 
@@ -270,27 +274,28 @@
     }
 
     scrollEvent() {
-      console.log(`scrolltop: ${this.previewElement.scrollTop}-${this.previewElement.offsetHeight}`);
-      if (this.autoScroll) {
-        this.autoSrocll = false;
-        return;
+      console.log(`scrolltop: ${window.scrollY}-${this.syncScroll}`);
+      if (this.syncScroll >= 0) {
+        if (window.scrollY === this.syncScroll) {
+          this.syncScroll = -1;
+        }
+      } else {
+        this.previewSyncSource();
       }
-
-      this.previewSyncSource();
     }
 
     previewSyncSource() {
       let scrollLine = 0;
-      if (this.previewElement.scrollTop !== 0) {
-        if (this.previewElement.scrollTop + this.previewElement.offsetHeight >= this.previewElement.scrollHeight) {
+      if (window.scrollY !== 0) {
+        if (window.scrollY + window.innerHeight >= this.previewElement.scrollHeight) {
           scrollLine = this.totalLines;
         } else {
-          const top = this.previewElement.scrollTop + this.previewElement.offsetHeight / 2;
+          const top = window.scrollY + window.innerHeight / 2;
 
           scrollLine = (top * this.totalLines) / this.previewElement.scrollHeight;
         }
       }
-      //this.postMessage("revealLine", [this.sourceUri, scrollLine]);
+      this.postMessage("revealLine", [this.sourceUri, scrollLine]);
     }
 
     scrollToLine(line, ratio = 0.372) {
@@ -301,10 +306,10 @@
           if (line + 1 === this.totalLines) {
             scrollTop = this.previewElement.scrollHeight;
           } else {
-            scrollTop = (line * this.previewElement.scrollHeight) / this.totalLines;
+            scrollTop = parseInt((line * this.previewElement.scrollHeight) / this.totalLines, 10);
             //Math.max(scrollTop - this.previewElement.offsetHeight * ratio, 0);
           }
-          this.autoScroll = true;
+          this.syncScroll = scrollTop;
           window.scroll({
             left: 0,
             top: scrollTop,

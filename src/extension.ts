@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  function openMarkdownPreview() {
+  async function openMarkdownPreview() {
     openPreview();
     // vscode.commands
     //   .executeCommand(close_other_editor_command_id)
@@ -91,7 +91,6 @@ export function activate(context: vscode.ExtensionContext) {
       if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
         const topLine = getTopVisibleLine(event.textEditor);
         const bottomLine = getBottomVisibleLine(event.textEditor);
-        const topRatio = (event.selections[0].active.line - topLine) / (bottomLine - topLine);
         let midLine;
         if (topLine === 0) {
           midLine = 0;
@@ -100,6 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
           midLine = Math.floor((topLine + bottomLine) / 2);
         }
+        const topRatio = (midLine - topLine) / (bottomLine - topLine);
         contentPreviewer.previewPostMessage({
           command: "changeTextEditorSelection",
           line: midLine,
@@ -212,7 +212,7 @@ function getTopVisibleLine(editor: vscode.TextEditor) {
   // const progress = firstVisiblePosition.character / (line.text.length + 2);
   // return lineNumber + progress;
 }
-exports.getTopVisibleLine = getTopVisibleLine;
+
 /**
  * Get the bottom-most visible range of `editor`.
  *
@@ -233,7 +233,6 @@ function getBottomVisibleLine(editor: vscode.TextEditor) {
   // const progress = firstVisiblePosition.character / (text.length + 2);
   // return lineNumber + progress;
 }
-exports.getBottomVisibleLine = getBottomVisibleLine;
 
 // this method is called when your extension is deactivated
 export function deactivate() {}

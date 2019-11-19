@@ -104,6 +104,9 @@ export class ShowdownPreviewer {
             case "exportPDF":
               this.exportPDF(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
+            case "webviewLoaded":
+              this.updateCurrentView();
+              break;
           }
         },
         null,
@@ -408,6 +411,9 @@ export class ShowdownPreviewer {
   public update(uri: vscode.Uri) {
     this.debounceUpdatePreview(this, uri);
   }
+  public updateCurrentView() {
+    if (this.uri) this.updatePreview(this.uri);
+  }
   public updateConfiguration() {
     const newConfig = PreviewConfig.getCurrentConfig(this.context);
     if (!this.config.isEqualTo(newConfig)) {
@@ -431,19 +437,7 @@ export class ShowdownPreviewer {
     if (this.webpanel && this.uri && this.editor) {
       const editor = this.editor;
       this.webpanel.title = `Preview ${path.basename(this.uri.fsPath)}`;
-      const text = editor.document.getText();
-      const totalLines = editor.document.lineCount;
-      // init markdown engine
-      let initialLine = 0;
-      if (editor && editor.document.uri.fsPath === this.uri.fsPath) {
-        initialLine = await new Promise((resolve, reject) => {
-          // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
-          setTimeout(() => {
-            return resolve(editor.selections[0].active.line || 0);
-          }, 100);
-        });
-      }
-      this.generateHTMLTemplate(this.uri, this.webpanel.webview, text, totalLines, initialLine);
+      this.generateHTMLTemplate(this.uri, this.webpanel.webview);
     }
   }
   /**
@@ -460,22 +454,16 @@ export class ShowdownPreviewer {
     return diskPath.toString();
   }
 
-  private generateHTMLTemplate(
-    uri: vscode.Uri,
-    webview: vscode.Webview,
-    text: string,
-    totalLines: number,
-    initialLine: number
-  ) {
+  private generateHTMLTemplate(uri: vscode.Uri, webview: vscode.Webview) {
     const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
-    const zcontent = zlibcodec.brEncode(text);
+    // const zcontent = zlibcodec.brEncode(text);
+    // <meta id="md-data" data-uri="${uri.toString()}" data-type="br" data="${zcontent}" data-lines="${totalLines}" data-currline="${initialLine}">
     webview.html = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta id="md-data" data-uri="${uri.toString()}" data-type="br" data="${zcontent}" data-lines="${totalLines}" data-currline="${initialLine}">
 <title>${title}</title>
 <style type="text/css">
   body {
@@ -510,47 +498,52 @@ export class ShowdownPreviewer {
 <script src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
 </body>
 </html>`;
-
-    // that.previewPostMessage({
-    //   command: "updateMarkdown",
-    //   uri: uri.toString(),
-    //   title: title,
-    //   totalLines: totalLines,
-    //   currentLine: initialLine,
-    //   markdown: { type: "br", content: res }
-    // });
   }
 
   private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
     const editor = this.getEditor();
     if (previewPanel && editor && editor.document && ShowdownPreviewer.isMarkdownFile(editor.document)) {
-      if (editor.document.uri && editor.document.uri.fsPath === uri.fsPath) {
-        let initialLine = 0;
-        initialLine = await new Promise((resolve, reject) => {
-          // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
-          setTimeout(() => {
+      // if (editor.document.uri && editor.document.uri.fsPath === uri.fsPath) {
+      let initialLine = 0;
+      initialLine = await new Promise((resolve, reject) => {
+        // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
+        setTimeout(() => {
+          if (!editor.visibleRanges.length) {
             return resolve(editor.selections[0].active.line || 0);
-          }, 100);
-        });
-        const lines = editor.document.lineCount;
-        const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
-        const text = editor.document.getText();
-        const zcontent = zlibcodec.brEncode(text);
-        this.previewPostMessage({
-          command: "updateMarkdown",
-          uri: uri.toString(),
-          title: caption,
-          totalLines: lines,
-          currentLine: initialLine,
-          markdown: { type: "br", content: zcontent }
-        });
-      } else {
-        const previewColumn = previewPanel && previewPanel.viewColumn ? previewPanel.viewColumn : vscode.ViewColumn.Two;
-        this.openPreview(uri, editor, {
-          viewColumn: previewColumn,
-          preserveFocus: true
-        });
-      }
+          }
+
+          const topLine = editor.visibleRanges[0].start.line;
+          const bottomLine = editor.visibleRanges[0].end.line;
+          let midLine;
+          if (topLine === 0) {
+            midLine = 0;
+          } else if (Math.floor(bottomLine) === editor.document.lineCount - 1) {
+            midLine = bottomLine;
+          } else {
+            midLine = Math.floor((topLine + bottomLine) / 2);
+          }
+          return resolve(midLine);
+        }, 100);
+      });
+      const lines = editor.document.lineCount;
+      const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
+      const text = editor.document.getText();
+      const zcontent = zlibcodec.brEncode(text);
+      this.previewPostMessage({
+        command: "updateMarkdown",
+        uri: uri.toString(),
+        title: caption,
+        totalLines: lines,
+        currentLine: initialLine,
+        markdown: { type: "br", content: zcontent }
+      });
+      // } else {
+      //   const previewColumn = previewPanel && previewPanel.viewColumn ? previewPanel.viewColumn : vscode.ViewColumn.Two;
+      //   this.openPreview(uri, editor, {
+      //     viewColumn: previewColumn,
+      //     preserveFocus: true
+      //   });
+      // }
     }
   }
   /**
