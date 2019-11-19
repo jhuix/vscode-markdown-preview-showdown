@@ -10,21 +10,17 @@
 
 "use strict";
 
-import * as zlib from "zlib";
+import zlib from "zlib";
 
 function encode64(data) {
   var r = "";
   for (var i = 0; i < data.length; i += 3) {
-    if (i + 2 == data.length) {
+    if (i + 2 === data.length) {
       r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), 0);
-    } else if (i + 1 == data.length) {
+    } else if (i + 1 === data.length) {
       r += append3bytes(data.charCodeAt(i), 0, 0);
     } else {
-      r += append3bytes(
-        data.charCodeAt(i),
-        data.charCodeAt(i + 1),
-        data.charCodeAt(i + 2)
-      );
+      r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), data.charCodeAt(i + 2));
     }
   }
   return r;
@@ -56,10 +52,10 @@ function encode6bit(b) {
     return String.fromCharCode(97 + b);
   }
   b -= 26;
-  if (b == 0) {
+  if (b === 0) {
     return "-";
   }
-  if (b == 1) {
+  if (b === 1) {
     return "_";
   }
   return "?";

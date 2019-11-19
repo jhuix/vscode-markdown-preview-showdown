@@ -1,33 +1,44 @@
 "use strict";
 
+import * as crypto from "crypto";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import * as crypto from "crypto";
 import { PreviewConfig } from "./config";
-const utils = require("./utils");
 
+const utils = require("./utils");
 const { debounce } = require("throttle-debounce");
 const zlibcodec = require("./zlib-codec.js");
 
 // Class Showdown MarkDown Previewer
 export class ShowdownPreviewer {
+  public static getPackageName() {
+    return PreviewConfig.packageName;
+  }
+  public static getPreviewUri(uri: vscode.Uri) {
+    if (uri.scheme === ShowdownPreviewer.getPackageName()) {
+      return uri;
+    }
+    return uri.with({
+      scheme: ShowdownPreviewer.getPackageName(),
+      path: `${ShowdownPreviewer.getPackageName()}.rendered`
+    });
+  }
+  public static isMarkdownFile(document: vscode.TextDocument) {
+    // prevent processing of own documents
+    return document && document.languageId === "markdown" && document.uri.scheme !== ShowdownPreviewer.getPackageName();
+  }
+
   private firstPreview: boolean;
   private config: PreviewConfig;
   private context: vscode.ExtensionContext;
   private editor: vscode.TextEditor | undefined = undefined;
   private webpanel: vscode.WebviewPanel | undefined = undefined;
   private uri: vscode.Uri | undefined = undefined;
-  private debounceUpdatePreview = debounce(500, function(
-    that: ShowdownPreviewer,
-    uri: vscode.Uri
-  ) {
+  private debounceUpdatePreview = debounce(100 * 5, (that: ShowdownPreviewer, uri: vscode.Uri) => {
     that.updatePreview(uri);
   });
-  private debouncePostMessage = debounce(500, function(
-    webView: vscode.Webview,
-    message: any
-  ) {
+  private debouncePostMessage = debounce(100 * 5, (webView: vscode.Webview, message: any) => {
     webView.postMessage(message);
   });
 
@@ -40,24 +51,15 @@ export class ShowdownPreviewer {
   public async openPreview(
     uri: vscode.Uri,
     editor: vscode.TextEditor,
-    viewOptions:
-      | vscode.ViewColumn
-      | {
-          viewColumn: vscode.ViewColumn;
-          preserveFocus?: boolean;
-        }
+    viewOptions: vscode.ViewColumn | { viewColumn: vscode.ViewColumn; preserveFocus?: boolean }
   ) {
     if (this.webpanel) {
-      let targetUri = this.uri;
+      const targetUri = this.uri;
       const oldResourceRoot = !targetUri
         ? ""
-        : this.getProjectDirectoryPath(
-            targetUri,
-            vscode.workspace.workspaceFolders
-          ) || path.dirname(targetUri.fsPath);
+        : this.getProjectDirectoryPath(targetUri, vscode.workspace.workspaceFolders) || path.dirname(targetUri.fsPath);
       const newResourceRoot =
-        this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) ||
-        path.dirname(uri.fsPath);
+        this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath);
       if (oldResourceRoot !== newResourceRoot) {
         this.webpanel.dispose();
         this.webpanel = undefined;
@@ -69,24 +71,11 @@ export class ShowdownPreviewer {
     } else {
       const localResourceRoots = [
         vscode.Uri.file(path.join(this.context.extensionPath, "media")),
-        vscode.Uri.file(
-          path.join(
-            this.context.extensionPath,
-            "node_modules/@jhuix/showdowns/dist"
-          )
-        ),
-        vscode.Uri.file(
-          path.join(
-            this.context.extensionPath,
-            "node_modules/@jhuix/showdowns/dist/fonts"
-          )
-        ),
+        vscode.Uri.file(path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist")),
+        vscode.Uri.file(path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist/fonts")),
         vscode.Uri.file(os.tmpdir()),
         vscode.Uri.file(
-          this.getProjectDirectoryPath(
-            uri,
-            vscode.workspace.workspaceFolders
-          ) || path.dirname(uri.fsPath)
+          this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath)
         )
       ];
       const previewPanel = vscode.window.createWebviewPanel(
@@ -107,28 +96,13 @@ export class ShowdownPreviewer {
         message => {
           switch (message.command) {
             case "openInBrowser":
-              this.openInBrowser(
-                message.args[0],
-                message.args[1],
-                message.args[2],
-                message.args[3]
-              );
+              this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
             case "exportHTML":
-              this.exportHTML(
-                message.args[0],
-                message.args[1],
-                message.args[2],
-                message.args[3]
-              );
+              this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
             case "exportPDF":
-              this.exportPDF(
-                message.args[0],
-                message.args[1],
-                message.args[2],
-                message.args[3]
-              );
+              this.exportPDF(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
           }
         },
@@ -164,10 +138,10 @@ export class ShowdownPreviewer {
   }
 
   public async saveLocalHtml(
-    htmlPath: string | undefined,
+    htmlPath: string,
     doc: { type: string; content: string } | string,
-    title: string | undefined,
-    types: { hasKatex: Boolean | undefined } | undefined
+    title: string,
+    types: { hasKatex: boolean }
   ) {
     if (!title) {
       title = "预览MARKDOWN文件";
@@ -192,10 +166,7 @@ export class ShowdownPreviewer {
       }
     }
     const showdowncss = await utils.readFile(
-      path.join(
-        this.context.extensionPath,
-        "node_modules/@jhuix/showdowns/dist/showdowns.min.css"
-      ),
+      path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist/showdowns.min.css"),
       {
         encoding: "utf-8"
       }
@@ -204,10 +175,7 @@ export class ShowdownPreviewer {
     let katexstyle = "";
     if (typeof types === "object" && types.hasKatex) {
       const katexcss = await utils.readFile(
-        path.join(
-          this.context.extensionPath,
-          "node_modules/@jhuix/showdowns/dist/katex.min.css"
-        ),
+        path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist/katex.min.css"),
         {
           encoding: "utf-8"
         }
@@ -307,19 +275,16 @@ export class ShowdownPreviewer {
 
   public async openInBrowser(
     doc: { type: string; content: string } | string,
-    title: string | undefined,
-    uri: string | undefined,
-    types: { hasKatex: Boolean | undefined } | undefined
+    title: string,
+    uri: string,
+    types: { hasKatex: boolean }
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
       uri = srcUri.fsPath;
       const fsHash = crypto.createHash("md5");
       fsHash.update(uri);
-      uri = path.join(
-        path.resolve(os.tmpdir()),
-        `mdsp-${fsHash.digest("hex")}.html`
-      );
+      uri = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest("hex")}.html`);
     } else {
       uri = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
@@ -329,9 +294,9 @@ export class ShowdownPreviewer {
 
   public async exportHTML(
     doc: { type: string; content: string } | string,
-    title: string | undefined,
-    uri: string | undefined,
-    types: { hasKatex: Boolean | undefined } | undefined
+    title: string,
+    uri: string,
+    types: { hasKatex: boolean }
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
@@ -345,23 +310,18 @@ export class ShowdownPreviewer {
 
   public async exportPDF(
     doc: { type: string; content: string } | string,
-    title: string | undefined,
-    uri: string | undefined,
-    types: { hasKatex: Boolean | undefined } | undefined,
-    fileType: string = "pdf"
+    title: string,
+    uri: string,
+    types: { hasKatex: boolean },
+    fileType = "pdf"
   ) {
-    if (!uri) {
-      return;
-    }
+    if (!uri) return;
 
     const srcUri = vscode.Uri.parse(uri);
     uri = srcUri.fsPath;
     const fsHash = crypto.createHash("md5");
     fsHash.update(uri);
-    const htmlPath = path.join(
-      path.resolve(os.tmpdir()),
-      `mdsp-${fsHash.digest("hex")}.html`
-    );
+    const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest("hex")}.html`);
     await this.saveLocalHtml(htmlPath, doc, title, types);
 
     const extname = path.extname(uri);
@@ -377,10 +337,7 @@ export class ShowdownPreviewer {
       });
     } else {
       const globalNodeModulesPath = (
-        await utils.execFile(process.platform === "win32" ? "npm.cmd" : "npm", [
-          "root",
-          "-g"
-        ])
+        await utils.execFile(process.platform === "win32" ? "npm.cmd" : "npm", ["root", "-g"])
       )
         .trim()
         .split("\n")[0]
@@ -390,9 +347,7 @@ export class ShowdownPreviewer {
         headless: true
       });
     }
-    if (!browser) {
-      return;
-    }
+    if (!browser) return;
 
     const page = await browser.newPage();
     const loadPath = "file:///" + htmlPath;
@@ -408,137 +363,17 @@ export class ShowdownPreviewer {
       printBackground: this.config.printBackground
     };
     // wait for timeout
-    if (
-      this.config.puppeteerWaitForTimeout &&
-      this.config.puppeteerWaitForTimeout > 0
-    ) {
+    if (this.config.puppeteerWaitForTimeout && this.config.puppeteerWaitForTimeout > 0) {
       await page.waitFor(this.config.puppeteerWaitForTimeout);
     }
     if (fileType === "pdf") {
       await page.pdf(puppeteerConfig);
     } else {
-      puppeteerConfig = Object.assign(puppeteerConfig, { fullPage: true }); // <= set to fullPage by default
-      await page.screenshot(puppeteerConfig);
-    }
+      await page.screenshot({ fullPage: true, ...puppeteerConfig });
+    } // <= set to fullPage by default
     browser.close();
     utils.openFile(uri);
     return uri;
-  }
-
-  private async generateHTML() {
-    if (this.webpanel && this.uri && this.editor) {
-      const editor = this.editor;
-      this.webpanel.title = `Preview ${path.basename(this.uri.fsPath)}`;
-      const text = editor.document.getText();
-      const totalLines = editor.document.lineCount;
-      // init markdown engine
-      let initialLine = 0;
-      if (editor && editor.document.uri.fsPath === this.uri.fsPath) {
-        initialLine = await new Promise((resolve, reject) => {
-          // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
-          setTimeout(() => {
-            return resolve(editor.selections[0].active.line || 0);
-          }, 100);
-        });
-      }
-      this.generateHTMLTemplate(
-        this.uri,
-        this.webpanel.webview,
-        text,
-        totalLines,
-        initialLine
-      );
-    }
-  }
-  /**
-   * Add file:/// to file path
-   * If it's for VSCode preview, add vscode-resource:/// to file path
-   * @param filePath
-   */
-  private changeFileProtocol(
-    webview: vscode.Webview | null,
-    relativePath: string,
-    isForVSCodePreview: boolean
-  ) {
-    const diskPath = vscode.Uri.file(
-      path.join(this.context.extensionPath, relativePath)
-    );
-
-    if (isForVSCodePreview && webview) {
-      return webview.asWebviewUri(diskPath).toString();
-    }
-
-    return diskPath.toString();
-  }
-
-  private generateHTMLTemplate(
-    uri: vscode.Uri,
-    webview: vscode.Webview,
-    text: string,
-    totalLines: Number,
-    initialLine: Number
-  ) {
-    const that = this;
-    const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
-    const zcontent = zlibcodec.brEncode(text);
-    webview.html = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta id="md-data" data-uri="${uri.toString()}" data-type="br" data="${zcontent}" data-lines="${totalLines}" data-currline="${initialLine}">
-<title>${title}</title>
-<style type="text/css">
-  body {
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  a {
-    color: #569cd6;
-  }
-  a:hover {
-    color: #00a3f5;
-  }
-</style>
-<link rel="stylesheet" href="${that.changeFileProtocol(
-      webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.br.min.css`,
-      true
-    )}">
-<link rel="stylesheet" href="${that.changeFileProtocol(
-      webview,
-      `node_modules/@jhuix/showdowns/dist/katex.min.css`,
-      true
-    )}">
-<link rel="stylesheet" href="${that.changeFileProtocol(
-      webview,
-      `media/contextmenu.css`,
-      true
-    )}">
-</head>
-<body>
-<script src="${that.changeFileProtocol(
-      webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.br.min.js`,
-      true
-    )}"></script>
-<script src="${that.changeFileProtocol(
-      webview,
-      `media/webview.js`,
-      true
-    )}"></script>
-</body>
-</html>`;
-
-    // that.previewPostMessage({
-    //   command: "updateMarkdown",
-    //   uri: uri.toString(),
-    //   title: title,
-    //   totalLines: totalLines,
-    //   currentLine: initialLine,
-    //   markdown: { type: "br", content: res }
-    // });
   }
   /**
    * Close all previews
@@ -563,50 +398,6 @@ export class ShowdownPreviewer {
       return false;
     }
     return this.uri.fsPath === uri.fsPath;
-  }
-
-  private async refreshPreview(
-    previewPanel: vscode.WebviewPanel,
-    uri: vscode.Uri
-  ) {
-    const editor = this.getEditor();
-    if (
-      previewPanel &&
-      editor &&
-      editor.document &&
-      ShowdownPreviewer.isMarkdownFile(editor.document)
-    ) {
-      if (editor.document.uri && editor.document.uri.fsPath === uri.fsPath) {
-        let initialLine = 0;
-        initialLine = await new Promise((resolve, reject) => {
-          // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
-          setTimeout(() => {
-            return resolve(editor.selections[0].active.line || 0);
-          }, 100);
-        });
-        const totalLines = editor.document.lineCount;
-        const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
-        const text = editor.document.getText();
-        const zcontent = zlibcodec.brEncode(text);
-        this.previewPostMessage({
-          command: "updateMarkdown",
-          uri: uri.toString(),
-          title: title,
-          totalLines: totalLines,
-          currentLine: initialLine,
-          markdown: { type: "br", content: zcontent }
-        });
-      } else {
-        const viewColumn =
-          previewPanel && previewPanel.viewColumn
-            ? previewPanel.viewColumn
-            : vscode.ViewColumn.Two;
-        this.openPreview(uri, editor, {
-          viewColumn: viewColumn,
-          preserveFocus: true
-        });
-      }
-    }
   }
   public updatePreview(uri: vscode.Uri) {
     const previewPanel = this.getPreview();
@@ -635,38 +426,151 @@ export class ShowdownPreviewer {
   public isPreviewOn() {
     return !!this.getPreview();
   }
+
+  private async generateHTML() {
+    if (this.webpanel && this.uri && this.editor) {
+      const editor = this.editor;
+      this.webpanel.title = `Preview ${path.basename(this.uri.fsPath)}`;
+      const text = editor.document.getText();
+      const totalLines = editor.document.lineCount;
+      // init markdown engine
+      let initialLine = 0;
+      if (editor && editor.document.uri.fsPath === this.uri.fsPath) {
+        initialLine = await new Promise((resolve, reject) => {
+          // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
+          setTimeout(() => {
+            return resolve(editor.selections[0].active.line || 0);
+          }, 100);
+        });
+      }
+      this.generateHTMLTemplate(this.uri, this.webpanel.webview, text, totalLines, initialLine);
+    }
+  }
+  /**
+   * Add file:/// to file path
+   * If it's for VSCode preview, add vscode-resource:/// to file path
+   */
+  private changeFileProtocol(webview: vscode.Webview | null, relativePath: string, isForVSCodePreview: boolean) {
+    const diskPath = vscode.Uri.file(path.join(this.context.extensionPath, relativePath));
+
+    if (isForVSCodePreview && webview) {
+      return webview.asWebviewUri(diskPath).toString();
+    }
+
+    return diskPath.toString();
+  }
+
+  private generateHTMLTemplate(
+    uri: vscode.Uri,
+    webview: vscode.Webview,
+    text: string,
+    totalLines: number,
+    initialLine: number
+  ) {
+    const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
+    const zcontent = zlibcodec.brEncode(text);
+    webview.html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta id="md-data" data-uri="${uri.toString()}" data-type="br" data="${zcontent}" data-lines="${totalLines}" data-currline="${initialLine}">
+<title>${title}</title>
+<style type="text/css">
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  a {
+    color: #569cd6;
+  }
+  a:hover {
+    color: #00a3f5;
+  }
+</style>
+<link rel="stylesheet" href="${this.changeFileProtocol(
+      webview,
+      `node_modules/@jhuix/showdowns/dist/showdowns.br.min.css`,
+      true
+    )}">
+<link rel="stylesheet" href="${this.changeFileProtocol(
+      webview,
+      `node_modules/@jhuix/showdowns/dist/katex.min.css`,
+      true
+    )}">
+<link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
+</head>
+<body>
+<script src="${this.changeFileProtocol(
+      webview,
+      `node_modules/@jhuix/showdowns/dist/showdowns.br.min.js`,
+      true
+    )}"></script>
+<script src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
+</body>
+</html>`;
+
+    // that.previewPostMessage({
+    //   command: "updateMarkdown",
+    //   uri: uri.toString(),
+    //   title: title,
+    //   totalLines: totalLines,
+    //   currentLine: initialLine,
+    //   markdown: { type: "br", content: res }
+    // });
+  }
+
+  private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
+    const editor = this.getEditor();
+    if (previewPanel && editor && editor.document && ShowdownPreviewer.isMarkdownFile(editor.document)) {
+      if (editor.document.uri && editor.document.uri.fsPath === uri.fsPath) {
+        let initialLine = 0;
+        initialLine = await new Promise((resolve, reject) => {
+          // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
+          setTimeout(() => {
+            return resolve(editor.selections[0].active.line || 0);
+          }, 100);
+        });
+        const lines = editor.document.lineCount;
+        const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
+        const text = editor.document.getText();
+        const zcontent = zlibcodec.brEncode(text);
+        this.previewPostMessage({
+          command: "updateMarkdown",
+          uri: uri.toString(),
+          title: caption,
+          totalLines: lines,
+          currentLine: initialLine,
+          markdown: { type: "br", content: zcontent }
+        });
+      } else {
+        const previewColumn = previewPanel && previewPanel.viewColumn ? previewPanel.viewColumn : vscode.ViewColumn.Two;
+        this.openPreview(uri, editor, {
+          viewColumn: previewColumn,
+          preserveFocus: true
+        });
+      }
+    }
+  }
   /**
    * Format pathString if it is on Windows. Convert `c:\` like string to `C:\`
-   * @param pathString
+   * @param pathString string
    */
   private formatPathIfNecessary(pathString: string) {
     if (process.platform === "win32") {
-      pathString = pathString.replace(
-        /^([a-zA-Z])\:\\/,
-        (_, $1) => `${$1.toUpperCase()}:\\`
-      );
+      pathString = pathString.replace(/^([a-zA-Z])\:\\/, (_, $1) => `${$1.toUpperCase()}:\\`);
     }
     return pathString;
   }
-  private getProjectDirectoryPath(
-    uri: vscode.Uri,
-    workspaceFolders: vscode.WorkspaceFolder[] = []
-  ) {
-    const possibleWorkspaceFolders = workspaceFolders.filter(
-      workspaceFolder => {
-        return (
-          path
-            .dirname(uri.path.toUpperCase())
-            .indexOf(workspaceFolder.uri.path.toUpperCase()) >= 0
-        );
-      }
-    );
+  private getProjectDirectoryPath(uri: vscode.Uri, workspaceFolders: vscode.WorkspaceFolder[] = []) {
+    const possibleWorkspaceFolders = workspaceFolders.filter(workspaceFolder => {
+      return path.dirname(uri.path.toUpperCase()).indexOf(workspaceFolder.uri.path.toUpperCase()) >= 0;
+    });
     let projectDirectoryPath;
     if (possibleWorkspaceFolders.length) {
       // We pick the workspaceUri that has the longest path
-      const workspaceFolder = possibleWorkspaceFolders.sort(
-        (x, y) => y.uri.fsPath.length - x.uri.fsPath.length
-      )[0];
+      const workspaceFolder = possibleWorkspaceFolders.sort((x, y) => y.uri.fsPath.length - x.uri.fsPath.length)[0];
       projectDirectoryPath = workspaceFolder.uri.fsPath;
     } else {
       projectDirectoryPath = "";
@@ -679,31 +583,11 @@ export class ShowdownPreviewer {
 
   private getNonce() {
     let text = "";
-    const possible =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (let i = 0; i < 32; i++) {
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const textLen = 32;
+    for (let i = 0; i < textLen; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
-  }
-
-  public static getPackageName() {
-    return PreviewConfig.packageName;
-  }
-  public static getPreviewUri(uri: vscode.Uri) {
-    if (uri.scheme === ShowdownPreviewer.getPackageName()) {
-      return uri;
-    }
-    return uri.with({
-      scheme: ShowdownPreviewer.getPackageName(),
-      path: `${ShowdownPreviewer.getPackageName()}.rendered`
-    });
-  }
-  public static isMarkdownFile(document: vscode.TextDocument) {
-    return (
-      document &&
-      document.languageId === "markdown" &&
-      document.uri.scheme !== ShowdownPreviewer.getPackageName()
-    ); // prevent processing of own documents
   }
 }

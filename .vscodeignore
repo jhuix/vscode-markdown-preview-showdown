@@ -3,6 +3,8 @@
 out/test/**
 src/**
 .gitignore
+.prettierrc
+.prettierignore
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/tslint.json

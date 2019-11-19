@@ -27,6 +27,7 @@
 
     initMenuItem(menuItems) {
       if (typeof menuItems !== "object" || !menuItems) return;
+
       if (menuItems.hasOwnProperty("style")) {
         for (const key in menuItems["style"]) {
           this.menus.style[key] = menuItems["style"].key;
@@ -42,13 +43,8 @@
           menu.classList.add("context-menu-item");
           switch (item.type) {
             case "menu":
-              menu
-                .appendChild(document.createElement("span"))
-                .appendChild(document.createTextNode(item.title));
-              if (
-                item.hasOwnProperty("onclick") &&
-                typeof item.onclick === "function"
-              ) {
+              menu.appendChild(document.createElement("span")).appendChild(document.createTextNode(item.title));
+              if (item.hasOwnProperty("onclick") && typeof item.onclick === "function") {
                 menu.addEventListener("click", event => {
                   item.onclick(event, that.selector);
                   that.hide();
@@ -58,9 +54,7 @@
               break;
             case "submenu":
               menu.classList.add("context-menu-submenu");
-              menu
-                .appendChild(document.createElement("span"))
-                .appendChild(document.createTextNode(item.title));
+              menu.appendChild(document.createElement("span")).appendChild(document.createTextNode(item.title));
               this.menus.appendChild(menu);
               break;
             case "separator":
@@ -276,9 +270,7 @@
     }
 
     scrollEvent() {
-      console.log(
-        `scrolltop: ${this.previewElement.scrollTop}-${this.previewElement.offsetHeight}`
-      );
+      console.log(`scrolltop: ${this.previewElement.scrollTop}-${this.previewElement.offsetHeight}`);
       if (this.autoScroll) {
         this.autoSrocll = false;
         return;
@@ -290,18 +282,12 @@
     previewSyncSource() {
       let scrollLine = 0;
       if (this.previewElement.scrollTop !== 0) {
-        if (
-          this.previewElement.scrollTop + this.previewElement.offsetHeight >=
-          this.previewElement.scrollHeight
-        ) {
+        if (this.previewElement.scrollTop + this.previewElement.offsetHeight >= this.previewElement.scrollHeight) {
           scrollLine = this.totalLines;
         } else {
-          const top =
-            this.previewElement.scrollTop +
-            this.previewElement.offsetHeight / 2;
+          const top = this.previewElement.scrollTop + this.previewElement.offsetHeight / 2;
 
-          scrollLine =
-            (top * this.totalLines) / this.previewElement.scrollHeight;
+          scrollLine = (top * this.totalLines) / this.previewElement.scrollHeight;
         }
       }
       //this.postMessage("revealLine", [this.sourceUri, scrollLine]);
@@ -315,8 +301,7 @@
           if (line + 1 === this.totalLines) {
             scrollTop = this.previewElement.scrollHeight;
           } else {
-            scrollTop =
-              (line * this.previewElement.scrollHeight) / this.totalLines;
+            scrollTop = (line * this.previewElement.scrollHeight) / this.totalLines;
             //Math.max(scrollTop - this.previewElement.offsetHeight * ratio, 0);
           }
           this.autoScroll = true;

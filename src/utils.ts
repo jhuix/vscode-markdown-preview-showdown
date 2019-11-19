@@ -1,11 +1,8 @@
 import * as child_process from "child_process";
 import * as fs from "fs";
-import * as mkdirp_ from "mkdirp";
+import * as _mkdirp from "mkdirp";
 
-function readFile(
-  file: fs.PathLike | number,
-  options: { encoding?: null; flag?: string } | undefined | null
-) {
+function readFile(file: fs.PathLike | number, options: { encoding?: null; flag?: string } | undefined | null) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, options, (error, text) => {
       if (error) {
@@ -17,11 +14,7 @@ function readFile(
   });
 }
 exports.readFile = readFile;
-function writeFile(
-  file: fs.PathLike | number,
-  text: any,
-  options: fs.WriteFileOptions
-) {
+function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileOptions) {
   return new Promise((resolve, reject) => {
     fs.writeFile(file, text, options, error => {
       if (error) {
@@ -65,7 +58,7 @@ function execFile(
 exports.execFile = execFile;
 function mkdirp(dir: string) {
   return new Promise((resolve, reject) => {
-    mkdirp_(dir, (error, made) => {
+    _mkdirp(dir, (error, made) => {
       if (error) {
         return reject(error);
       } else {
@@ -77,7 +70,7 @@ function mkdirp(dir: string) {
 exports.mkdirp = mkdirp;
 /**
  * open html file in browser or open pdf file in reader ... etc
- * @param filePath
+ * @param filePath string
  */
 function openFile(filePath: string) {
   if (process.platform === "win32") {

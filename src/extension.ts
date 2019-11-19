@@ -14,12 +14,12 @@ let editorScrollDelay = Date.now();
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  //let close_other_editor_command_id =
+  // let close_other_editor_command_id =
   //  "workbench.action.closeEditorsInOtherGroups";
   // assume only one preview supported.
   const contentPreviewer = new ShowdownPreviewer(context);
 
-  function openPreview(uri: vscode.Uri | undefined = undefined) {
+  function openPreview(uri?: vscode.Uri) {
     if (!vscode.window.activeTextEditor) {
       return;
     }
@@ -28,8 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
       uri = vscode.window.activeTextEditor.document.uri;
     }
     contentPreviewer.openPreview(uri, vscode.window.activeTextEditor, {
-      viewColumn: vscode.ViewColumn.Two,
-      preserveFocus: true
+      preserveFocus: true,
+      viewColumn: vscode.ViewColumn.Two
     });
   }
 
@@ -91,15 +91,11 @@ export function activate(context: vscode.ExtensionContext) {
       if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
         const topLine = getTopVisibleLine(event.textEditor);
         const bottomLine = getBottomVisibleLine(event.textEditor);
-        const topRatio =
-          (event.selections[0].active.line - topLine) / (bottomLine - topLine);
+        const topRatio = (event.selections[0].active.line - topLine) / (bottomLine - topLine);
         let midLine;
         if (topLine === 0) {
           midLine = 0;
-        } else if (
-          Math.floor(bottomLine) ===
-          event.textEditor.document.lineCount - 1
-        ) {
+        } else if (Math.floor(bottomLine) === event.textEditor.document.lineCount - 1) {
           midLine = bottomLine;
         } else {
           midLine = Math.floor((topLine + bottomLine) / 2);
@@ -120,7 +116,7 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       if (ShowdownPreviewer.isMarkdownFile(textEditor.document)) {
-        //const sourceUri = textEditor.document.uri;
+        // const sourceUri = textEditor.document.uri;
         if (!event.textEditor.visibleRanges.length) {
           return undefined;
         } else {
@@ -129,10 +125,7 @@ export function activate(context: vscode.ExtensionContext) {
           let midLine;
           if (topLine === 0) {
             midLine = 0;
-          } else if (
-            Math.floor(bottomLine) ===
-            textEditor.document.lineCount - 1
-          ) {
+          } else if (Math.floor(bottomLine) === textEditor.document.lineCount - 1) {
             midLine = bottomLine;
           } else {
             midLine = Math.floor((topLine + bottomLine) / 2);
@@ -146,9 +139,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  /**
-   * @param textEditor
-   */
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(textEditor => {
       if (textEditor && textEditor.document && textEditor.document.uri) {
@@ -165,12 +155,10 @@ export function activate(context: vscode.ExtensionContext) {
             if (!contentPreviewer.isSameUri(sourceUri)) {
               const previewPanel = contentPreviewer.getPreview();
               const viewColumn =
-                previewPanel && previewPanel.viewColumn
-                  ? previewPanel.viewColumn
-                  : vscode.ViewColumn.Two;
+                previewPanel && previewPanel.viewColumn ? previewPanel.viewColumn : vscode.ViewColumn.Two;
               contentPreviewer.openPreview(sourceUri, textEditor, {
-                viewColumn: viewColumn,
-                preserveFocus: true
+                preserveFocus: true,
+                viewColumn
               });
             } else {
               const previewPanel = contentPreviewer.getPreview();
@@ -187,10 +175,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      `${ShowdownPreviewer.getPackageName()}.openPreview`,
-      openPreview
-    )
+    vscode.commands.registerCommand(`${ShowdownPreviewer.getPackageName()}.openPreview`, openPreview)
   );
 }
 
@@ -198,24 +183,16 @@ function revealLine(uri: string, line: number) {
   const sourceUri = vscode.Uri.parse(uri);
   vscode.window.visibleTextEditors
     .filter(
-      editor =>
-        ShowdownPreviewer.isMarkdownFile(editor.document) &&
-        editor.document.uri.fsPath === sourceUri.fsPath
+      editor => ShowdownPreviewer.isMarkdownFile(editor.document) && editor.document.uri.fsPath === sourceUri.fsPath
     )
     .forEach(editor => {
-      const sourceLine = Math.min(
-        Math.floor(line),
-        editor.document.lineCount - 1
-      );
+      const sourceLine = Math.min(Math.floor(line), editor.document.lineCount - 1);
       const fraction = line - sourceLine;
       const text = editor.document.lineAt(sourceLine).text;
       const start = Math.floor(fraction * text.length);
-      editorScrollDelay = Date.now() + 500;
-      editor.revealRange(
-        new vscode.Range(sourceLine, start, sourceLine + 1, 0),
-        vscode.TextEditorRevealType.InCenter
-      );
-      editorScrollDelay = Date.now() + 500;
+      editorScrollDelay = Date.now() + 100 * 5;
+      editor.revealRange(new vscode.Range(sourceLine, start, sourceLine + 1, 0), vscode.TextEditorRevealType.InCenter);
+      editorScrollDelay = Date.now() + 100 * 5;
     });
 }
 /**
@@ -225,15 +202,15 @@ function revealLine(uri: string, line: number) {
  * Floor to get real line number
  */
 function getTopVisibleLine(editor: vscode.TextEditor) {
-  if (!editor["visibleRanges"].length) {
+  if (!editor.visibleRanges.length) {
     return 0;
   }
-  const startPosition = editor["visibleRanges"][0].start;
+  const startPosition = editor.visibleRanges[0].start;
   return startPosition.line;
-  //const lineNumber = firstVisiblePosition.line;
-  //const line = editor.document.lineAt(lineNumber);
-  //const progress = firstVisiblePosition.character / (line.text.length + 2);
-  //return lineNumber + progress;
+  // const lineNumber = firstVisiblePosition.line;
+  // const line = editor.document.lineAt(lineNumber);
+  // const progress = firstVisiblePosition.character / (line.text.length + 2);
+  // return lineNumber + progress;
 }
 exports.getTopVisibleLine = getTopVisibleLine;
 /**
@@ -243,10 +220,10 @@ exports.getTopVisibleLine = getTopVisibleLine;
  * Floor to get real line number
  */
 function getBottomVisibleLine(editor: vscode.TextEditor) {
-  if (!editor["visibleRanges"].length) {
+  if (!editor.visibleRanges.length) {
     return 0;
   }
-  const endPosition = editor["visibleRanges"][0].end;
+  const endPosition = editor.visibleRanges[0].end;
   return endPosition.line;
   // const lineNumber = firstVisiblePosition.line;
   // let text = "";
