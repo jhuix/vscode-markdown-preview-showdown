@@ -1,5 +1,5 @@
 
-<p align="center"><a href="https://jhuix.github.io/markdown-showdown-preview" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/markdown-showdown-preview/screenshot/vscode-mdsp.png" alt="markdown-showdown-preview"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-showdown-preview" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-showdown-preview/screenshot/vscode-mdsp.png" alt="markdown-showdown-preview"></a></p>
 
 <h1 align="center">MDSP: MarkDown-Showdown-Preview</h1>
 

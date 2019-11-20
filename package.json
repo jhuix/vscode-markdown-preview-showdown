@@ -116,7 +116,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jhuix/markdown-shaowdown-preview"
+    "url": "https://github.com/jhuix/vscode-markdown-shaowdown-preview"
   },
-  "homepage": "https://github.com/jhuix/markdown-shaowdown-preview/blob/master/README.md"
+  "homepage": "https://github.com/jhuix/vscode-markdown-shaowdown-preview/blob/master/README.md"
 }

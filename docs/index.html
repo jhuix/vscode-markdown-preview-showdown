@@ -93,7 +93,7 @@
     window.mdsp = {};
     window.addEventListener('wasm', function (e) {
       let md = '';
-      window.fetch("https://jhuix.github.io/markdown-showdown-preview/demo.md")
+      window.fetch("https://jhuix.github.io/vscode-markdown-showdown-preview/demo.md")
         .then(function (res) {
           md = res.data;
           return window.fetch("https://jhuix.github.io/showdowns/Showdown's-Markdown-syntax.md");
