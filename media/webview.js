@@ -196,34 +196,7 @@
           // ctrl+shift+s preview sync source
           return this.previewSyncSource();
         }
-        // else if (event.metaKey || event.ctrlKey) {
-        //   // ctrl+c copy
-        //   if (event.which === 67) {
-        //     // [c] copy
-        //     document.execCommand("copy");
-        //   } else if (event.which === 187 && !this.config.vscode) {
-        //     // [+] zoom in
-        //     this.zoomIn();
-        //   } else if (event.which === 189 && !this.config.vscode) {
-        //     // [-] zoom out
-        //     this.zoomOut();
-        //   } else if (event.which === 48 && !this.config.vscode) {
-        //     // [0] reset zoom
-        //     this.resetZoom();
-        //   } else if (event.which === 38) {
-        //     // [ArrowUp] scroll to the most top
-        //     if (this.presentationMode) {
-        //       window["Reveal"].slide(0);
-        //     } else {
-        //       this.previewElement.scrollTop = 0;
-        //     }
-        //   }
-        // } else if (event.which === 27) {
-        //   // [esc] toggle sidebar toc
-        //   this.escPressed(event);
-        // }
       });
-      //window.onscroll = this.scrollEvent.bind(this);
       window.addEventListener("scroll", event => {
         this.scrollEvent(event);
       });
@@ -260,18 +233,13 @@
             break;
           case "changeTextEditorSelection":
             const line = parseInt(message.line, 10);
-            let topRatio = parseFloat(message.topRatio);
-            if (isNaN(topRatio)) {
-              topRatio = 0.372;
-            }
-            this.scrollToLine(line, topRatio);
+            this.scrollToLine(line);
             break;
         }
       }
     }
 
     scrollEvent(event) {
-      console.log(`scrolltop: ${window.scrollY}-${this.syncScrollTop}`);
       if (this.syncScrollTop >= 0) {
         if (window.scrollY === this.syncScrollTop) {
           this.syncScrollTop = -1;
@@ -294,7 +262,7 @@
       this.postMessage("revealLine", [this.sourceUri, scrollLine]);
     }
 
-    scrollToLine(line, ratio = 0.372) {
+    scrollToLine(line) {
       if (line !== this.currentLine) {
         this.currentLine = line;
         if (this.totalLines) {

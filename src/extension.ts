@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   function previewFirstPreview() {
-    if (contentPreviewer.isFirstPreview()) {
+    if (!contentPreviewer.isAutoPreview() || contentPreviewer.isFirstPreview()) {
       return;
     }
     const editor = vscode.window.activeTextEditor;
@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     context.subscriptions.push(
       vscode.workspace.onDidOpenTextDocument(document => {
-        if (ShowdownPreviewer.isMarkdownFile(document)) {
+        if (ShowdownPreviewer.isMarkdownFile(document) && contentPreviewer.isAutoPreview()) {
           openPreview(document.uri);
         }
       })
@@ -78,13 +78,17 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection(event => {
-      contentPreviewer.changeTextEditorSelection(event.textEditor);
+      if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
+        contentPreviewer.changeTextEditorSelection(event.textEditor);
+      }
     })
   );
 
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-      contentPreviewer.changeTextEditorSelection(event.textEditor);
+      if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
+        contentPreviewer.changeTextEditorSelection(event.textEditor);
+      }
     })
   );
 

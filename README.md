@@ -37,16 +37,17 @@ Open vscode editor, then search MarkDown-Showdown-Preview in Extensions, then cl
 
 This extension contributes the following settings:
 
-* `markDown-showdown-preview.scrollSync`: true/false Automatic scroll sync.
-* `markDown-showdown-preview.usePuppeteerCore`: If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.
-* `markdown-showdown-preview.puppeteerWaitForTimeout`: Puppeteer waits for a certain timeout in milliseconds before the document export.
+* `markDown-showdown-preview.autoPreview`: Automatic preview markdown file, default false.
+* `markDown-showdown-preview.scrollSync`: Automatic scroll sync, default true.
+* `markDown-showdown-preview.usePuppeteerCore`: If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
+* `markdown-showdown-preview.puppeteerWaitForTimeout`: Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
 * `markdown-showdown-preview.chromePath`: Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
 
 ## Keybindings
 
-|Key|	Command|
-|---|---|
-|ctrl+shift+v or cmd+shift+v	| Open preview |
+|Key|Command|
+|-----|---|
+|ctrl+shift+v or cmd+shift+v | Open preview |
 
 ## Release Notes
 

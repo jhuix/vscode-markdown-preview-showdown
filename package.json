@@ -3,7 +3,10 @@
   "displayName": "%displayname%",
   "description": "%description%",
   "version": "1.0.0",
-  "publisher": "Jhuix <jhuix0117@gmail.com>",
+  "publisher": "Jhuix",
+  "author": {
+    "name": "Jhuix"
+  },
   "engines": {
     "vscode": "^1.39.0"
   },
@@ -18,7 +21,7 @@
     "preview",
     "MDSP"
   ],
-  "icon": "./media/rightpane.png",
+  "icon": "media/rightpane.png",
   "activationEvents": [
     "onLanguage:markdown",
     "onCommand:markdown-showdown-preview.openPreview"
@@ -56,7 +59,7 @@
         {
           "command": "markdown-showdown-preview.openPreview",
           "when": "editorLangId == markdown",
-          "group": "navigation@1"
+          "group": "navigation"
         }
       ]
     },
@@ -64,6 +67,11 @@
       "type": "object",
       "title": "%mdsp%",
       "properties": {
+        "markdown-showdown-preview.autoPreview": {
+          "description": "Automatic preview markdown file.",
+          "default": false,
+          "type": "boolean"
+        },
         "markdown-showdown-preview.scrollSync": {
           "description": "Automatic scroll sync.",
           "default": true,

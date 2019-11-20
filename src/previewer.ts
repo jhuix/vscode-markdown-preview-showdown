@@ -455,6 +455,9 @@ export class ShowdownPreviewer {
   public isPreviewOn() {
     return !!this.getPreview();
   }
+  public isAutoPreview() {
+    return this.config.autoPreview;
+  }
 
   public changeActiveTextEditor(editor: vscode.TextEditor) {
     if (editor && editor.document && editor.document.uri) {
@@ -486,29 +489,24 @@ export class ShowdownPreviewer {
   }
 
   public changeTextEditorSelection(editor: vscode.TextEditor) {
-    if (!this.config.scrollSync || Date.now() < this.editorScrollDelay) {
+    if (!this.config.scrollSync || Date.now() < this.editorScrollDelay || !editor.visibleRanges.length) {
       return;
     }
-    if (ShowdownPreviewer.isMarkdownFile(editor.document)) {
-      if (!editor.visibleRanges.length) {
-        return;
-      } else {
-        const topLine = ShowdownPreviewer.getTopVisibleLine(editor);
-        const bottomLine = ShowdownPreviewer.getBottomVisibleLine(editor);
-        let midLine;
-        if (topLine === 0) {
-          midLine = 0;
-        } else if (Math.floor(bottomLine) === editor.document.lineCount - 1) {
-          midLine = bottomLine;
-        } else {
-          midLine = Math.floor((topLine + bottomLine) / 2);
-        }
-        this.previewPostMessage({
-          command: "changeTextEditorSelection",
-          line: midLine
-        });
-      }
+
+    const topLine = ShowdownPreviewer.getTopVisibleLine(editor);
+    const bottomLine = ShowdownPreviewer.getBottomVisibleLine(editor);
+    let midLine;
+    if (topLine === 0) {
+      midLine = 0;
+    } else if (Math.floor(bottomLine) === editor.document.lineCount - 1) {
+      midLine = bottomLine;
+    } else {
+      midLine = Math.floor((topLine + bottomLine) / 2);
     }
+    this.previewPostMessage({
+      command: "changeTextEditorSelection",
+      line: midLine
+    });
   }
 
   private async generateHTML() {
