@@ -42,11 +42,6 @@
         "key": "ctrl+shift+v",
         "mac": "cmd+shift+v",
         "when": "editorLangId == markdown"
-      },
-      {
-        "command": "markdown-showdown-preview.syncPreview",
-        "key": "ctrl+shift+s",
-        "when": "editorLangId == markdown"
       }
     ],
     "menus": {
@@ -70,7 +65,7 @@
       "title": "%mdsp%",
       "properties": {
         "markdown-showdown-preview.scrollSync": {
-          "description": "Automatic scroll sync. This is now partially supported.",
+          "description": "Automatic scroll sync.",
           "default": true,
           "type": "boolean"
         },
