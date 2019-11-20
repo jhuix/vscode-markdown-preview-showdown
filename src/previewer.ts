@@ -15,36 +15,54 @@ export class ShowdownPreviewer {
   public static getPackageName() {
     return PreviewConfig.packageName;
   }
-  public static getPreviewUri(uri: vscode.Uri) {
-    if (uri.scheme === ShowdownPreviewer.getPackageName()) {
-      return uri;
-    }
-    return uri.with({
-      scheme: ShowdownPreviewer.getPackageName(),
-      path: `${ShowdownPreviewer.getPackageName()}.rendered`
-    });
-  }
   public static isMarkdownFile(document: vscode.TextDocument) {
     // prevent processing of own documents
-    return document && document.languageId === "markdown" && document.uri.scheme !== ShowdownPreviewer.getPackageName();
+    return document && document.languageId === "markdown";
+  }
+  /**
+   * Get the top-most visible range of `editor`.
+   *
+   * Returns a fractional line number based the visible character within the line.
+   * Floor to get real line number
+   */
+  private static getTopVisibleLine(editor: vscode.TextEditor) {
+    if (!editor.visibleRanges.length) {
+      return 0;
+    }
+    return editor.visibleRanges[0].start.line;
+  }
+
+  /**
+   * Get the bottom-most visible range of `editor`.
+   *
+   * Returns a fractional line number based the visible character within the line.
+   * Floor to get real line number
+   */
+  private static getBottomVisibleLine(editor: vscode.TextEditor) {
+    if (!editor.visibleRanges.length) {
+      return 0;
+    }
+    return editor.visibleRanges[0].end.line;
   }
 
   private firstPreview: boolean;
   private config: PreviewConfig;
   private context: vscode.ExtensionContext;
+  private editorScrollDelay: number;
   private editor: vscode.TextEditor | undefined = undefined;
   private webpanel: vscode.WebviewPanel | undefined = undefined;
   private uri: vscode.Uri | undefined = undefined;
-  private debounceUpdatePreview = debounce(100 * 5, (that: ShowdownPreviewer, uri: vscode.Uri) => {
+  private debounceUpdatePreview = debounce(100 * 3, (that: ShowdownPreviewer, uri: vscode.Uri) => {
     that.updatePreview(uri);
   });
-  private debouncePostMessage = debounce(100 * 5, (webView: vscode.Webview, message: any) => {
+  private debouncePostMessage = debounce(100 * 3, (webView: vscode.Webview, message: any) => {
     webView.postMessage(message);
   });
 
   public constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.firstPreview = false;
+    this.editorScrollDelay = Date.now();
     this.config = PreviewConfig.getCurrentConfig(context);
   }
 
@@ -106,6 +124,9 @@ export class ShowdownPreviewer {
               break;
             case "webviewLoaded":
               this.updateCurrentView();
+              break;
+            case "revealLine":
+              this.revealLine(message.args[0], message.args[1]);
               break;
           }
         },
@@ -293,6 +314,7 @@ export class ShowdownPreviewer {
     }
     await this.saveLocalHtml(uri, doc, title, types);
     utils.openFile(uri);
+    vscode.window.showInformationMessage(`Browser HTML from: ${uri}`);
   }
 
   public async exportHTML(
@@ -308,6 +330,7 @@ export class ShowdownPreviewer {
       uri = uri.replace(new RegExp(extname + "$"), ".html");
       await this.saveLocalHtml(uri, doc, title, types);
       utils.openFile(uri);
+      vscode.window.showInformationMessage(`Stored HTML To: ${uri}`);
     }
   }
 
@@ -376,7 +399,7 @@ export class ShowdownPreviewer {
     } // <= set to fullPage by default
     browser.close();
     utils.openFile(uri);
-    return uri;
+    vscode.window.showInformationMessage(`Stored PDF To: ${uri}`);
   }
   /**
    * Close all previews
@@ -431,6 +454,61 @@ export class ShowdownPreviewer {
   }
   public isPreviewOn() {
     return !!this.getPreview();
+  }
+
+  public changeActiveTextEditor(editor: vscode.TextEditor) {
+    if (editor && editor.document && editor.document.uri) {
+      if (ShowdownPreviewer.isMarkdownFile(editor.document)) {
+        const sourceUri = editor.document.uri;
+        /**
+         * If the preview is on,
+         * when we switched text ed()tor,
+         * update preview to that text editor.
+         */
+        if (!this.isPreviewOn()) return false;
+
+        if (!this.isSameUri(sourceUri)) {
+          const previewPanel = this.getPreview();
+          const viewColumn = previewPanel && previewPanel.viewColumn ? previewPanel.viewColumn : vscode.ViewColumn.Two;
+          this.openPreview(sourceUri, editor, {
+            preserveFocus: true,
+            viewColumn
+          });
+        } else {
+          const previewPanel = this.getPreview();
+          if (previewPanel) {
+            previewPanel.reveal(vscode.ViewColumn.Two, true);
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  public changeTextEditorSelection(editor: vscode.TextEditor) {
+    if (!this.config.scrollSync || Date.now() < this.editorScrollDelay) {
+      return;
+    }
+    if (ShowdownPreviewer.isMarkdownFile(editor.document)) {
+      if (!editor.visibleRanges.length) {
+        return;
+      } else {
+        const topLine = ShowdownPreviewer.getTopVisibleLine(editor);
+        const bottomLine = ShowdownPreviewer.getBottomVisibleLine(editor);
+        let midLine;
+        if (topLine === 0) {
+          midLine = 0;
+        } else if (Math.floor(bottomLine) === editor.document.lineCount - 1) {
+          midLine = bottomLine;
+        } else {
+          midLine = Math.floor((topLine + bottomLine) / 2);
+        }
+        this.previewPostMessage({
+          command: "changeTextEditorSelection",
+          line: midLine
+        });
+      }
+    }
   }
 
   private async generateHTML() {
@@ -503,10 +581,8 @@ export class ShowdownPreviewer {
   private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
     const editor = this.getEditor();
     if (previewPanel && editor && editor.document && ShowdownPreviewer.isMarkdownFile(editor.document)) {
-      // if (editor.document.uri && editor.document.uri.fsPath === uri.fsPath) {
       let initialLine = 0;
       initialLine = await new Promise((resolve, reject) => {
-        // Hack: sometimes we only get 0. I couldn't find API to wait for editor getting loaded.
         setTimeout(() => {
           if (!editor.visibleRanges.length) {
             return resolve(editor.selections[0].active.line || 0);
@@ -537,14 +613,25 @@ export class ShowdownPreviewer {
         currentLine: initialLine,
         markdown: { type: "br", content: zcontent }
       });
-      // } else {
-      //   const previewColumn = previewPanel && previewPanel.viewColumn ? previewPanel.viewColumn : vscode.ViewColumn.Two;
-      //   this.openPreview(uri, editor, {
-      //     viewColumn: previewColumn,
-      //     preserveFocus: true
-      //   });
-      // }
     }
+  }
+  private revealLine(uri: string, line: number) {
+    if (!this.config.scrollSync) return;
+
+    const sourceUri = vscode.Uri.parse(uri);
+    vscode.window.visibleTextEditors
+      .filter(
+        editor => ShowdownPreviewer.isMarkdownFile(editor.document) && editor.document.uri.fsPath === sourceUri.fsPath
+      )
+      .forEach(editor => {
+        const sourceLine = Math.min(Math.floor(line), editor.document.lineCount - 1);
+        const fraction = line - sourceLine;
+        const text = editor.document.lineAt(sourceLine).text;
+        const start = Math.floor(fraction * text.length);
+        this.editorScrollDelay = Date.now() + 100 * 5;
+        editor.revealRange(new vscode.Range(sourceLine, 0, sourceLine + 1, 0), vscode.TextEditorRevealType.InCenter);
+        this.editorScrollDelay = Date.now() + 100 * 5;
+      });
   }
   /**
    * Format pathString if it is on Windows. Convert `c:\` like string to `C:\`
@@ -573,7 +660,6 @@ export class ShowdownPreviewer {
   private getFilePath(uri: vscode.Uri) {
     return this.formatPathIfNecessary(uri.fsPath);
   }
-
   private getNonce() {
     let text = "";
     const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

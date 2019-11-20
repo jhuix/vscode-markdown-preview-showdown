@@ -95,7 +95,7 @@
       this.sourceUri = "";
       this.totalLines = 0;
       this.currentLine = -1;
-      this.syncScroll = -1;
+      this.syncScrollTop = -1;
       this.config = { vscode: isVscode };
       const previewElement = document.createElement("div");
       previewElement.classList.add("workspace-container");
@@ -104,7 +104,6 @@
       this.initWindowEvents();
       this.initMenus();
       previewer.init();
-      console.log(this.previewElement);
     }
 
     initMenus() {
@@ -224,45 +223,17 @@
         //   this.escPressed(event);
         // }
       });
-      window.onscroll = this.scrollEvent.bind(this);
+      //window.onscroll = this.scrollEvent.bind(this);
+      window.addEventListener("scroll", event => {
+        this.scrollEvent(event);
+      });
       window.addEventListener("message", event => {
-        const message = event.data;
-        if (message) {
-          console.log(message);
-          switch (message.command) {
-            case "updateMarkdown":
-              this.sourceUri = message.uri;
-              this.updateMarkdown(message.markdown);
-              if (message.title) {
-                document.title = message.title;
-              }
-              this.totalLines = message.totalLines;
-              this.scrollToLine(message.currentLine);
-              break;
-            case "changeTextEditorSelection":
-              const line = parseInt(message.line, 10);
-              let topRatio = parseFloat(message.topRatio);
-              if (isNaN(topRatio)) {
-                topRatio = 0.372;
-              }
-              this.scrollToLine(line, topRatio);
-              break;
-          }
-        }
+        this.messageEvent(event);
       });
       window.addEventListener("wasm", event => {
         if (event.detail.name === "wasm_brotli_browser_bg.wasm") {
           this.postMessage("webviewLoaded", [document.title]);
         }
-        //const mdel = document.getElementById("md-data");
-        //if (mdel) {
-        //  const mdtype = mdel.getAttribute("data-type");
-        //  const mddata = mdel.getAttribute("data");
-        //  this.sourceUri = mdel.getAttribute("data-uri");
-        //  this.updateMarkdown({ type: mdtype, content: mddata });
-        //  this.totalLines = parseInt(mdel.getAttribute("data-lines"), 10);
-        //  this.scrollToLine(parseInt(mdel.getAttribute("data-currline"), 10));
-        //}
       });
     }
 
@@ -273,11 +244,37 @@
       });
     }
 
-    scrollEvent() {
-      console.log(`scrolltop: ${window.scrollY}-${this.syncScroll}`);
-      if (this.syncScroll >= 0) {
-        if (window.scrollY === this.syncScroll) {
-          this.syncScroll = -1;
+    messageEvent(event) {
+      const message = event.data;
+      if (message) {
+        console.log(message);
+        switch (message.command) {
+          case "updateMarkdown":
+            this.sourceUri = message.uri;
+            this.updateMarkdown(message.markdown);
+            if (message.title) {
+              document.title = message.title;
+            }
+            this.totalLines = message.totalLines;
+            this.scrollToLine(message.currentLine);
+            break;
+          case "changeTextEditorSelection":
+            const line = parseInt(message.line, 10);
+            let topRatio = parseFloat(message.topRatio);
+            if (isNaN(topRatio)) {
+              topRatio = 0.372;
+            }
+            this.scrollToLine(line, topRatio);
+            break;
+        }
+      }
+    }
+
+    scrollEvent(event) {
+      console.log(`scrolltop: ${window.scrollY}-${this.syncScrollTop}`);
+      if (this.syncScrollTop >= 0) {
+        if (window.scrollY === this.syncScrollTop) {
+          this.syncScrollTop = -1;
         }
       } else {
         this.previewSyncSource();
@@ -291,8 +288,7 @@
           scrollLine = this.totalLines;
         } else {
           const top = window.scrollY + window.innerHeight / 2;
-
-          scrollLine = (top * this.totalLines) / this.previewElement.scrollHeight;
+          scrollLine = parseInt((top * this.totalLines) / this.previewElement.scrollHeight, 10);
         }
       }
       this.postMessage("revealLine", [this.sourceUri, scrollLine]);
@@ -309,7 +305,7 @@
             scrollTop = parseInt((line * this.previewElement.scrollHeight) / this.totalLines, 10);
             //Math.max(scrollTop - this.previewElement.offsetHeight * ratio, 0);
           }
-          this.syncScroll = scrollTop;
+          this.syncScrollTop = scrollTop;
           window.scroll({
             left: 0,
             top: scrollTop,
