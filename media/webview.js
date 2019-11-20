@@ -174,13 +174,15 @@
           args
         });
       } else {
-        window.parent.postMessage(
-          {
-            command,
-            args
-          },
-          "file://"
-        );
+        if (window.parent != window) {
+          window.parent.postMessage(
+            {
+              command,
+              args
+            },
+            "file://"
+          );
+        }
       }
     }
 
