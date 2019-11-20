@@ -95,11 +95,22 @@
       let md = '';
       window.fetch("https://jhuix.github.io/vscode-markdown-showdown-preview/demo.md")
         .then(function (res) {
-          md = res.data;
+          if (res.ok ) {
+            return res.text();
+          }
+        })
+        .then(function (text) {
+          md = text;
           return window.fetch("https://jhuix.github.io/showdowns/Showdown's-Markdown-syntax.md");
         })
-        .then(function (res) {
-          md = md + `\n\n## Showdown's Markdown syntax\n\n` + res.data;
+        .then(function(res) {
+          if (res.ok ) {
+            return res.text();
+          }          
+          window.mdsp.phtml.updateMarkdown(showdowns.makeHtml(md));
+        })
+        .then(function(text){
+          md = md + `\n\n## Showdown's Markdown syntax\n\n` + text;
           window.mdsp.phtml.updateMarkdown(showdowns.makeHtml(md));
         })
         .catch(function (error) {
