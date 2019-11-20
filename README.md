@@ -63,6 +63,10 @@ Support TOC and sub-TOC.
 
 Support Text-Align.
 
+### 1.0.1
+
+Fix repository url in package.json.
+
 ## License
 
 [MIT](https://github.com/jhuix/markdown-showdown-preview/blob/master/LICENSE) License
