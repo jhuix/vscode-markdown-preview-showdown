@@ -77,6 +77,11 @@
           "default": true,
           "type": "boolean"
         },
+        "markdown-showdown-preview.maxContentSize": {
+          "description": "When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission.",
+          "default": 32768,
+          "type": "number"
+        },
         "markdown-showdown-preview.usePuppeteerCore": {
           "description": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
           "default": true,
@@ -116,7 +121,7 @@
     "vscode-test": "^1.2.0"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.2.0",
+    "@jhuix/showdowns": "^0.3.0",
     "mkdirp": "^0.5.1",
     "puppeteer-core": "^2.0.0",
     "throttle-debounce": "^2.1.0"

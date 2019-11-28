@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-import * as crypto from "crypto";
-import * as os from "os";
-import * as path from "path";
-import * as vscode from "vscode";
-import { PreviewConfig } from "./config";
+import * as crypto from 'crypto';
+import * as os from 'os';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import { PreviewConfig } from './config';
 
-const utils = require("./utils");
-const { debounce } = require("throttle-debounce");
-const zlibcodec = require("./zlib-codec.js");
+const utils = require('./utils');
+const { debounce } = require('throttle-debounce');
+const zlibcodec = require('./zlib-codec.js');
 
 // Class Showdown MarkDown Previewer
 export class ShowdownPreviewer {
@@ -17,7 +17,7 @@ export class ShowdownPreviewer {
   }
   public static isMarkdownFile(document: vscode.TextDocument) {
     // prevent processing of own documents
-    return document && document.languageId === "markdown";
+    return document && document.languageId === 'markdown';
   }
   /**
    * Get the top-most visible range of `editor`.
@@ -74,7 +74,7 @@ export class ShowdownPreviewer {
     if (this.webpanel) {
       const targetUri = this.uri;
       const oldResourceRoot = !targetUri
-        ? ""
+        ? ''
         : this.getProjectDirectoryPath(targetUri, vscode.workspace.workspaceFolders) || path.dirname(targetUri.fsPath);
       const newResourceRoot =
         this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath);
@@ -88,9 +88,8 @@ export class ShowdownPreviewer {
       this.editor = editor;
     } else {
       const localResourceRoots = [
-        vscode.Uri.file(path.join(this.context.extensionPath, "media")),
-        vscode.Uri.file(path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist")),
-        vscode.Uri.file(path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist/fonts")),
+        vscode.Uri.file(path.join(this.context.extensionPath, 'media')),
+        vscode.Uri.file(path.join(this.context.extensionPath, 'node_modules')),
         vscode.Uri.file(os.tmpdir()),
         vscode.Uri.file(
           this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath)
@@ -111,21 +110,21 @@ export class ShowdownPreviewer {
 
       // register previewPanel message events
       previewPanel.webview.onDidReceiveMessage(
-        message => {
+        (message) => {
           switch (message.command) {
-            case "openInBrowser":
+            case 'openInBrowser':
               this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
-            case "exportHTML":
+            case 'exportHTML':
               this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
-            case "exportPDF":
+            case 'exportPDF':
               this.exportPDF(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
-            case "webviewLoaded":
+            case 'webviewLoaded':
               this.updateCurrentView();
               break;
-            case "revealLine":
+            case 'revealLine':
               this.revealLine(message.args[0], message.args[1]);
               break;
           }
@@ -145,7 +144,7 @@ export class ShowdownPreviewer {
 
       // Update the content based on view changes
       previewPanel.onDidChangeViewState(
-        e => {
+        (e) => {
           if (previewPanel.visible) {
             this.generateHTML();
           }
@@ -165,19 +164,19 @@ export class ShowdownPreviewer {
     htmlPath: string,
     doc: { type: string; content: string } | string,
     title: string,
-    types: { hasKatex: boolean }
+    csstypes: { hasKatex: boolean }
   ) {
     if (!title) {
-      title = "预览MARKDOWN文件";
+      title = '预览MARKDOWN文件';
     }
-    if (typeof doc === "object") {
-      if (typeof doc.content === "string") {
-        if (typeof doc.type === "string") {
+    if (typeof doc === 'object') {
+      if (typeof doc.content === 'string') {
+        if (typeof doc.type === 'string') {
           switch (doc.type) {
-            case "zip":
+            case 'zip':
               doc = zlibcodec.decode(doc.content);
               break;
-            case "br":
+            case 'br':
               doc = zlibcodec.brDecode(doc.content);
               break;
             default:
@@ -190,24 +189,24 @@ export class ShowdownPreviewer {
       }
     }
     const showdowncss = await utils.readFile(
-      path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist/showdowns.min.css"),
+      path.join(this.context.extensionPath, 'node_modules/@jhuix/showdowns/dist/showdowns.min.css'),
       {
-        encoding: "utf-8"
+        encoding: 'utf-8'
       }
     );
 
-    let katexstyle = "";
-    if (typeof types === "object" && types.hasKatex) {
+    let katexstyle = '';
+    if (typeof csstypes === 'object' && csstypes.hasKatex) {
       const katexcss = await utils.readFile(
-        path.join(this.context.extensionPath, "node_modules/@jhuix/showdowns/dist/katex.min.css"),
+        path.join(this.context.extensionPath, 'node_modules/katex/dist/katex.min.css'),
         {
-          encoding: "utf-8"
+          encoding: 'utf-8'
         }
       );
 
       katexstyle = `<style type="text/css">${katexcss.replace(
         /url\(fonts/gi,
-        "url(https://jhuix.github.io/showdowns/dist/fonts"
+        'url(https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/fonts'
       )}</style>`;
     }
 
@@ -293,7 +292,7 @@ export class ShowdownPreviewer {
     </html>`;
 
     await utils.writeFile(htmlPath, html, {
-      encoding: "utf-8"
+      encoding: 'utf-8'
     });
   }
 
@@ -301,18 +300,18 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    types: { hasKatex: boolean }
+    csstypes: { hasKatex: boolean }
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
       uri = srcUri.fsPath;
-      const fsHash = crypto.createHash("md5");
+      const fsHash = crypto.createHash('md5');
       fsHash.update(uri);
-      uri = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest("hex")}.html`);
+      uri = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
     } else {
       uri = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
-    await this.saveLocalHtml(uri, doc, title, types);
+    await this.saveLocalHtml(uri, doc, title, csstypes);
     utils.openFile(uri);
     vscode.window.showInformationMessage(`Browser HTML from: ${uri}`);
   }
@@ -321,14 +320,14 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    types: { hasKatex: boolean }
+    csstypes: { hasKatex: boolean }
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
       uri = srcUri.fsPath;
       const extname = path.extname(uri);
-      uri = uri.replace(new RegExp(extname + "$"), ".html");
-      await this.saveLocalHtml(uri, doc, title, types);
+      uri = uri.replace(new RegExp(extname + '$'), '.html');
+      await this.saveLocalHtml(uri, doc, title, csstypes);
       utils.openFile(uri);
       vscode.window.showInformationMessage(`Stored HTML To: ${uri}`);
     }
@@ -338,37 +337,37 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    types: { hasKatex: boolean },
-    fileType = "pdf"
+    csstypes: { hasKatex: boolean },
+    fileType = 'pdf'
   ) {
     if (!uri) return;
 
     const srcUri = vscode.Uri.parse(uri);
     uri = srcUri.fsPath;
-    const fsHash = crypto.createHash("md5");
+    const fsHash = crypto.createHash('md5');
     fsHash.update(uri);
-    const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest("hex")}.html`);
-    await this.saveLocalHtml(htmlPath, doc, title, types);
+    const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
+    await this.saveLocalHtml(htmlPath, doc, title, csstypes);
 
     const extname = path.extname(uri);
-    uri = uri.replace(new RegExp(extname + "$"), `.${fileType}`);
+    uri = uri.replace(new RegExp(extname + '$'), `.${fileType}`);
 
     let browser = null;
     let puppeteer = null;
     if (this.config.usePuppeteerCore) {
-      puppeteer = require("puppeteer-core");
+      puppeteer = require('puppeteer-core');
       browser = await puppeteer.launch({
-        executablePath: this.config.chromePath || require("chrome-location"),
+        executablePath: this.config.chromePath || require('chrome-location'),
         headless: true
       });
     } else {
       const globalNodeModulesPath = (
-        await utils.execFile(process.platform === "win32" ? "npm.cmd" : "npm", ["root", "-g"])
+        await utils.execFile(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['root', '-g'])
       )
         .trim()
-        .split("\n")[0]
+        .split('\n')[0]
         .trim();
-      puppeteer = require(path.resolve(globalNodeModulesPath, "./puppeteer")); // trim() function here is very necessary.
+      puppeteer = require(path.resolve(globalNodeModulesPath, './puppeteer')); // trim() function here is very necessary.
       browser = await puppeteer.launch({
         headless: true
       });
@@ -376,15 +375,15 @@ export class ShowdownPreviewer {
     if (!browser) return;
 
     const page = await browser.newPage();
-    const loadPath = "file:///" + htmlPath;
+    const loadPath = 'file:///' + htmlPath;
     await page.goto(loadPath);
     let puppeteerConfig = {
       path: uri,
       margin: {
-        top: "1cm",
-        bottom: "1cm",
-        left: "1cm",
-        right: "1cm"
+        top: '1cm',
+        bottom: '1cm',
+        left: '1cm',
+        right: '1cm'
       },
       printBackground: this.config.printBackground
     };
@@ -392,7 +391,7 @@ export class ShowdownPreviewer {
     if (this.config.puppeteerWaitForTimeout && this.config.puppeteerWaitForTimeout > 0) {
       await page.waitFor(this.config.puppeteerWaitForTimeout);
     }
-    if (fileType === "pdf") {
+    if (fileType === 'pdf') {
       await page.pdf(puppeteerConfig);
     } else {
       await page.screenshot({ fullPage: true, ...puppeteerConfig });
@@ -465,7 +464,7 @@ export class ShowdownPreviewer {
         const sourceUri = editor.document.uri;
         /**
          * If the preview is on,
-         * when we switched text ed()tor,
+         * when we switched text editor,
          * update preview to that text editor.
          */
         if (!this.isPreviewOn()) return false;
@@ -504,7 +503,7 @@ export class ShowdownPreviewer {
       midLine = Math.floor((topLine + bottomLine) / 2);
     }
     this.previewPostMessage({
-      command: "changeTextEditorSelection",
+      command: 'changeTextEditorSelection',
       line: midLine
     });
   }
@@ -532,8 +531,6 @@ export class ShowdownPreviewer {
 
   private generateHTMLTemplate(uri: vscode.Uri, webview: vscode.Webview) {
     const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
-    // const zcontent = zlibcodec.brEncode(text);
-    // <meta id="md-data" data-uri="${uri.toString()}" data-type="br" data="${zcontent}" data-lines="${totalLines}" data-currline="${initialLine}">
     webview.html = `<!DOCTYPE html>
 <html>
 <head>
@@ -558,11 +555,6 @@ export class ShowdownPreviewer {
       `node_modules/@jhuix/showdowns/dist/showdowns.br.min.css`,
       true
     )}">
-<link rel="stylesheet" href="${this.changeFileProtocol(
-      webview,
-      `node_modules/@jhuix/showdowns/dist/katex.min.css`,
-      true
-    )}">
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
 </head>
 <body>
@@ -571,6 +563,11 @@ export class ShowdownPreviewer {
       `node_modules/@jhuix/showdowns/dist/showdowns.br.min.js`,
       true
     )}"></script>
+<script>
+var max_contentsize = ${this.config.maxContentSize};
+var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
+var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
+</script>
 <script src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
 </body>
 </html>`;
@@ -602,14 +599,13 @@ export class ShowdownPreviewer {
       const lines = editor.document.lineCount;
       const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
       const text = editor.document.getText();
-      const zcontent = zlibcodec.brEncode(text);
       this.previewPostMessage({
-        command: "updateMarkdown",
+        command: 'updateMarkdown',
         uri: uri.toString(),
         title: caption,
         totalLines: lines,
         currentLine: initialLine,
-        markdown: { type: "br", content: zcontent }
+        markdown: text.length > this.config.maxContentSize ? { type: 'br', content: zlibcodec.brEncode(text) } : text
       });
     }
   }
@@ -619,9 +615,9 @@ export class ShowdownPreviewer {
     const sourceUri = vscode.Uri.parse(uri);
     vscode.window.visibleTextEditors
       .filter(
-        editor => ShowdownPreviewer.isMarkdownFile(editor.document) && editor.document.uri.fsPath === sourceUri.fsPath
+        (editor) => ShowdownPreviewer.isMarkdownFile(editor.document) && editor.document.uri.fsPath === sourceUri.fsPath
       )
-      .forEach(editor => {
+      .forEach((editor) => {
         const sourceLine = Math.min(Math.floor(line), editor.document.lineCount - 1);
         const fraction = line - sourceLine;
         const text = editor.document.lineAt(sourceLine).text;
@@ -636,13 +632,13 @@ export class ShowdownPreviewer {
    * @param pathString string
    */
   private formatPathIfNecessary(pathString: string) {
-    if (process.platform === "win32") {
+    if (process.platform === 'win32') {
       pathString = pathString.replace(/^([a-zA-Z])\:\\/, (_, $1) => `${$1.toUpperCase()}:\\`);
     }
     return pathString;
   }
   private getProjectDirectoryPath(uri: vscode.Uri, workspaceFolders: vscode.WorkspaceFolder[] = []) {
-    const possibleWorkspaceFolders = workspaceFolders.filter(workspaceFolder => {
+    const possibleWorkspaceFolders = workspaceFolders.filter((workspaceFolder) => {
       return path.dirname(uri.path.toUpperCase()).indexOf(workspaceFolder.uri.path.toUpperCase()) >= 0;
     });
     let projectDirectoryPath;
@@ -651,7 +647,7 @@ export class ShowdownPreviewer {
       const workspaceFolder = possibleWorkspaceFolders.sort((x, y) => y.uri.fsPath.length - x.uri.fsPath.length)[0];
       projectDirectoryPath = workspaceFolder.uri.fsPath;
     } else {
-      projectDirectoryPath = "";
+      projectDirectoryPath = '';
     }
     return this.formatPathIfNecessary(projectDirectoryPath);
   }
@@ -659,8 +655,8 @@ export class ShowdownPreviewer {
     return this.formatPathIfNecessary(uri.fsPath);
   }
   private getNonce() {
-    let text = "";
-    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const textLen = 32;
     for (let i = 0; i < textLen; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));

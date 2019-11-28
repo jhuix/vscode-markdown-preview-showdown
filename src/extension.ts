@@ -7,12 +7,13 @@
  */
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
-import { ShowdownPreviewer } from "./previewer";
+import * as vscode from 'vscode';
+import { ShowdownPreviewer } from './previewer';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  console.log('begin activate');
   // assume only one preview supported.
   const contentPreviewer = new ShowdownPreviewer(context);
 
@@ -31,6 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   function previewFirstPreview() {
+    console.log('previewFirstPreview');
     if (!contentPreviewer.isAutoPreview() || contentPreviewer.isFirstPreview()) {
       return;
     }
@@ -46,7 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
     previewFirstPreview();
   } else {
     context.subscriptions.push(
-      vscode.workspace.onDidOpenTextDocument(document => {
+      vscode.workspace.onDidOpenTextDocument((document) => {
+        console.log('onDidOpenTextDocument');
         if (ShowdownPreviewer.isMarkdownFile(document) && contentPreviewer.isAutoPreview()) {
           openPreview(document.uri);
         }
@@ -55,16 +58,20 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   context.subscriptions.push(
-    vscode.workspace.onDidSaveTextDocument(document => {
-      if (ShowdownPreviewer.isMarkdownFile(document)) {
+    vscode.workspace.onDidSaveTextDocument((document) => {
+      console.log('onDidSaveTextDocument');
+      const result = vscode.workspace.getConfiguration().get('files.autoSave');
+      if (result !== 'off' && ShowdownPreviewer.isMarkdownFile(document)) {
         contentPreviewer.updatePreview(document.uri);
       }
     })
   );
 
   context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument(event => {
-      if (ShowdownPreviewer.isMarkdownFile(event.document)) {
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      console.log('onDidChangeTextDocument');
+      const result = vscode.workspace.getConfiguration().get('files.autoSave');
+      if (result === 'off' && ShowdownPreviewer.isMarkdownFile(event.document)) {
         contentPreviewer.update(event.document.uri);
       }
     })
@@ -72,12 +79,23 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(() => {
+      console.log('onDidChangeConfiguration');
       contentPreviewer.updateConfiguration();
     })
   );
 
   context.subscriptions.push(
-    vscode.window.onDidChangeTextEditorSelection(event => {
+    vscode.window.onDidChangeTextEditorSelection((event) => {
+      console.log('onDidChangeTextEditorSelection');
+      // if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
+      //  contentPreviewer.changeTextEditorSelection(event.textEditor);
+      // }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.window.onDidChangeTextEditorVisibleRanges((event) => {
+      console.log('onDidChangeTextEditorVisibleRanges');
       if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
         contentPreviewer.changeTextEditorSelection(event.textEditor);
       }
@@ -85,15 +103,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-      if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
-        contentPreviewer.changeTextEditorSelection(event.textEditor);
-      }
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(textEditor => {
+    vscode.window.onDidChangeActiveTextEditor((textEditor) => {
+      console.log('onDidChangeActiveTextEditor');
       if (textEditor && !contentPreviewer.changeActiveTextEditor(textEditor)) {
         previewFirstPreview();
       }
@@ -103,7 +114,11 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`${ShowdownPreviewer.getPackageName()}.openPreview`, openPreview)
   );
+
+  console.log('end activate');
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+  console.log('deactivate');
+}

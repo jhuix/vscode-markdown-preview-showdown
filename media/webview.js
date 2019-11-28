@@ -1,14 +1,14 @@
-(function(previewer) {
+(function(previewer, defScheme, distScheme) {
   class ContextMenu {
     constructor(selector, menuItems) {
-      const menus = document.createElement("ul");
-      menus.classList.add("context-menu-list");
-      menus.style.width = "210px";
-      menus.style.display = "none";
-      menus.style.zIndex = "1";
+      const menus = document.createElement('ul');
+      menus.classList.add('context-menu-list');
+      menus.style.width = '210px';
+      menus.style.display = 'none';
+      menus.style.zIndex = '1';
       this.menus = menus;
       this.selector = selector ? selector : document;
-      this.markdown_types = {};
+      this.csstypes = {};
       this.initMenuItem(menuItems);
       document.body.appendChild(this.menus);
       this.initWindowEvents();
@@ -16,49 +16,49 @@
 
     initWindowEvents() {
       const that = this;
-      this.selector.addEventListener("contextmenu", event => {
+      this.selector.addEventListener('contextmenu', (event) => {
         event.preventDefault();
         that.show(event.clientX, event.clientY);
       });
-      document.addEventListener("click", function(e) {
+      document.addEventListener('click', function(e) {
         that.hide();
       });
     }
 
     initMenuItem(menuItems) {
-      if (typeof menuItems !== "object" || !menuItems) return;
+      if (typeof menuItems !== 'object' || !menuItems) return;
 
-      if (menuItems.hasOwnProperty("style")) {
-        for (const key in menuItems["style"]) {
-          this.menus.style[key] = menuItems["style"].key;
+      if (menuItems.hasOwnProperty('style')) {
+        for (const key in menuItems['style']) {
+          this.menus.style[key] = menuItems['style'].key;
         }
       }
 
-      if (menuItems.hasOwnProperty("items")) {
+      if (menuItems.hasOwnProperty('items')) {
         const that = this;
         const items = menuItems.items;
         for (const index in items) {
           const item = items[index];
-          const menu = document.createElement("li");
-          menu.classList.add("context-menu-item");
+          const menu = document.createElement('li');
+          menu.classList.add('context-menu-item');
           switch (item.type) {
-            case "menu":
-              menu.appendChild(document.createElement("span")).appendChild(document.createTextNode(item.title));
-              if (item.hasOwnProperty("onclick") && typeof item.onclick === "function") {
-                menu.addEventListener("click", event => {
+            case 'menu':
+              menu.appendChild(document.createElement('span')).appendChild(document.createTextNode(item.title));
+              if (item.hasOwnProperty('onclick') && typeof item.onclick === 'function') {
+                menu.addEventListener('click', (event) => {
                   item.onclick(event, that.selector);
                   that.hide();
                 });
               }
               this.menus.appendChild(menu);
               break;
-            case "submenu":
-              menu.classList.add("context-menu-submenu");
-              menu.appendChild(document.createElement("span")).appendChild(document.createTextNode(item.title));
+            case 'submenu':
+              menu.classList.add('context-menu-submenu');
+              menu.appendChild(document.createElement('span')).appendChild(document.createTextNode(item.title));
               this.menus.appendChild(menu);
               break;
-            case "separator":
-              menu.classList.add("context-menu-separator");
+            case 'separator':
+              menu.classList.add('context-menu-separator');
               this.menus.appendChild(menu);
               break;
           }
@@ -67,8 +67,8 @@
     }
 
     show(x, y) {
-      this.menus.style.top = "-50%";
-      this.menus.style.display = "block";
+      this.menus.style.top = '-50%';
+      this.menus.style.display = 'block';
       if (y + this.menus.clientHeight > window.innerHeight - 10) {
         y -= this.menus.clientHeight + 10;
       }
@@ -77,12 +77,12 @@
       }
       x += window.pageXOffset;
       y += window.pageYOffset;
-      this.menus.style.left = x + "px";
-      this.menus.style.top = y + "px";
+      this.menus.style.left = x + 'px';
+      this.menus.style.top = y + 'px';
     }
 
     hide() {
-      this.menus.style.display = "none";
+      this.menus.style.display = 'none';
     }
   }
 
@@ -92,62 +92,68 @@
      */
     constructor(isVscode) {
       this.vscodeAPI = null;
-      this.sourceUri = "";
+      this.sourceUri = '';
       this.totalLines = 0;
       this.currentLine = -1;
       this.syncScrollTop = -1;
       this.config = { vscode: isVscode };
-      const previewElement = document.createElement("div");
-      previewElement.classList.add("workspace-container");
+      const previewElement = document.createElement('div');
+      previewElement.classList.add('workspace-container');
       this.previewElement = previewElement;
       document.body.appendChild(this.previewElement);
       this.initWindowEvents();
       this.initMenus();
-      previewer.init();
+      previewer.init('local', defScheme, distScheme);
     }
 
     initMenus() {
       const that = this;
       const menuItems = {
         style: {
-          width: "210px",
-          zIndex: "1",
-          display: "none"
+          width: '210px',
+          zIndex: '1',
+          display: 'none'
         },
         items: [
           {
-            type: "menu",
-            title: "用浏览器打开",
+            type: 'menu',
+            title: '用浏览器打开',
             onclick: function(e, s) {
-              that.postMessage("openInBrowser", [
-                { type: "br", content: previewer.brEncode(s.innerHTML) },
+              that.postMessage('openInBrowser', [
+                s.innerHTML.length > 32786
+                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
+                  : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.markdown_types
+                that.csstypes
               ]);
             }
           },
           {
-            type: "menu",
-            title: "导出 -> HTML",
+            type: 'menu',
+            title: '导出 -> HTML',
             onclick: function(e, s) {
-              that.postMessage("exportHTML", [
-                { type: "br", content: previewer.brEncode(s.innerHTML) },
+              that.postMessage('exportHTML', [
+                s.innerHTML.length > 32786
+                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
+                  : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.markdown_types
+                that.csstypes
               ]);
             }
           },
           {
-            type: "menu",
-            title: "导出 -> PDF",
+            type: 'menu',
+            title: '导出 -> PDF',
             onclick: function(e, s) {
-              that.postMessage("exportPDF", [
-                { type: "br", content: previewer.brEncode(s.innerHTML) },
+              that.postMessage('exportPDF', [
+                s.innerHTML.length > max_contentsize
+                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
+                  : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.markdown_types
+                that.csstypes
               ]);
             }
           }
@@ -180,7 +186,7 @@
               command,
               args
             },
-            "file://"
+            'file://'
           );
         }
       }
@@ -193,29 +199,29 @@
       /**
        * Several keyboard events.
        */
-      window.addEventListener("keydown", event => {
+      window.addEventListener('keydown', (event) => {
         if (event.shiftKey && event.ctrlKey && event.which === 83) {
           // ctrl+shift+s preview sync source
           return this.previewSyncSource();
         }
       });
-      window.addEventListener("scroll", event => {
+      window.addEventListener('scroll', (event) => {
         this.scrollEvent(event);
       });
-      window.addEventListener("message", event => {
+      window.addEventListener('message', (event) => {
         this.messageEvent(event);
       });
-      window.addEventListener("wasm", event => {
-        if (event.detail.name === "wasm_brotli_browser_bg.wasm") {
-          this.postMessage("webviewLoaded", [document.title]);
+      window.addEventListener('showdownsLoaded', (event) => {
+        if (event.detail.name === 'wasm_brotli_browser_bg.wasm') {
+          this.postMessage('webviewLoaded', [document.title]);
         }
       });
     }
 
     updateMarkdown(markdown) {
       const that = this;
-      this.previewElement.innerHTML = previewer.makeHtml(markdown, types => {
-        that.markdown_types = types;
+      this.previewElement.innerHTML = previewer.makeHtml(markdown, (csstypes) => {
+        that.csstypes = csstypes;
       });
     }
 
@@ -224,7 +230,7 @@
       if (message) {
         console.log(message);
         switch (message.command) {
-          case "updateMarkdown":
+          case 'updateMarkdown':
             this.sourceUri = message.uri;
             this.updateMarkdown(message.markdown);
             if (message.title) {
@@ -233,7 +239,7 @@
             this.totalLines = message.totalLines;
             this.scrollToLine(message.currentLine);
             break;
-          case "changeTextEditorSelection":
+          case 'changeTextEditorSelection':
             const line = parseInt(message.line, 10);
             this.scrollToLine(line);
             break;
@@ -261,7 +267,7 @@
           scrollLine = parseInt((top * this.totalLines) / this.previewElement.scrollHeight, 10);
         }
       }
-      this.postMessage("revealLine", [this.sourceUri, scrollLine]);
+      this.postMessage('revealLine', [this.sourceUri, scrollLine]);
     }
 
     scrollToLine(line) {
@@ -279,7 +285,7 @@
           window.scroll({
             left: 0,
             top: scrollTop,
-            behavior: "smooth"
+            behavior: 'smooth'
           });
         }
       }
@@ -287,15 +293,15 @@
   }
 
   function onLoad() {
-    if (typeof window.mdsp === "object" && window.mdsp) {
+    if (typeof window.mdsp === 'object' && window.mdsp) {
       window.mdsp.phtml = new PreviewHtml(false);
     } else {
       new PreviewHtml(true);
     }
   }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", onLoad);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onLoad);
   } else {
     onLoad();
   }
-})(showdowns);
+})(showdowns, scheme_default, scheme_dist);
