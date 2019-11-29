@@ -1,13 +1,13 @@
 
-<p align="center"><a href="https://jhuix.github.io/vscode-markdown-showdown-preview" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-showdown-preview/screenshot/vscode-mdsp.png" alt="markdown-showdown-preview"></a></p>
-
 <h1 align="center">MDSP: MarkDown-Showdown-Preview</h1>
 
-A markdown preview vscode extension for showdown.js
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-showdown-preview" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-showdown-preview/screenshot/vscode-mdsp.png" alt="markdown-showdown-preview"></a></p>
+
+A markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
 
 ## Features
 
-MarkDown-Showdown-Preview(MDSP) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC,export HTML, export PDF etc.
+[MarkDown-Showdown-Preview(MDSP)](https://github.com/jhuix/vscode-markdown-showdown-preview) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC,export HTML, export PDF etc.
 
 MDSP converte markdown content to html that using the [\@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package.
 
@@ -39,6 +39,7 @@ This extension contributes the following settings:
 
 * `markDown-showdown-preview.autoPreview`: Automatic preview markdown file, default false.
 * `markDown-showdown-preview.scrollSync`: Automatic scroll sync, default true.
+* `markdown-showdown-preview.maxContentSize`: When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
 * `markDown-showdown-preview.usePuppeteerCore`: If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
 * `markdown-showdown-preview.puppeteerWaitForTimeout`: Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
 * `markdown-showdown-preview.chromePath`: Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
@@ -66,6 +67,30 @@ Support Text-Align.
 ### 1.0.1
 
 Fix repository url in package.json.
+
+### 1.1.0
+
+1.  Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) version >= 0.3.0, Support more diagrams extensions:
+  
+    Support [LaTeX math and AsciiMath](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#latex-math-and-asciimath)
+
+    Support [Mermaid](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#mermaid)
+
+    Support [Plantuml](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#plantuml)
+
+    Support [Flowchart](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#flowchart)
+
+    Support [Network Sequence](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#network-sequence)
+
+    Support [Graphviz's dot](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#graphviz-s-dot)
+
+    Support [Railroad diagrams](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#railroad-diagrams)
+
+    Support [WaveDrom](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#wavedrom)
+
+2.  Can export html page to PNG and JPG images.
+3.  Add `maxContenSize` settings, default `32768(32K)` Bytes.
+
 
 ## License
 
