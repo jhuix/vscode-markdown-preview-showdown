@@ -121,9 +121,10 @@
     "vscode-test": "^1.2.0"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.3.0",
+    "@jhuix/showdowns": "^0.3.1",
     "mkdirp": "^0.5.1",
     "puppeteer-core": "^2.0.0",
+    "raphael": "^2.3.0",
     "throttle-debounce": "^2.1.0"
   },
   "license": "MIT",
