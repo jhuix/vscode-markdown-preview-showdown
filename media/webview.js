@@ -1,4 +1,4 @@
-(function(previewer, defScheme, distScheme) {
+(function(previewer, defScheme, distScheme, isBrotli, maxContentSize) {
   class ContextMenu {
     constructor(selector, menuItems) {
       const menus = document.createElement('ul');
@@ -103,7 +103,14 @@
       document.body.appendChild(this.previewElement);
       this.initWindowEvents();
       this.initMenus();
-      previewer.init('local', defScheme, distScheme);
+      if (isVscode) {
+        previewer.init('local', defScheme, distScheme);
+      } else {
+        previewer.init();
+      }
+      if (!isBrotli) {
+        this.postMessage('webviewLoaded', [document.title]);
+      }
     }
 
     initMenus() {
@@ -120,7 +127,7 @@
             title: '用浏览器打开',
             onclick: function(e, s) {
               that.postMessage('openInBrowser', [
-                s.innerHTML.length > 32786
+                s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
@@ -134,7 +141,7 @@
             title: '导出 -> HTML',
             onclick: function(e, s) {
               that.postMessage('exportHTML', [
-                s.innerHTML.length > 32786
+                s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
@@ -148,7 +155,35 @@
             title: '导出 -> PDF',
             onclick: function(e, s) {
               that.postMessage('exportPDF', [
-                s.innerHTML.length > max_contentsize
+                s.innerHTML.length > maxContentSize
+                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
+                  : s.innerHTML.trim(),
+                document.title,
+                that.sourceUri,
+                that.csstypes
+              ]);
+            }
+          },
+          {
+            type: 'menu',
+            title: '导出 -> PNG',
+            onclick: function(e, s) {
+              that.postMessage('exportPNG', [
+                s.innerHTML.length > maxContentSize
+                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
+                  : s.innerHTML.trim(),
+                document.title,
+                that.sourceUri,
+                that.csstypes
+              ]);
+            }
+          },
+          {
+            type: 'menu',
+            title: '导出 -> JPEG',
+            onclick: function(e, s) {
+              that.postMessage('exportJPEG', [
+                s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
@@ -228,7 +263,6 @@
     messageEvent(event) {
       const message = event.data;
       if (message) {
-        console.log(message);
         switch (message.command) {
           case 'updateMarkdown':
             this.sourceUri = message.uri;
@@ -272,14 +306,13 @@
 
     scrollToLine(line) {
       if (line !== this.currentLine) {
-        this.currentLine = line;
         if (this.totalLines) {
+          this.currentLine = line;
           let scrollTop = 0;
           if (line + 1 === this.totalLines) {
             scrollTop = this.previewElement.scrollHeight;
           } else {
             scrollTop = parseInt((line * this.previewElement.scrollHeight) / this.totalLines, 10);
-            //Math.max(scrollTop - this.previewElement.offsetHeight * ratio, 0);
           }
           this.syncScrollTop = scrollTop;
           window.scroll({
@@ -304,4 +337,10 @@
   } else {
     onLoad();
   }
-})(showdowns, scheme_default, scheme_dist);
+})(
+  showdowns,
+  typeof scheme_default === 'undefined' ? '' : scheme_default,
+  typeof scheme_dist === 'undefined' ? '' : scheme_dist,
+  typeof is_brotli === 'undefined' ? true : is_brotli,
+  typeof max_contentsize === 'undefined' ? 32768 : max_contentsize
+);

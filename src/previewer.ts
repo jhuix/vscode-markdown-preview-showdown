@@ -52,10 +52,10 @@ export class ShowdownPreviewer {
   private editor: vscode.TextEditor | undefined = undefined;
   private webpanel: vscode.WebviewPanel | undefined = undefined;
   private uri: vscode.Uri | undefined = undefined;
-  private debounceUpdatePreview = debounce(100 * 3, (that: ShowdownPreviewer, uri: vscode.Uri) => {
+  private debounceUpdatePreview = debounce(5 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
     that.updatePreview(uri);
   });
-  private debouncePostMessage = debounce(100 * 3, (webView: vscode.Webview, message: any) => {
+  private debouncePostMessage = debounce(5 * 5 * 10, (webView: vscode.Webview, message: any) => {
     webView.postMessage(message);
   });
 
@@ -119,7 +119,13 @@ export class ShowdownPreviewer {
               this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
             case 'exportPDF':
-              this.exportPDF(message.args[0], message.args[1], message.args[2], message.args[3]);
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3]);
+              break;
+            case 'exportPNG':
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'PNG');
+              break;
+            case 'exportJPEG':
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'JPEG');
               break;
             case 'webviewLoaded':
               this.updateCurrentView();
@@ -164,7 +170,7 @@ export class ShowdownPreviewer {
     htmlPath: string,
     doc: { type: string; content: string } | string,
     title: string,
-    csstypes: { hasKatex: boolean }
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
   ) {
     if (!title) {
       title = '预览MARKDOWN文件';
@@ -195,19 +201,48 @@ export class ShowdownPreviewer {
       }
     );
 
-    let katexstyle = '';
-    if (typeof csstypes === 'object' && csstypes.hasKatex) {
-      const katexcss = await utils.readFile(
-        path.join(this.context.extensionPath, 'node_modules/katex/dist/katex.min.css'),
-        {
-          encoding: 'utf-8'
-        }
-      );
+    let katexStyle = '';
+    let railroadStyle = '';
+    let sequencesStyle = '';
+    if (typeof csstypes === 'object') {
+      if (csstypes.hasKatex) {
+        const katexCSS = await utils.readFile(
+          path.join(this.context.extensionPath, 'node_modules/katex/dist/katex.min.css'),
+          {
+            encoding: 'utf-8'
+          }
+        );
 
-      katexstyle = `<style type="text/css">${katexcss.replace(
-        /url\(fonts/gi,
-        'url(https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/fonts'
-      )}</style>`;
+        katexStyle = `<style type="text/css">${katexCSS.replace(
+          /url\(fonts/gi,
+          'url(https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/fonts'
+        )}</style>`;
+      }
+
+      if (csstypes.hasRailroad) {
+        const railroadCSS = await utils.readFile(
+          path.join(this.context.extensionPath, 'node_modules/railroad-diagrams/railroad-diagrams.css'),
+          {
+            encoding: 'utf-8'
+          }
+        );
+
+        railroadStyle = `<style type="text/css">${railroadCSS}</style>`;
+      }
+
+      if (csstypes.hasSequence) {
+        const sequencesCSS = await utils.readFile(
+          path.join(
+            this.context.extensionPath,
+            'node_modules/@rokt33r/js-sequence-diagrams/dist/sequence-diagram-min.css'
+          ),
+          {
+            encoding: 'utf-8'
+          }
+        );
+
+        sequencesStyle = `<style type="text/css">${sequencesCSS}</style>`;
+      }
     }
 
     const html = `<!DOCTYPE html>
@@ -284,7 +319,9 @@ export class ShowdownPreviewer {
     }
     </style>
     <style type="text/css">${showdowncss}</style>
-    ${katexstyle}
+    ${katexStyle}
+    ${railroadStyle}
+    ${sequencesStyle}
     </head>
     <body>
     <div class="workspace-container">${doc}</div>
@@ -300,7 +337,7 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean }
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
@@ -320,7 +357,7 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean }
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
@@ -333,24 +370,24 @@ export class ShowdownPreviewer {
     }
   }
 
-  public async exportPDF(
+  public async exportChrome(
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean },
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
     fileType = 'pdf'
   ) {
     if (!uri) return;
 
     const srcUri = vscode.Uri.parse(uri);
-    uri = srcUri.fsPath;
+    let dest = srcUri.fsPath;
     const fsHash = crypto.createHash('md5');
-    fsHash.update(uri);
+    fsHash.update(dest);
     const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
     await this.saveLocalHtml(htmlPath, doc, title, csstypes);
 
-    const extname = path.extname(uri);
-    uri = uri.replace(new RegExp(extname + '$'), `.${fileType}`);
+    const extname = path.extname(dest);
+    dest = dest.replace(new RegExp(extname + '$'), `.${fileType}`);
 
     let browser = null;
     let puppeteer = null;
@@ -378,7 +415,7 @@ export class ShowdownPreviewer {
     const loadPath = 'file:///' + htmlPath;
     await page.goto(loadPath);
     let puppeteerConfig = {
-      path: uri,
+      path: dest,
       margin: {
         top: '1cm',
         bottom: '1cm',
@@ -397,8 +434,8 @@ export class ShowdownPreviewer {
       await page.screenshot({ fullPage: true, ...puppeteerConfig });
     } // <= set to fullPage by default
     browser.close();
-    utils.openFile(uri);
-    vscode.window.showInformationMessage(`Stored PDF To: ${uri}`);
+    vscode.window.showInformationMessage(`File ${path.basename(dest)} was created at path: ${dest}`);
+    utils.openFile(dest);
   }
   /**
    * Close all previews
@@ -564,6 +601,7 @@ export class ShowdownPreviewer {
       true
     )}"></script>
 <script>
+var is_brotli = true;
 var max_contentsize = ${this.config.maxContentSize};
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
