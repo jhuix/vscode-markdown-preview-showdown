@@ -122,10 +122,10 @@ export class ShowdownPreviewer {
               this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3]);
               break;
             case 'exportPNG':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'PNG');
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'png');
               break;
             case 'exportJPEG':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'JPEG');
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'jpg');
               break;
             case 'webviewLoaded':
               this.updateCurrentView();
@@ -205,7 +205,7 @@ export class ShowdownPreviewer {
     let railroadStyle = '';
     let sequencesStyle = '';
     if (typeof csstypes === 'object') {
-      if (csstypes.hasKatex) {
+      if (csstypes.hasOwnProperty('hasKatex') && csstypes.hasKatex) {
         const katexCSS = await utils.readFile(
           path.join(this.context.extensionPath, 'node_modules/katex/dist/katex.min.css'),
           {
@@ -219,7 +219,7 @@ export class ShowdownPreviewer {
         )}</style>`;
       }
 
-      if (csstypes.hasRailroad) {
+      if (csstypes.hasOwnProperty('hasRailroad') && csstypes.hasRailroad) {
         const railroadCSS = await utils.readFile(
           path.join(this.context.extensionPath, 'node_modules/railroad-diagrams/railroad-diagrams.css'),
           {
@@ -230,7 +230,7 @@ export class ShowdownPreviewer {
         railroadStyle = `<style type="text/css">${railroadCSS}</style>`;
       }
 
-      if (csstypes.hasSequence) {
+      if (csstypes.hasOwnProperty('hasSequence') && csstypes.hasSequence) {
         const sequencesCSS = await utils.readFile(
           path.join(
             this.context.extensionPath,
@@ -241,7 +241,9 @@ export class ShowdownPreviewer {
           }
         );
 
-        sequencesStyle = `<style type="text/css">${sequencesCSS}</style>`;
+        sequencesStyle = `<style type="text/css">${sequencesCSS.replace(/url\(([\s\S]*?)\)/gi, (match: string) => {
+          return match.replace('danielbd', 'https://jhuix.github.io/showdowns/dist/diagrams/sequence/dist/danielbd');
+        })}</style>`;
       }
     }
 
@@ -339,18 +341,23 @@ export class ShowdownPreviewer {
     uri: string,
     csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
   ) {
+    let dest = '';
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
-      uri = srcUri.fsPath;
+      dest = srcUri.fsPath;
       const fsHash = crypto.createHash('md5');
-      fsHash.update(uri);
-      uri = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
+      fsHash.update(dest);
+      dest = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
     } else {
-      uri = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
+      dest = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
-    await this.saveLocalHtml(uri, doc, title, csstypes);
-    utils.openFile(uri);
-    vscode.window.showInformationMessage(`Browser HTML from: ${uri}`);
+    await this.saveLocalHtml(dest, doc, title, csstypes);
+    vscode.window.showInformationMessage(`Browser HTML from:\r\n ${dest}`, 'Explorer').then((act) => {
+      if (act === 'Explorer') {
+        utils.openFile(path.dirname(dest));
+      }
+    });
+    utils.openFile(dest);
   }
 
   public async exportHTML(
@@ -361,12 +368,18 @@ export class ShowdownPreviewer {
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
-      uri = srcUri.fsPath;
-      const extname = path.extname(uri);
-      uri = uri.replace(new RegExp(extname + '$'), '.html');
-      await this.saveLocalHtml(uri, doc, title, csstypes);
-      utils.openFile(uri);
-      vscode.window.showInformationMessage(`Stored HTML To: ${uri}`);
+      let dest = srcUri.fsPath;
+      const extname = path.extname(dest);
+      dest = dest.replace(new RegExp(extname + '$'), '.html');
+      await this.saveLocalHtml(dest, doc, title, csstypes);
+      vscode.window
+        .showInformationMessage(`File ${path.basename(dest)} was created at path:\r\n ${dest}`, 'Explorer')
+        .then((act) => {
+          if (act === 'Explorer') {
+            utils.openFile(path.dirname(dest));
+          }
+        });
+      utils.openFile(dest);
     }
   }
 
@@ -434,7 +447,13 @@ export class ShowdownPreviewer {
       await page.screenshot({ fullPage: true, ...puppeteerConfig });
     } // <= set to fullPage by default
     browser.close();
-    vscode.window.showInformationMessage(`File ${path.basename(dest)} was created at path: ${dest}`);
+    vscode.window
+      .showInformationMessage(`File ${path.basename(dest)} was created at path:\r\n ${dest}`, 'Explorer')
+      .then((act) => {
+        if (act === 'Explorer') {
+          utils.openFile(path.dirname(dest));
+        }
+      });
     utils.openFile(dest);
   }
   /**
