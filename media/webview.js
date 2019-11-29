@@ -1,4 +1,4 @@
-(function(previewer, defScheme, distScheme, isBrotli, maxContentSize) {
+(function(previewer, cdnName, defScheme, distScheme, isBrotli, maxContentSize) {
   class ContextMenu {
     constructor(selector, menuItems) {
       const menus = document.createElement('ul');
@@ -103,11 +103,7 @@
       document.body.appendChild(this.previewElement);
       this.initWindowEvents();
       this.initMenus();
-      if (isVscode) {
-        previewer.init('local', defScheme, distScheme);
-      } else {
-        previewer.init();
-      }
+      previewer.init(cdnName, defScheme, distScheme);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
       }
@@ -339,6 +335,7 @@
   }
 })(
   showdowns,
+  typeof cdn_name === 'undefined' ? 'local' : cdn_name,
   typeof scheme_default === 'undefined' ? '' : scheme_default,
   typeof scheme_dist === 'undefined' ? '' : scheme_dist,
   typeof is_brotli === 'undefined' ? true : is_brotli,
