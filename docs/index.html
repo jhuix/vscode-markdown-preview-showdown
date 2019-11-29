@@ -85,14 +85,14 @@
     }
   </style>
   <link rel="stylesheet" href="https://jhuix.github.io/showdowns/dist/showdowns.min.css">
-  <link rel="stylesheet" href="https://jhuix.github.io/showdowns/dist/katex.min.css">
   <link rel="stylesheet" href="./media/contextmenu.css">
 </head>
 
 <body>
   <script type="text/javascript">
     window.mdsp = {};
-    window.addEventListener('wasm', function (e) {
+    var scheme_dist = '../node_modules/@jhuix/showdowns/dist/';
+    window.addEventListener('showdownsLoaded', function (e) {
       let md = '';
       window.fetch("https://jhuix.github.io/vscode-markdown-showdown-preview/demo.md")
         .then(function (res) {
@@ -108,16 +108,16 @@
           if (res.ok ) {
             return res.text();
           }          
-          window.mdsp.phtml.updateMarkdown(showdowns.makeHtml(md));
+          window.mdsp.phtml.updateMarkdown(md);
         })
         .then(function(text){
           md = md + `\n\n## Showdown's Markdown syntax\n\n` + text;
-          window.mdsp.phtml.updateMarkdown(showdowns.makeHtml(md));
+          window.mdsp.phtml.updateMarkdown(md);
         })
         .catch(function (error) {
           console.log(error);
           if (md) {
-            window.mdsp.phtml.updateMarkdown(showdowns.makeHtml(md));
+            window.mdsp.phtml.updateMarkdown(md);
           }
         });
     });
