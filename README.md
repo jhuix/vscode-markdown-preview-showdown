@@ -1,13 +1,13 @@
 
-<h1 align="center">MDSP: MarkDown-Showdown-Preview</h1>
+<h1 align="center">MDPS: MarkDown-Preview-Showdown</h1>
 
-<p align="center"><a href="https://jhuix.github.io/vscode-markdown-showdown-preview" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-showdown-preview/screenshot/vscode-mdsp.png" alt="markdown-showdown-preview"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-preview-showdown/screenshot/vscode-mdps.png" alt="markdown-preview-showdown"></a></p>
 
 A markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
 
 ## Features
 
-[MarkDown-Showdown-Preview(MDSP)](https://github.com/jhuix/vscode-markdown-showdown-preview) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC,export HTML, export PDF etc.
+[markdown-preview-showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC,export HTML, export PDF etc.
 
 MDSP converte markdown content to html that using the [\@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package.
 
@@ -20,29 +20,29 @@ MDSP converte markdown content to html that using the [\@jhuix/showdowns](https:
 
 For export PDF:
 
-When `markDown-showdown-preview.usePuppeteerCore` setting is true, this extension require puppeteer-core package and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-showdown-preview.chromePath`. The chrome-location globally installed by npm:
+When `markdown-preview-showdown.usePuppeteerCore` setting is true, this extension require puppeteer-core package and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.chromePath`. The chrome-location globally installed by npm:
 
     npm install -g chrome-location
 
-When `markDown-showdown-preview.usePuppeteerCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
+When `markdown-preview-showdown.usePuppeteerCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
 
     npm install -g puppeteer
 
 
 ## Install from VS Code (Recommended)
 
-Open vscode editor, then search MarkDown-Showdown-Preview in Extensions, then click Install button.
+Open vscode editor, then search markdown-preview-showdown in Extensions, then click Install button.
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
-* `markDown-showdown-preview.autoPreview`: Automatic preview markdown file, default false.
-* `markDown-showdown-preview.scrollSync`: Automatic scroll sync, default true.
-* `markdown-showdown-preview.maxContentSize`: When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
-* `markDown-showdown-preview.usePuppeteerCore`: If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
-* `markdown-showdown-preview.puppeteerWaitForTimeout`: Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
-* `markdown-showdown-preview.chromePath`: Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
+* `markdown-preview-showdown.autoPreview`: Automatic preview markdown file, default false.
+* `markdown-preview-showdown.scrollSync`: Automatic scroll sync, default true.
+* `markdown-preview-showdown.maxContentSize`: When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
+* `markdown-preview-showdown.usePuppeteerCore`: If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
+* `markdown-preview-showdown.puppeteerWaitForTimeout`: Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
+* `markdown-preview-showdown.chromePath`: Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
 
 ## Keybindings
 
@@ -91,9 +91,12 @@ Fix repository url in package.json.
 2.  Can export html page to PNG and JPG images.
 3.  Add `maxContenSize` settings, default `32768(32K)` Bytes.
 
+### 1.1.1
+
+Change extension name to markdown-preview-showdown (MDPS).
 
 ## License
 
-[MIT](https://github.com/jhuix/markdown-showdown-preview/blob/master/LICENSE) License
+[MIT](https://github.com/jhuix/markdown-preview-showdown/blob/master/LICENSE) License
 
 Copyright (c) 2019-present, [Jhuix](mailto:jhuix0117@gmail.com) (Hui Jin)

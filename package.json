@@ -1,5 +1,5 @@
 {
-  "name": "markdown-showdown-preview",
+  "name": "markdown-preview-showdown",
   "displayName": "%displayname%",
   "description": "%description%",
   "version": "1.1.0",
@@ -14,24 +14,24 @@
     "Other"
   ],
   "keywords": [
-    "vscode",
     "markdown",
+    "preview",
     "showdown",
     "html",
-    "preview",
-    "MDSP"
+    "vscode",
+    "MDPS"
   ],
   "icon": "media/rightpane.png",
   "activationEvents": [
     "onLanguage:markdown",
-    "onCommand:markdown-showdown-preview.openPreview"
+    "onCommand:markdown-preview-showdown.openPreview"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "markdown-showdown-preview.openPreview",
-        "title": "%mdsp.openPreview%",
+        "command": "markdown-preview-showdown.openPreview",
+        "title": "%mdps.openPreview%",
         "category": "Markdown",
         "icon": {
           "light": "./media/rightpane-16-light.png",
@@ -41,7 +41,7 @@
     ],
     "keybindings": [
       {
-        "command": "markdown-showdown-preview.openPreview",
+        "command": "markdown-preview-showdown.openPreview",
         "key": "ctrl+shift+v",
         "mac": "cmd+shift+v",
         "when": "editorLangId == markdown"
@@ -50,14 +50,14 @@
     "menus": {
       "editor/context": [
         {
-          "command": "markdown-showdown-preview.openPreview",
+          "command": "markdown-preview-showdown.openPreview",
           "when": "editorLangId == markdown",
-          "group": "markdown-showdown-preview"
+          "group": "markdown-preview-showdown"
         }
       ],
       "editor/title": [
         {
-          "command": "markdown-showdown-preview.openPreview",
+          "command": "markdown-preview-showdown.openPreview",
           "when": "editorLangId == markdown",
           "group": "navigation"
         }
@@ -65,34 +65,34 @@
     },
     "configuration": {
       "type": "object",
-      "title": "%mdsp%",
+      "title": "%mdps%",
       "properties": {
-        "markdown-showdown-preview.autoPreview": {
+        "markdown-preview-showdown.autoPreview": {
           "description": "Automatic preview markdown file.",
           "default": false,
           "type": "boolean"
         },
-        "markdown-showdown-preview.scrollSync": {
+        "markdown-preview-showdown.scrollSync": {
           "description": "Automatic scroll sync.",
           "default": true,
           "type": "boolean"
         },
-        "markdown-showdown-preview.maxContentSize": {
+        "markdown-preview-showdown.maxContentSize": {
           "description": "When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission.",
           "default": 32768,
           "type": "number"
         },
-        "markdown-showdown-preview.usePuppeteerCore": {
+        "markdown-preview-showdown.usePuppeteerCore": {
           "description": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
           "default": true,
           "type": "boolean"
         },
-        "markdown-showdown-preview.puppeteerWaitForTimeout": {
+        "markdown-preview-showdown.puppeteerWaitForTimeout": {
           "description": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
           "default": 0,
           "type": "number"
         },
-        "markdown-showdown-preview.chromePath": {
+        "markdown-preview-showdown.chromePath": {
           "description": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.",
           "default": "",
           "type": "string",
@@ -130,7 +130,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jhuix/vscode-markdown-showdown-preview"
+    "url": "https://github.com/jhuix/vscode-markdown-preview-showdown"
   },
-  "homepage": "https://github.com/jhuix/vscode-markdown-showdown-preview/blob/master/README.md"
+  "homepage": "https://github.com/jhuix/vscode-markdown-preview-showdown/blob/master/README.md"
 }
