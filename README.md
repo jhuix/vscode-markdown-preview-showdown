@@ -3,7 +3,7 @@
 
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-preview-showdown/screenshot/vscode-mdps.png" alt="markdown-preview-showdown"></a></p>
 
-A markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
+A excellent markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
 
 ## Features
 
@@ -15,10 +15,12 @@ MDSP converte markdown content to html that using the [\@jhuix/showdowns](https:
 
 - [Showdown's Markdown syntax](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax)
 - [Showdown Options](https://github.com/showdownjs/showdown/wiki/Showdown-options)
+- [Showdowns readme](https://github.com/jhuix/showdowns/blob/master/README.md)
+- [Showdowns Features](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
 
 ## Requirements
 
-For export PDF:
+For export PDF or PNG or JPEG:
 
 When `markdown-preview-showdown.usePuppeteerCore` setting is true, this extension require puppeteer-core package and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.chromePath`. The chrome-location globally installed by npm:
 
@@ -52,48 +54,7 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### 1.0.0
-
-Support Plantuml.
-
-Support Mermaid.
-
-Support LaTeX math and AsciiMath.
-
-Support TOC and sub-TOC.
-
-Support Text-Align.
-
-### 1.0.1
-
-Fix repository url in package.json.
-
-### 1.1.0
-
-1.  Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) version >= 0.3.0, Support more diagrams extensions:
-  
-    Support [LaTeX math and AsciiMath](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#latex-math-and-asciimath)
-
-    Support [Mermaid](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#mermaid)
-
-    Support [Plantuml](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#plantuml)
-
-    Support [Flowchart](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#flowchart)
-
-    Support [Network Sequence](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#network-sequence)
-
-    Support [Graphviz's dot](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#graphviz-s-dot)
-
-    Support [Railroad diagrams](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#railroad-diagrams)
-
-    Support [WaveDrom](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#wavedrom)
-
-2.  Can export html page to PNG and JPG images.
-3.  Add `maxContenSize` settings, default `32768(32K)` Bytes.
-
-### 1.1.1
-
-Change extension name to markdown-preview-showdown (MDPS).
+Please see the [release-notes](https://github.com/jhuix/vscode-markdown-preview-showdown/blob/master/docs/release-notes.md) page.
 
 ## License
 

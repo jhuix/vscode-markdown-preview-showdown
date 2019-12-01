@@ -10,6 +10,8 @@ export class PreviewConfig {
   public autoPreview: boolean;
   public scrollSync: boolean;
   public maxContentSize: number;
+  public mermaidTheme: string;
+  public vegaTheme: string;
   public usePuppeteerCore: boolean;
   public puppeteerWaitForTimeout: number;
   public chromePath: string;
@@ -20,22 +22,36 @@ export class PreviewConfig {
     if (context) {
       PreviewConfig.packageName = require(path.resolve(context.extensionPath, 'package.json')).name;
       const config = vscode.workspace.getConfiguration(PreviewConfig.packageName);
+
       let temp: boolean | undefined = config.get('autoPreview');
       this.autoPreview = typeof temp === 'undefined' ? true : temp;
+
       temp = config.get('scrollSync');
       this.scrollSync = typeof temp === 'undefined' ? true : temp;
+
       let tempNumber: number | undefined = config.get('maxContentSize');
       this.maxContentSize = typeof tempNumber === 'undefined' ? Math.pow(8, 5) : tempNumber;
-      const tmpStr: string | undefined = config.get('chromePath');
+
+      let tmpStr: string | undefined = config.get('mermaidTheme');
+      this.mermaidTheme = typeof tmpStr === 'undefined' ? '' : tmpStr;
+
+      tmpStr = config.get('vegaTheme');
+      this.vegaTheme = typeof tmpStr === 'undefined' ? '' : tmpStr;
+
+      tmpStr = config.get('chromePath');
       this.chromePath = typeof tmpStr === 'undefined' ? '' : tmpStr;
+
       temp = config.get('usePuppeteerCore');
       this.usePuppeteerCore = typeof temp !== 'undefined' ? temp : this.chromePath ? true : false;
+
       const tmpNum: number | undefined = config.get('puppeteerWaitForTimeout');
       this.puppeteerWaitForTimeout = typeof tmpNum === 'undefined' ? 0 : tmpNum;
     } else {
       this.autoPreview = false;
       this.scrollSync = true;
       this.maxContentSize = Math.pow(8, 5);
+      this.mermaidTheme = 'default';
+      this.vegaTheme = 'vox';
       this.usePuppeteerCore = false;
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';

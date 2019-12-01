@@ -82,6 +82,29 @@
           "default": 32768,
           "type": "number"
         },
+        "markdown-preview-showdown.mermaidTheme": {
+          "description": "Mermaid theme, you can choose one from [\"default\", \"dark\", \"forest\", \"neutral\"]",
+          "default": "default",
+          "type": "string",
+          "enum": [
+            "default",
+            "dark",
+            "forest",
+            "neutral"
+          ]
+        },
+        "markdown-preview-showdown.vegaTheme": {
+          "description": "Vega theme, you can choose one from [\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"]",
+          "default": "vox",
+          "type": "string",
+          "enum": [
+            "excel",
+            "ggplot2",
+            "quartz",
+            "vox",
+            "dark"
+          ]
+        },
         "markdown-preview-showdown.usePuppeteerCore": {
           "description": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
           "default": true,
@@ -121,10 +144,9 @@
     "vscode-test": "^1.2.0"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.3.1",
+    "@jhuix/showdowns": "^0.3.2",
     "mkdirp": "^0.5.1",
     "puppeteer-core": "^2.0.0",
-    "raphael": "^2.3.0",
     "throttle-debounce": "^2.1.0"
   },
   "license": "MIT",

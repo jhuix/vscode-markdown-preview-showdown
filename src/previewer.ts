@@ -622,6 +622,8 @@ export class ShowdownPreviewer {
 <script>
 var is_brotli = true;
 var max_contentsize = ${this.config.maxContentSize};
+var mermaid_theme = "${this.config.mermaidTheme}";
+var vega_theme = "${this.config.vegaTheme}";
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
 </script>

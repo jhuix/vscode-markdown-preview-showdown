@@ -1,9 +1,9 @@
-(function(previewer, cdnName, defScheme, distScheme, isBrotli, maxContentSize) {
+(function(previewer, cdnName, defScheme, distScheme, isBrotli, maxContentSize, mermaidTheme, vegaTheme) {
   class ContextMenu {
     constructor(selector, menuItems) {
       const menus = document.createElement('ul');
       menus.classList.add('context-menu-list');
-      menus.style.width = '210px';
+      menus.style.top = '-50%';
       menus.style.display = 'none';
       menus.style.zIndex = '1';
       this.menus = menus;
@@ -67,7 +67,6 @@
     }
 
     show(x, y) {
-      this.menus.style.top = '-50%';
       this.menus.style.display = 'block';
       if (y + this.menus.clientHeight > window.innerHeight - 10) {
         y -= this.menus.clientHeight + 10;
@@ -83,6 +82,7 @@
 
     hide() {
       this.menus.style.display = 'none';
+      this.menus.style.top = '-50%';
     }
   }
 
@@ -103,7 +103,8 @@
       document.body.appendChild(this.previewElement);
       this.initWindowEvents();
       this.initMenus();
-      previewer.init(cdnName, defScheme, distScheme);
+      previewer.setCDN(cdnName, defScheme, distScheme);
+      previewer.init(mermaidTheme, vegaTheme);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
       }
@@ -120,7 +121,7 @@
         items: [
           {
             type: 'menu',
-            title: '用浏览器打开',
+            title: 'Browser HTML',
             onclick: function(e, s) {
               that.postMessage('openInBrowser', [
                 s.innerHTML.length > maxContentSize
@@ -134,7 +135,7 @@
           },
           {
             type: 'menu',
-            title: '导出 -> HTML',
+            title: 'Export -> HTML',
             onclick: function(e, s) {
               that.postMessage('exportHTML', [
                 s.innerHTML.length > maxContentSize
@@ -148,7 +149,7 @@
           },
           {
             type: 'menu',
-            title: '导出 -> PDF',
+            title: 'Export -> PDF',
             onclick: function(e, s) {
               that.postMessage('exportPDF', [
                 s.innerHTML.length > maxContentSize
@@ -162,7 +163,7 @@
           },
           {
             type: 'menu',
-            title: '导出 -> PNG',
+            title: 'Export -> PNG',
             onclick: function(e, s) {
               that.postMessage('exportPNG', [
                 s.innerHTML.length > maxContentSize
@@ -176,7 +177,7 @@
           },
           {
             type: 'menu',
-            title: '导出 -> JPEG',
+            title: 'Export -> JPEG',
             onclick: function(e, s) {
               that.postMessage('exportJPEG', [
                 s.innerHTML.length > maxContentSize
@@ -339,5 +340,7 @@
   typeof scheme_default === 'undefined' ? '' : scheme_default,
   typeof scheme_dist === 'undefined' ? '' : scheme_dist,
   typeof is_brotli === 'undefined' ? true : is_brotli,
-  typeof max_contentsize === 'undefined' ? 32768 : max_contentsize
+  typeof max_contentsize === 'undefined' ? 32768 : max_contentsize,
+  typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,
+  typeof vega_theme === 'undefined' ? 'vox' : vega_theme
 );
