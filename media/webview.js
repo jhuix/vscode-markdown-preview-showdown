@@ -123,13 +123,21 @@
             type: 'menu',
             title: 'Browser HTML',
             onclick: function(e, s) {
+              let styles = [];
+              const elVegaEmbedStyle = document.getElementById('vega-embed-style');
+              if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = elVegaEmbedStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
               that.postMessage('openInBrowser', [
                 s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.csstypes
+                that.csstypes,
+                styles
               ]);
             }
           },
@@ -137,13 +145,21 @@
             type: 'menu',
             title: 'Export -> HTML',
             onclick: function(e, s) {
+              let styles = [];
+              const elVegaEmbedStyle = document.getElementById('vega-embed-style');
+              if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = elVegaEmbedStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
               that.postMessage('exportHTML', [
                 s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.csstypes
+                that.csstypes,
+                styles
               ]);
             }
           },
@@ -151,13 +167,21 @@
             type: 'menu',
             title: 'Export -> PDF',
             onclick: function(e, s) {
+              let styles = [];
+              const elVegaEmbedStyle = document.getElementById('vega-embed-style');
+              if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = elVegaEmbedStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
               that.postMessage('exportPDF', [
                 s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.csstypes
+                that.csstypes,
+                styles
               ]);
             }
           },
@@ -165,13 +189,21 @@
             type: 'menu',
             title: 'Export -> PNG',
             onclick: function(e, s) {
+              let styles = [];
+              const elVegaEmbedStyle = document.getElementById('vega-embed-style');
+              if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = elVegaEmbedStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
               that.postMessage('exportPNG', [
                 s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.csstypes
+                that.csstypes,
+                styles
               ]);
             }
           },
@@ -179,13 +211,21 @@
             type: 'menu',
             title: 'Export -> JPEG',
             onclick: function(e, s) {
+              let styles = [];
+              const elVegaEmbedStyle = document.getElementById('vega-embed-style');
+              if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = elVegaEmbedStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
               that.postMessage('exportJPEG', [
                 s.innerHTML.length > maxContentSize
                   ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
                   : s.innerHTML.trim(),
                 document.title,
                 that.sourceUri,
-                that.csstypes
+                that.csstypes,
+                styles
               ]);
             }
           }

@@ -113,19 +113,33 @@ export class ShowdownPreviewer {
         (message) => {
           switch (message.command) {
             case 'openInBrowser':
-              this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3]);
+              this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4]);
               break;
             case 'exportHTML':
-              this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3]);
+              this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4]);
               break;
             case 'exportPDF':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3]);
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4]);
               break;
             case 'exportPNG':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'png');
+              this.exportChrome(
+                message.args[0],
+                message.args[1],
+                message.args[2],
+                message.args[3],
+                message.args[4],
+                'png'
+              );
               break;
             case 'exportJPEG':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], 'jpg');
+              this.exportChrome(
+                message.args[0],
+                message.args[1],
+                message.args[2],
+                message.args[3],
+                message.args[4],
+                'jpg'
+              );
               break;
             case 'webviewLoaded':
               this.updateCurrentView();
@@ -170,7 +184,8 @@ export class ShowdownPreviewer {
     htmlPath: string,
     doc: { type: string; content: string } | string,
     title: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: []
   ) {
     if (!title) {
       title = '预览MARKDOWN文件';
@@ -215,7 +230,7 @@ export class ShowdownPreviewer {
 
         katexStyle = `<style type="text/css">${katexCSS.replace(
           /url\(fonts/gi,
-          'url(https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/fonts'
+          'url(https://cdn.jsdelivr.net/npm/katex/dist/fonts'
         )}</style>`;
       }
 
@@ -242,8 +257,15 @@ export class ShowdownPreviewer {
         );
 
         sequencesStyle = `<style type="text/css">${sequencesCSS.replace(/url\(([\s\S]*?)\)/gi, (match: string) => {
-          return match.replace('danielbd', 'https://jhuix.github.io/showdowns/dist/diagrams/sequence/dist/danielbd');
+          return match.replace('danielbd', 'https://cdn.jsdelivr.net/npm/@rokt33r/js-sequence-diagrams/dist/danielbd');
         })}</style>`;
+      }
+    }
+
+    let otherStyles = '';
+    if (styles.length > 0) {
+      for (let item of styles) {
+        otherStyles = otherStyles + item;
       }
     }
 
@@ -320,10 +342,7 @@ export class ShowdownPreviewer {
       background: rgba(128, 135, 139, 0.8);
     }
     </style>
-    <style type="text/css">${showdowncss}</style>
-    ${katexStyle}
-    ${railroadStyle}
-    ${sequencesStyle}
+    <style type="text/css">${showdowncss}</style>${katexStyle}${railroadStyle}${sequencesStyle}${otherStyles}
     </head>
     <body>
     <div class="workspace-container">${doc}</div>
@@ -339,7 +358,8 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: []
   ) {
     let dest = '';
     if (uri) {
@@ -351,7 +371,7 @@ export class ShowdownPreviewer {
     } else {
       dest = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
-    await this.saveLocalHtml(dest, doc, title, csstypes);
+    await this.saveLocalHtml(dest, doc, title, csstypes, styles);
     vscode.window.showInformationMessage(`Browser HTML from:\r\n ${dest}`, 'Explorer').then((act) => {
       if (act === 'Explorer') {
         utils.openFile(path.dirname(dest));
@@ -364,14 +384,15 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean }
+    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: []
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
       let dest = srcUri.fsPath;
       const extname = path.extname(dest);
       dest = dest.replace(new RegExp(extname + '$'), '.html');
-      await this.saveLocalHtml(dest, doc, title, csstypes);
+      await this.saveLocalHtml(dest, doc, title, csstypes, styles);
       vscode.window
         .showInformationMessage(`File ${path.basename(dest)} was created at path:\r\n ${dest}`, 'Explorer')
         .then((act) => {
@@ -388,6 +409,7 @@ export class ShowdownPreviewer {
     title: string,
     uri: string,
     csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: [],
     fileType = 'pdf'
   ) {
     if (!uri) return;
@@ -397,7 +419,7 @@ export class ShowdownPreviewer {
     const fsHash = crypto.createHash('md5');
     fsHash.update(dest);
     const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
-    await this.saveLocalHtml(htmlPath, doc, title, csstypes);
+    await this.saveLocalHtml(htmlPath, doc, title, csstypes, styles);
 
     const extname = path.extname(dest);
     dest = dest.replace(new RegExp(extname + '$'), `.${fileType}`);
