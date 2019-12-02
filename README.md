@@ -52,7 +52,7 @@ This extension contributes the following settings:
 
 |Key|Command|
 |-----|---|
-|ctrl+shift+v or cmd+shift+v | Open preview |
+|ctrl+shift+z or cmd+shift+z | Open preview |
 
 ## Release Notes
 

@@ -9,6 +9,8 @@
 
 3. Add `vegaTheme` settings, range of values: ['excel', 'ggplot2', 'quartz', 'vox', 'dark'], default `vox` string.
 
+4. Support international localization of resources, currently support English(en) and Chinese(zh-cn).
+
 ## 1.1.2
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) version >= 0.3.1
 2. Change extension name to markdown-preview-showdown (MDPS).

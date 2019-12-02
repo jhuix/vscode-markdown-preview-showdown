@@ -10,6 +10,63 @@ const utils = require('./utils');
 const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
 
+// tslint:disable-next-line: class-name
+interface localizedInfo {
+  [key: string]: string;
+}
+
+const localizedMessage: {
+  [key: string]: localizedInfo;
+} = {
+  en: {
+    'msg.exploredir': 'Explore Directory',
+    'msg.browsehtml': 'Browse local HTML page:\r\n {0}',
+    'msg.createdfile': 'File {0} was created at path:\r\n {1}',
+    'msg.previewfile': 'Preview {0}'
+  },
+  'zh-cn': {
+    'msg.exploredir': '浏览目录',
+    'msg.browsehtml': '浏览本地HTML页面:\r\n {0}',
+    'msg.createdfile': '文件 {0} 已被创建在文件路径下:\r\n {1}',
+    'msg.previewfile': '预览 {0}'
+  }
+};
+
+function format(message: string, args: any[]): string {
+  let result: string;
+  if (args.length === 0) {
+    result = message;
+  } else {
+    result = message.replace(/\{(\d+)\}/g, (match, rest) => {
+      let index = rest[0];
+      let arg = args[index];
+      let replacement = match;
+      if (typeof arg === 'string') {
+        replacement = arg;
+      } else if (typeof arg === 'number' || typeof arg === 'boolean' || arg === void 0 || arg === null) {
+        replacement = String(arg);
+      }
+      return replacement;
+    });
+  }
+  return result;
+}
+
+function localize(locale: string, key: string, ...args: any[]): string {
+  let message: string;
+  let localizer: localizedInfo;
+  if (!locale || !localizedMessage.hasOwnProperty(locale) || !localizedMessage[locale]) {
+    locale = 'en';
+  }
+  localizer = localizedMessage[locale];
+  message = localizer[key];
+  if (!message) {
+    return message;
+  }
+
+  return format(message, args);
+}
+
 // Class Showdown MarkDown Previewer
 export class ShowdownPreviewer {
   public static getPackageName() {
@@ -188,7 +245,7 @@ export class ShowdownPreviewer {
     styles: []
   ) {
     if (!title) {
-      title = '预览MARKDOWN文件';
+      title = 'Preview Markdown File';
     }
     if (typeof doc === 'object') {
       if (typeof doc.content === 'string') {
@@ -372,11 +429,15 @@ export class ShowdownPreviewer {
       dest = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
     await this.saveLocalHtml(dest, doc, title, csstypes, styles);
-    vscode.window.showInformationMessage(`Browser HTML from:\r\n ${dest}`, 'Explorer').then((act) => {
-      if (act === 'Explorer') {
-        utils.openFile(path.dirname(dest));
-      }
-    });
+
+    const actionItem = localize(this.config.locale, 'msg.exploredir');
+    vscode.window
+      .showInformationMessage(localize(this.config.locale, 'msg.browsehtml', dest), actionItem)
+      .then((act) => {
+        if (act === actionItem) {
+          utils.openFile(path.dirname(dest));
+        }
+      });
     utils.openFile(dest);
   }
 
@@ -393,10 +454,11 @@ export class ShowdownPreviewer {
       const extname = path.extname(dest);
       dest = dest.replace(new RegExp(extname + '$'), '.html');
       await this.saveLocalHtml(dest, doc, title, csstypes, styles);
+      const actionItem = localize(this.config.locale, 'msg.exploredir');
       vscode.window
-        .showInformationMessage(`File ${path.basename(dest)} was created at path:\r\n ${dest}`, 'Explorer')
+        .showInformationMessage(localize(this.config.locale, 'msg.createdfile', path.basename(dest), dest), actionItem)
         .then((act) => {
-          if (act === 'Explorer') {
+          if (act === actionItem) {
             utils.openFile(path.dirname(dest));
           }
         });
@@ -469,10 +531,11 @@ export class ShowdownPreviewer {
       await page.screenshot({ fullPage: true, ...puppeteerConfig });
     } // <= set to fullPage by default
     browser.close();
+    const actionItem = localize(this.config.locale, 'msg.exploredir');
     vscode.window
-      .showInformationMessage(`File ${path.basename(dest)} was created at path:\r\n ${dest}`, 'Explorer')
+      .showInformationMessage(localize(this.config.locale, 'msg.createdfile', path.basename(dest), dest), actionItem)
       .then((act) => {
-        if (act === 'Explorer') {
+        if (act === actionItem) {
           utils.openFile(path.dirname(dest));
         }
       });
@@ -587,9 +650,8 @@ export class ShowdownPreviewer {
   }
 
   private async generateHTML() {
-    if (this.webpanel && this.uri && this.editor) {
-      const editor = this.editor;
-      this.webpanel.title = `Preview ${path.basename(this.uri.fsPath)}`;
+    if (this.webpanel && this.uri) {
+      this.webpanel.title = localize(this.config.locale, 'msg.previewfile', path.basename(this.uri.fsPath));
       this.generateHTMLTemplate(this.uri, this.webpanel.webview);
     }
   }
@@ -614,6 +676,7 @@ export class ShowdownPreviewer {
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Language"content="${this.config.locale}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <style type="text/css">

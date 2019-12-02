@@ -1,7 +1,7 @@
 {
   "name": "markdown-preview-showdown",
-  "displayName": "%displayname%",
-  "description": "%description%",
+  "displayName": "%mdps.displayname%",
+  "description": "%mdps.description%",
   "version": "1.1.2",
   "publisher": "jhuix",
   "author": {
@@ -42,8 +42,8 @@
     "keybindings": [
       {
         "command": "markdown-preview-showdown.openPreview",
-        "key": "ctrl+shift+v",
-        "mac": "cmd+shift+v",
+        "key": "ctrl+shift+z",
+        "mac": "cmd+shift+z",
         "when": "editorLangId == markdown"
       }
     ],
@@ -65,25 +65,25 @@
     },
     "configuration": {
       "type": "object",
-      "title": "%mdps%",
+      "title": "%mdps.title%",
       "properties": {
         "markdown-preview-showdown.autoPreview": {
-          "description": "Automatic preview markdown file.",
+          "description": "%mdps.autoPreview%",
           "default": false,
           "type": "boolean"
         },
         "markdown-preview-showdown.scrollSync": {
-          "description": "Automatic scroll sync.",
+          "description": "%mdps.scrollSync%",
           "default": true,
           "type": "boolean"
         },
         "markdown-preview-showdown.maxContentSize": {
-          "description": "When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission.",
+          "description": "%mdps.maxContentSize%",
           "default": 32768,
           "type": "number"
         },
         "markdown-preview-showdown.mermaidTheme": {
-          "description": "Mermaid theme, you can choose one from [\"default\", \"dark\", \"forest\", \"neutral\"]",
+          "description": "%mdps.mermaidTheme%",
           "default": "default",
           "type": "string",
           "enum": [
@@ -94,7 +94,7 @@
           ]
         },
         "markdown-preview-showdown.vegaTheme": {
-          "description": "Vega theme, you can choose one from [\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"]",
+          "description": "%mdps.vegaTheme%",
           "default": "vox",
           "type": "string",
           "enum": [
@@ -106,17 +106,17 @@
           ]
         },
         "markdown-preview-showdown.usePuppeteerCore": {
-          "description": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
+          "description": "%mdps.usePuppeteerCore%",
           "default": true,
           "type": "boolean"
         },
         "markdown-preview-showdown.puppeteerWaitForTimeout": {
-          "description": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
+          "description": "%mdps.puppeteerWaitForTimeout%",
           "default": 0,
           "type": "number"
         },
         "markdown-preview-showdown.chromePath": {
-          "description": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.",
+          "description": "%mdps.chromePath%",
           "default": "",
           "type": "string",
           "scope": "machine"
@@ -133,15 +133,16 @@
     "@types/glob": "^7.1.1",
     "@types/mkdirp": "^0.5.2",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^12.0.0",
-    "@types/vscode": "^1.39.0",
+    "@types/node": "^12.12.14",
+    "@types/vscode": "^1.40.0",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
-    "tslint": "^5.12.1",
+    "semver": "^6.3.0",
+    "tslint": "^5.20.1",
     "tslint-config-alloy": "^0.2.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.3.1",
-    "vscode-test": "^1.2.0"
+    "vscode-test": "^1.2.3"
   },
   "dependencies": {
     "@jhuix/showdowns": "^0.3.2",

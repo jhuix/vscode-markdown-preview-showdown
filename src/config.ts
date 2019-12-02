@@ -7,6 +7,8 @@ export class PreviewConfig {
   public static getCurrentConfig(context: vscode.ExtensionContext) {
     return new PreviewConfig(context);
   }
+
+  public locale: string;
   public autoPreview: boolean;
   public scrollSync: boolean;
   public maxContentSize: number;
@@ -19,6 +21,13 @@ export class PreviewConfig {
 
   public constructor(context: vscode.ExtensionContext) {
     this.printBackground = false;
+    this.locale = 'zh-cn';
+    if (typeof process.env.VSCODE_NLS_CONFIG === 'string') {
+      const vscodeOptions = JSON.parse(process.env.VSCODE_NLS_CONFIG);
+      if (vscodeOptions.hasOwnProperty('locale') && vscodeOptions.locale) {
+        this.locale = vscodeOptions.locale.toLowerCase();
+      }
+    }
     if (context) {
       PreviewConfig.packageName = require(path.resolve(context.extensionPath, 'package.json')).name;
       const config = vscode.workspace.getConfiguration(PreviewConfig.packageName);

@@ -86,6 +86,38 @@
     }
   }
 
+  var localizedMenu = {
+    en: {
+      'menu.browsehtml': 'Browse HTML Page',
+      'menu.exporthtml': 'Export -> HTML',
+      'menu.exportpdf': 'Export -> PDF',
+      'menu.exportpng': 'Export -> PNG',
+      'menu.exportjpg': 'Export -> JPG'
+    },
+    'zh-cn': {
+      'menu.browsehtml': '用浏览器打开',
+      'menu.exporthtml': '导出文件 -> HTML',
+      'menu.exportpdf': '导出文件 -> PDF',
+      'menu.exportpng': '导出图片 -> PNG',
+      'menu.exportjpg': '导出图片 -> JPG'
+    }
+  };
+
+  function localize(key) {
+    var locale = 'en';
+    var langMeta = document.querySelector('meta[http-equiv="Content-Language"]');
+    if (langMeta) {
+      var lang = langMeta.getAttribute('content');
+      if (lang) {
+        locale = lang.toLowerCase();
+        if (!localizedMenu.hasOwnProperty(locale) || !localizedMenu[locale]) {
+          locale = 'en';
+        }
+      }
+    }
+    return localizedMenu[locale][key] ? localizedMenu[locale][key] : '';
+  }
+
   class PreviewHtml {
     /**
      * This PreviewHtml should be initialized when the html dom is loaded.
@@ -121,7 +153,7 @@
         items: [
           {
             type: 'menu',
-            title: 'Browser HTML',
+            title: localize('menu.browsehtml'),
             onclick: function(e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
@@ -143,7 +175,7 @@
           },
           {
             type: 'menu',
-            title: 'Export -> HTML',
+            title: localize('menu.exporthtml'),
             onclick: function(e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
@@ -165,7 +197,7 @@
           },
           {
             type: 'menu',
-            title: 'Export -> PDF',
+            title: localize('menu.exportpdf'),
             onclick: function(e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
@@ -187,7 +219,7 @@
           },
           {
             type: 'menu',
-            title: 'Export -> PNG',
+            title: localize('menu.exportpng'),
             onclick: function(e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
@@ -209,7 +241,7 @@
           },
           {
             type: 'menu',
-            title: 'Export -> JPEG',
+            title: localize('menu.exportjpg'),
             onclick: function(e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');

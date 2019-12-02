@@ -1,6 +1,14 @@
 {
-  "displayname": "MarkDown Preview Showdown (MDPS)",
-  "description": "A markdown preview vscode extension for showdown.js",
-  "mdps": "MDPS - MarkDown文件预览",
-  "mdps.openPreview": "预览MD文件"
+  "mdps.displayname": "MarkDown Preview Showdown (MDPS)",
+  "mdps.description": "A excellent markdown preview extension for Visual Studio Code",
+  "mdps.title": "MDPS - MarkDown文件预览",
+  "mdps.openPreview": "预览MD文件",
+  "mdps.autoPreview": "自动预览markdown文件.",
+  "mdps.scrollSync": "自动同步滚屏.",
+  "mdps.maxContentSize": "当预览markdown内容以及导出文件情况下, 并且插件与预览页面之间的传递内容大小超过该值定义的最大阈值时,传递内容会使用brotli进行压缩后传输, 默认值为32768(32K)字节.",
+  "mdps.mermaidTheme": "渲染Mermaid图表的主题式样, 可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"], 默认主题为\"default\"",
+  "mdps.vegaTheme": "渲染Vega图表的主题式样, 可选择项为[\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"], 默认主题为\"vox\"",
+  "mdps.usePuppeteerCore": "若该值为真, 则使用当前插件下安装使用puppeteer-core包（插件自身会自动安装）; 否则需要使用脚本`npm install -g puppeteer`手动来全局安装使用puppeteer包并.",
+  "mdps.puppeteerWaitForTimeout": "在导出文件时, Puppeteer包执行导出过程运行相关进程的等待时间, 单位毫秒, 默认值为0表示无限等待直到自动完成导出.",
+  "mdps.chromePath": "使用Puppeteer包导出文件时, 需设置的Chrome浏览器执行文件（chrome.exe）的文件绝对路径; 该值为空时,则表示导出时会自动寻找Chrome浏览器的路径."
 }

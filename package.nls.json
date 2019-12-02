@@ -1,6 +1,14 @@
 {
-  "displayname": "MarkDown Preview Showdown (MDPS)",
-  "description": "A markdown preview vscode extension for showdown.js",  
-  "mdps": "MDPS - MarkDown Preview Showdown",
-  "mdps.openPreview": "Preview MD File"
+  "mdps.displayname": "MarkDown Preview Showdown (MDPS)",
+  "mdps.description": "A excellent markdown preview extension for Visual Studio Code",
+  "mdps.title": "MDPS - MarkDown Preview Showdown",
+  "mdps.openPreview": "Preview MD File",
+  "mdps.autoPreview": "Automatic preview markdown file.",
+  "mdps.scrollSync": "Automatic scroll sync.",
+  "mdps.maxContentSize": "When markdown content or html content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission.",
+  "mdps.mermaidTheme": "Mermaid theme, you can choose one from [\"default\", \"dark\", \"forest\", \"neutral\"]",
+  "mdps.vegaTheme": "Vega theme, you can choose one from [\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"]",
+  "mdps.usePuppeteerCore": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
+  "mdps.puppeteerWaitForTimeout": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
+  "mdps.chromePath": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically."
 }
