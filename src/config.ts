@@ -21,7 +21,7 @@ export class PreviewConfig {
 
   public constructor(context: vscode.ExtensionContext) {
     this.printBackground = false;
-    this.locale = 'zh-cn';
+    this.locale = 'en';
     if (typeof process.env.VSCODE_NLS_CONFIG === 'string') {
       const vscodeOptions = JSON.parse(process.env.VSCODE_NLS_CONFIG);
       if (vscodeOptions.hasOwnProperty('locale') && vscodeOptions.locale) {

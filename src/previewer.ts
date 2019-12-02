@@ -671,12 +671,17 @@ export class ShowdownPreviewer {
 
   private generateHTMLTemplate(uri: vscode.Uri, webview: vscode.Webview) {
     const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
+
+    let langMeta = '';
+    if (this.config.locale !== 'en') {
+      langMeta = `<meta http-equiv="Content-Language" content="${this.config.locale}">`;
+    }
+
     webview.html = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta http-equiv="Content-Language"content="${this.config.locale}">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">${langMeta}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <style type="text/css">
