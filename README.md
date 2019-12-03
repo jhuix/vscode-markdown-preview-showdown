@@ -7,9 +7,11 @@ A excellent markdown preview vscode extension with [showdowns](https://github.co
 
 ## Features
 
-[markdown-preview-showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC,export HTML, export PDF etc.
+[markdown-preview-showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC,export HTML, export PDF etc.
 
-MDSP converte markdown content to html that using the [\@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package.
+MDSP converte markdown content to html that using the [\@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package. See to [Demo Features](https://jhuix.github.io/vscode-markdown-preview-showdown).
+
+![features-gif](https://jhuix.github.io/vscode-markdown-preview-showdown/screenshot/mdps.gif)
 
 [Showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And [showdown.js](https://github.com/showdownjs/showdown) is a Javascript Markdown to HTML converter, based on the original works by John Gruber. Showdown can be used client side (in the browser) or server side (with NodeJs). For more information, refer to the following document:
 
