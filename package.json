@@ -22,7 +22,7 @@
     "vscode",
     "MDPS"
   ],
-  "icon": "media/rightpane.png",
+  "icon": "media/logo.png",
   "activationEvents": [
     "onLanguage:markdown",
     "onCommand:markdown-preview-showdown.openPreview"
