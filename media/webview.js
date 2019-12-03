@@ -30,7 +30,7 @@
 
       if (menuItems.hasOwnProperty('style')) {
         for (const key in menuItems['style']) {
-          this.menus.style[key] = menuItems['style'].key;
+          this.menus.style[key] = menuItems['style'][key];
         }
       }
 
@@ -136,6 +136,7 @@
       this.initWindowEvents();
       this.initMenus();
       previewer.setCDN(cdnName, defScheme, distScheme);
+      previewer.setVegaOptions({ renderer: 'svg' });
       previewer.init(mermaidTheme, vegaTheme);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
@@ -146,7 +147,6 @@
       const that = this;
       const menuItems = {
         style: {
-          width: '210px',
           zIndex: '1',
           display: 'none'
         },
@@ -350,11 +350,17 @@
       }
     }
 
+    checkScrollEnd() {
+      this.syncScrollTop = -1;
+      this.endScrollTimeout = null;
+    }
+
     scrollEvent(event) {
       if (this.syncScrollTop >= 0) {
-        if (window.scrollY === this.syncScrollTop) {
-          this.syncScrollTop = -1;
+        if (this.endScrollTimeout) {
+          clearTimeout(this.endScrollTimeout);
         }
+        this.endScrollTimeout = setTimeout(this.checkScrollEnd.bind(this), 500);
       } else {
         this.previewSyncSource();
       }
@@ -383,12 +389,15 @@
           } else {
             scrollTop = parseInt((line * this.previewElement.scrollHeight) / this.totalLines, 10);
           }
-          this.syncScrollTop = scrollTop;
-          window.scroll({
-            left: 0,
-            top: scrollTop,
-            behavior: 'smooth'
-          });
+
+          if (window.scrollY !== scrollTop) {
+            this.syncScrollTop = window.scrollY;
+            window.scroll({
+              left: 0,
+              top: scrollTop,
+              behavior: 'smooth'
+            });
+          }
         }
       }
     }
