@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -22,6 +26,7 @@ export class PreviewConfig {
   public constructor(context: vscode.ExtensionContext) {
     this.printBackground = false;
     this.locale = 'en';
+    // Get gurrent localization id, default 'en'.
     if (typeof process.env.VSCODE_NLS_CONFIG === 'string') {
       const vscodeOptions = JSON.parse(process.env.VSCODE_NLS_CONFIG);
       if (vscodeOptions.hasOwnProperty('locale') && vscodeOptions.locale) {

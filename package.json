@@ -43,8 +43,8 @@
     "keybindings": [
       {
         "command": "markdown-preview-showdown.openPreview",
-        "key": "ctrl+shift+z",
-        "mac": "cmd+shift+z",
+        "key": "ctrl+shift+v ctrl+shift+v",
+        "mac": "cmd+shift+v cmd+shift+v",
         "when": "editorLangId == markdown"
       }
     ],
@@ -146,7 +146,7 @@
     "vscode-test": "^1.2.3"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.3.3",
+    "@jhuix/showdowns": "^0.3.6",
     "mkdirp": "^0.5.1",
     "puppeteer-core": "^2.0.0",
     "throttle-debounce": "^2.1.0"

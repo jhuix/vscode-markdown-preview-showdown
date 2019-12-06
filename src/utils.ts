@@ -1,6 +1,10 @@
-import * as child_process from "child_process";
-import * as fs from "fs";
-import * as _mkdirp from "mkdirp";
+/*
+ * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+import * as child_process from 'child_process';
+import * as fs from 'fs';
+import * as _mkdirp from 'mkdirp';
 
 function readFile(file: fs.PathLike | number, options: { encoding?: null; flag?: string } | undefined | null) {
   return new Promise((resolve, reject) => {
@@ -16,7 +20,7 @@ function readFile(file: fs.PathLike | number, options: { encoding?: null; flag?:
 exports.readFile = readFile;
 function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileOptions) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(file, text, options, error => {
+    fs.writeFile(file, text, options, (error) => {
       if (error) {
         return reject(error.toString());
       } else {
@@ -28,7 +32,7 @@ function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileO
 exports.writeFile = writeFile;
 function write(fd: number, text: any) {
   return new Promise((resolve, reject) => {
-    fs.write(fd, text, error => {
+    fs.write(fd, text, (error) => {
       if (error) {
         return reject(error.toString());
       } else {
@@ -73,20 +77,20 @@ exports.mkdirp = mkdirp;
  * @param filePath string
  */
 function openFile(filePath: string) {
-  if (process.platform === "win32") {
+  if (process.platform === 'win32') {
     if (filePath.match(/^[a-zA-Z]:\\/)) {
       // C:\ like url.
-      filePath = "file:///" + filePath;
+      filePath = 'file:///' + filePath;
     }
-    if (filePath.startsWith("file:///")) {
-      return child_process.execFile("explorer.exe", [filePath]);
+    if (filePath.startsWith('file:///')) {
+      return child_process.execFile('explorer.exe', [filePath]);
     } else {
       return child_process.exec(`start ${filePath}`);
     }
-  } else if (process.platform === "darwin") {
-    child_process.execFile("open", [filePath]);
+  } else if (process.platform === 'darwin') {
+    child_process.execFile('open', [filePath]);
   } else {
-    child_process.execFile("xdg-open", [filePath]);
+    child_process.execFile('xdg-open', [filePath]);
   }
 }
 exports.openFile = openFile;

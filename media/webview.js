@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
 (function(previewer, cdnName, defScheme, distScheme, isBrotli, maxContentSize, mermaidTheme, vegaTheme) {
   class ContextMenu {
     constructor(selector, menuItems) {
@@ -119,9 +123,7 @@
   }
 
   class PreviewHtml {
-    /**
-     * This PreviewHtml should be initialized when the html dom is loaded.
-     */
+    //This PreviewHtml should be initialized when the html dom is loaded.
     constructor(isVscode) {
       this.vscodeAPI = null;
       this.sourceUri = '';
@@ -136,8 +138,9 @@
       this.initWindowEvents();
       this.initMenus();
       previewer.setCDN(cdnName, defScheme, distScheme);
-      previewer.setVegaOptions({ renderer: 'svg' });
-      previewer.init(mermaidTheme, vegaTheme);
+      previewer.setVegaOptions({ theme: vegaTheme, renderer: 'svg' });
+      previewer.setMermaidOptions({ theme: mermaidTheme });
+      previewer.init(true);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
       }
@@ -267,11 +270,7 @@
       this.contextMenu = new ContextMenu(this.previewElement, menuItems);
     }
 
-    /**
-     * Post message to parent window
-     * @param command
-     * @param args
-     */
+    // Post message to parent window
     postMessage(command, args = []) {
       if (this.config.vscode) {
         if (!this.vscodeAPI) {
@@ -296,13 +295,9 @@
       }
     }
 
-    /**
-     * Initialize several `window` events.
-     */
+    // Initialize `window` events.
     initWindowEvents() {
-      /**
-       * Several keyboard events.
-       */
+      // Keyboard events.
       window.addEventListener('keydown', (event) => {
         if (event.shiftKey && event.ctrlKey && event.which === 83) {
           // ctrl+shift+s preview sync source

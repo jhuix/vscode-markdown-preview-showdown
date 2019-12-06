@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
 'use strict';
 
 import * as crypto from 'crypto';
@@ -542,7 +546,7 @@ export class ShowdownPreviewer {
     utils.openFile(dest);
   }
   /**
-   * Close all previews
+   * Close preview
    */
   public dispose() {
     if (this.webpanel) {

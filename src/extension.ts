@@ -1,12 +1,7 @@
 /*
- * @Description:
- * @Author: Jhuix (Hui Jin) <jhuix0117@gmail.com>
- * @Date: 2019-10-26 12:12:22
- * @LastEditors: Jhuix (Hui Jin) <jhuix0117@gmail.com>
- * @LastEditTime: 2019-10-26 13:18:15
+ * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
  */
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { ShowdownPreviewer } from './previewer';
 
@@ -109,6 +104,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
-  console.log('deactivate');
-}
+export function deactivate() {}

@@ -1,5 +1,16 @@
 # Release Notes
 
+## v1.1.5
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.6:
+
+   - Fixed no dynamic loaded katex library, and reducing release file size.
+
+   - Add codeblock field of json in syntax language attribute.
+
+   - Add removeExtension and addExtension functions, delete addExtensions function.
+
+   - Update defaultExtensions of property is object of extensions.
+
 ## v1.1.4
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.3:
 

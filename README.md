@@ -42,6 +42,7 @@ Open vscode editor, then search markdown-preview-showdown in Extensions, then cl
 This extension contributes the following settings:
 
 * `markdown-preview-showdown.autoPreview`: Automatic preview markdown file, default false.
+* `markdown-preview-showdown.flavor`: Flavor of preview html page, you can choose one from ["github", "ghost", "vanilla"], default is "github" flavor.
 * `markdown-preview-showdown.scrollSync`: Automatic scroll sync, default true.
 * `markdown-preview-showdown.maxContentSize`: When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
 * `markdown-preview-showdown.mermaidTheme`: Mermaid theme, you can choose one from ["default", "dark", "forest", "neutral"], default is "default" theme.
@@ -52,9 +53,10 @@ This extension contributes the following settings:
 
 ## Keybindings
 
-|Key|Command|
-|-----|---|
-|ctrl+shift+z or cmd+shift+z | Open preview |
+|OS|Key|Command|
+|----|-----|----|
+|WINDOWS|ctrl+shift+v ctrl+shift+v| openPreview |
+|MAC|cmd+shift+v cmd+shift+v| openPreview |
 
 ## Release Notes
 
