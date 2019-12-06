@@ -11,6 +11,8 @@
 
    - Update defaultExtensions of property is object of extensions.
 
+2. Update short key of preview is 'ctrl+shift+v ctrl+shift+v'.
+
 ## v1.1.4
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.3:
 
