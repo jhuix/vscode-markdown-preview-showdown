@@ -74,14 +74,25 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  context.subscriptions.push(
+    vscode.window.onDidChangeVisibleTextEditors((textEditors) => {
+      textEditors.map((textEditor) => {
+        if (textEditor.viewColumn === vscode.ViewColumn.One) {
+          contentPreviewer.changeVisibleRanges(textEditor);
+        }
+      });
+    })
+  );
+
   // When change active texteditor, event order in same viewcolumn:
   // onDidChangeTextEditorVisibleRanges -> onDidChangeVisibleTextEditors -> onDidChangeTextEditorVisibleRanges.
   // And textEditor of first onDidChangeTextEditorVisibleRanges event is previous texteditor,
   // but visibleRanges of event is associated with the active texteditor.
-  // So we call updateVisibleRanges that is a debounce method between two onDidChangeTextEditorVisibleRanges event.
+  // So we call previewPostMessage that is a debounce method in changeVisibleRanges
+  // between the onDidChangeTextEditorVisibleRanges and onDidChangeVisibleTextEditors event.
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorVisibleRanges((event) => {
-      contentPreviewer.updateVisibleRanges(event.textEditor);
+      contentPreviewer.changeVisibleRanges(event.textEditor);
     })
   );
 

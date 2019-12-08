@@ -1,5 +1,9 @@
 # Release Notes
 
+## v1.1.7
+
+1. Fixed bug that can not be previewed for the first time in v1.1.6.
+
 ## v1.1.6
 
 1. Fixed the preview scrolls to top when switch to active between markdown and non markdown file.

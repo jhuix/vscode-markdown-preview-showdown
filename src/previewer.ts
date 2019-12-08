@@ -118,11 +118,9 @@ export class ShowdownPreviewer {
     that.updatePreview(uri);
   });
   private debouncePostMessage = debounce(5 * 5 * 10, (webView: vscode.Webview, message: any) => {
-    webView.postMessage(message);
-  });
-
-  private debounceChangeVisibleRanges = debounce(5 * 5 * 10, (that: ShowdownPreviewer, editor: vscode.TextEditor) => {
-    that.changeVisibleRanges(editor);
+    if (message.command !== 'breakMessage') {
+      webView.postMessage(message);
+    }
   });
 
   public constructor(context: vscode.ExtensionContext) {
@@ -640,10 +638,6 @@ export class ShowdownPreviewer {
     return true;
   }
 
-  public updateVisibleRanges(editor: vscode.TextEditor) {
-    this.debounceChangeVisibleRanges(this, editor);
-  }
-
   public changeVisibleRanges(editor: vscode.TextEditor) {
     if (
       !this.config.scrollSync ||
@@ -651,6 +645,9 @@ export class ShowdownPreviewer {
       !ShowdownPreviewer.isMarkdownFile(editor.document) ||
       !editor.visibleRanges.length
     ) {
+      this.previewPostMessage({
+        command: 'breakMessage'
+      });
       return;
     }
 
