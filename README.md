@@ -43,39 +43,39 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.autoPreview`:
 
- Automatic preview markdown file, default false.
+    Automatic preview markdown file, default false.
 
 * `markdown-preview-showdown.flavor`:
 
- Flavor of preview html page, you can choose one from ["github", "ghost", "vanilla"], default is "github" flavor.
+    Flavor of preview html page, you can choose one from ["github", "ghost", "vanilla"], default is "github" flavor.
 
 * `markdown-preview-showdown.scrollSync`:
 
- Automatic scroll sync, default true.
+    Automatic scroll sync, default true.
 
 * `markdown-preview-showdown.maxContentSize`:
 
- When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
+    When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
 
 * `markdown-preview-showdown.mermaidTheme`:
 
- Mermaid theme, you can choose one from ["default", "dark", "forest", "neutral"], default is "default" theme.
+    Mermaid theme, you can choose one from ["default", "dark", "forest", "neutral"], default is "default" theme.
 
 * `markdown-preview-showdown.vegaTheme`:
 
- Vega theme, you can choose one from ["excel", "ggplot2", "quartz", "vox", "dark"], default is "vox"  theme.
+    Vega theme, you can choose one from ["excel", "ggplot2", "quartz", "vox", "dark"], default is "vox"  theme.
 
 * `markdown-preview-showdown.usePuppeteerCore`:
 
- If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
+    If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
 
 * `markdown-preview-showdown.puppeteerWaitForTimeout`:
 
- Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
+    Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
 
 * `markdown-preview-showdown.chromePath`:
 
- Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
+    Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
 
 ## Keybindings
 
