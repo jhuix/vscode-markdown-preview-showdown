@@ -74,19 +74,14 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // context.subscriptions.push(
-  //   vscode.window.onDidChangeTextEditorSelection((event) => {
-  //      if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
-  //       contentPreviewer.changeTextEditorSelection(event.textEditor);
-  //      }
-  //   })
-  // );
-
+  // When change active texteditor, event order in same viewcolumn:
+  // onDidChangeTextEditorVisibleRanges -> onDidChangeVisibleTextEditors -> onDidChangeTextEditorVisibleRanges.
+  // And textEditor of first onDidChangeTextEditorVisibleRanges event is previous texteditor,
+  // but visibleRanges of event is associated with the active texteditor.
+  // So we call updateVisibleRanges that is a debounce method between two onDidChangeTextEditorVisibleRanges event.
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorVisibleRanges((event) => {
-      if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
-        contentPreviewer.changeTextEditorSelection(event.textEditor);
-      }
+      contentPreviewer.updateVisibleRanges(event.textEditor);
     })
   );
 

@@ -108,21 +108,27 @@ export class ShowdownPreviewer {
 
   private firstPreview: boolean;
   private config: PreviewConfig;
+  private currentLine: number;
   private context: vscode.ExtensionContext;
   private editorScrollDelay: number;
   private editor: vscode.TextEditor | undefined = undefined;
   private webpanel: vscode.WebviewPanel | undefined = undefined;
   private uri: vscode.Uri | undefined = undefined;
-  private debounceUpdatePreview = debounce(5 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
+  private debounceUpdatePreview = debounce(4 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
     that.updatePreview(uri);
   });
   private debouncePostMessage = debounce(5 * 5 * 10, (webView: vscode.Webview, message: any) => {
     webView.postMessage(message);
   });
 
+  private debounceChangeVisibleRanges = debounce(5 * 5 * 10, (that: ShowdownPreviewer, editor: vscode.TextEditor) => {
+    that.changeVisibleRanges(editor);
+  });
+
   public constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.firstPreview = false;
+    this.currentLine = 0;
     this.editorScrollDelay = Date.now();
     this.config = PreviewConfig.getCurrentConfig(context);
   }
@@ -140,8 +146,9 @@ export class ShowdownPreviewer {
       const newResourceRoot =
         this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath);
       if (oldResourceRoot !== newResourceRoot) {
-        this.webpanel.dispose();
+        const webpanel = this.webpanel;
         this.webpanel = undefined;
+        webpanel.dispose();
         this.openPreview(uri, editor, viewOptions);
         return;
       }
@@ -223,16 +230,17 @@ export class ShowdownPreviewer {
         this.context.subscriptions
       );
 
+      // Deprecated: Do not use, it be replaced by `webviewLoaded` custom message.
       // Update the content based on view changes
-      previewPanel.onDidChangeViewState(
-        (e) => {
-          if (previewPanel.visible) {
-            this.generateHTML();
-          }
-        },
-        null,
-        this.context.subscriptions
-      );
+      // previewPanel.onDidChangeViewState(
+      //   (e) => {
+      //     if (previewPanel.visible) {
+      //       this.updateCurrentView();
+      //     }
+      //   },
+      //   null,
+      //   this.context.subscriptions
+      // );
     }
 
     this.generateHTML();
@@ -632,8 +640,17 @@ export class ShowdownPreviewer {
     return true;
   }
 
-  public changeTextEditorSelection(editor: vscode.TextEditor) {
-    if (!this.config.scrollSync || Date.now() < this.editorScrollDelay || !editor.visibleRanges.length) {
+  public updateVisibleRanges(editor: vscode.TextEditor) {
+    this.debounceChangeVisibleRanges(this, editor);
+  }
+
+  public changeVisibleRanges(editor: vscode.TextEditor) {
+    if (
+      !this.config.scrollSync ||
+      Date.now() < this.editorScrollDelay ||
+      !ShowdownPreviewer.isMarkdownFile(editor.document) ||
+      !editor.visibleRanges.length
+    ) {
       return;
     }
 
@@ -648,7 +665,7 @@ export class ShowdownPreviewer {
       midLine = Math.floor((topLine + bottomLine) / 2);
     }
     this.previewPostMessage({
-      command: 'changeTextEditorSelection',
+      command: 'changeVisibleRanges',
       line: midLine
     });
   }
@@ -729,26 +746,22 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
   private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
     const editor = this.getEditor();
     if (previewPanel && editor && editor.document && ShowdownPreviewer.isMarkdownFile(editor.document)) {
-      let initialLine = 0;
-      initialLine = await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (!editor.visibleRanges.length) {
-            return resolve(editor.selections[0].active.line || 0);
-          }
-
+      let initialLine = this.currentLine;
+      if (editor === vscode.window.activeTextEditor) {
+        initialLine = editor.selections[0].active.line || 0;
+        if (editor.visibleRanges.length) {
           const topLine = editor.visibleRanges[0].start.line;
           const bottomLine = editor.visibleRanges[0].end.line;
-          let midLine;
           if (topLine === 0) {
-            midLine = 0;
+            initialLine = 0;
           } else if (Math.floor(bottomLine) === editor.document.lineCount - 1) {
-            midLine = bottomLine;
+            initialLine = bottomLine;
           } else {
-            midLine = Math.floor((topLine + bottomLine) / 2);
+            initialLine = Math.floor((topLine + bottomLine) / 2);
           }
-          return resolve(midLine);
-        }, 100);
-      });
+        }
+        this.currentLine = initialLine;
+      }
       const lines = editor.document.lineCount;
       const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
       const text = editor.document.getText();

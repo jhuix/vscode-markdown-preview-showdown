@@ -337,7 +337,7 @@
             this.totalLines = message.totalLines;
             this.scrollToLine(message.currentLine);
             break;
-          case 'changeTextEditorSelection':
+          case 'changeVisibleRanges':
             const line = parseInt(message.line, 10);
             this.scrollToLine(line);
             break;
