@@ -1,5 +1,13 @@
 # Release Notes
 
+## v1.1.6
+
+1. Fixed the preview scrolls to top when switch to active between markdown and non markdown file.
+
+2. Fixed sometimes the preview scrolls to top when When editing markdown file.
+
+3. Update logo png.
+
 ## v1.1.5
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.6:
 
