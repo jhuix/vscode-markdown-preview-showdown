@@ -5,6 +5,8 @@
 
 A excellent markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
 
+> If you think the vscode extension is excellent or can help you, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️.
+
 ## Features
 
 [MarkDown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC, export HTML, export PDF etc.
