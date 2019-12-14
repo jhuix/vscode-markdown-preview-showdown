@@ -754,7 +754,7 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
     const editor = this.getEditor();
     if (previewPanel && editor && editor.document && ShowdownPreviewer.isMarkdownFile(editor.document)) {
       let initialLine = this.currentLine;
-      if (editor === vscode.window.activeTextEditor) {
+      if (vscode.window.activeTextEditor && this.isSameUri(vscode.window.activeTextEditor.document.uri)) {
         initialLine = editor.selections[0].active.line || 0;
         if (editor.visibleRanges.length) {
           const topLine = editor.visibleRanges[0].start.line;

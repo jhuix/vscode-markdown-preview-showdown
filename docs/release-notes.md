@@ -1,5 +1,13 @@
 # Release Notes
 
+## v1.1.8
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.8:
+
+   - Update check css types extension.
+
+2. Continue to fixed the preview scrolls to top when editing markdown file.
+
 ## v1.1.7
 
 1. Fixed bug that can not be previewed for the first time in v1.1.6.
@@ -8,11 +16,12 @@
 
 1. Fixed the preview scrolls to top when switch to active between markdown and non markdown file.
 
-2. Fixed sometimes the preview scrolls to top when When editing markdown file.
+2. Fixed sometimes the preview scrolls to top when editing markdown file.
 
 3. Update logo png.
 
 ## v1.1.5
+
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.6:
 
    - Fixed no dynamic loaded katex library, and reducing release file size.
@@ -26,6 +35,7 @@
 2. Update short key of preview is 'ctrl+shift+v ctrl+shift+v'.
 
 ## v1.1.4
+
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.3:
 
    - Support align field of more diagrams that vaule is selected empty("left") or "center" or "right" in code language attribute.
@@ -39,6 +49,7 @@
 4. Fixed the problem that can not display diagrams of vega when export to html or pdf or png or jpg.
 
 ## v1.1.3
+
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.2:
 
    - Support [Vega and Vega-Lite](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#vega-and-vega-lite)
@@ -50,6 +61,7 @@
 4. Support international localization of resources, currently support English(en) and Chinese(zh-cn).
 
 ## v1.1.2
+
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.1
 2. Change extension name to markdown-preview-showdown (MDPS).
 
