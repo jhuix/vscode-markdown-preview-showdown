@@ -500,6 +500,16 @@ export class ShowdownPreviewer {
     let puppeteer = null;
     if (this.config.usePuppeteerCore) {
       puppeteer = require('puppeteer-core');
+      if (!this.config.chromePath && process.platform === 'win32') {
+        await utils
+          .regQuery('HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe')
+          .then((out: string) => {
+            this.config.chromePath = out;
+          })
+          .catch((err: string) => {
+            console.log(err);
+          });
+      }
       browser = await puppeteer.launch({
         executablePath: this.config.chromePath || require('chrome-location'),
         headless: true
@@ -813,17 +823,5 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       projectDirectoryPath = '';
     }
     return this.formatPathIfNecessary(projectDirectoryPath);
-  }
-  private getFilePath(uri: vscode.Uri) {
-    return this.formatPathIfNecessary(uri.fsPath);
-  }
-  private getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const textLen = 32;
-    for (let i = 0; i < textLen; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
   }
 }

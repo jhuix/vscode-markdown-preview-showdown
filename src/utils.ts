@@ -94,3 +94,29 @@ function openFile(filePath: string) {
   }
 }
 exports.openFile = openFile;
+
+// Available only in win32 platform
+function regQuery(key: string, valueName?: string) {
+  return new Promise((resolve, reject) => {
+    const cmd = `REG QUERY \"${key}\"` + (valueName ? ` /v ${valueName}` : ' /ve');
+    child_process.exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        return reject(error.toString());
+      } else if (stderr) {
+        return reject(stderr);
+      } else {
+        let outs = stdout.trim().split('\r\n');
+        if (outs.length < 2) {
+          return resolve('');
+        }
+        outs = outs[1]
+          .trim()
+          .replace(/ +/g, ' ')
+          .split(' ');
+        return resolve(outs.length > 2 ? outs.slice(2).join(' ') : '');
+      }
+    });
+  });
+}
+
+exports.regQuery = regQuery;
