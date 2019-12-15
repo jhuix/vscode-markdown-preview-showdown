@@ -17,10 +17,10 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 [@jhuix/Showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And [showdown.js](https://github.com/showdownjs/showdown) is a Javascript Markdown to HTML converter, based on the original works by John Gruber. For more information, refer to the following document:
 
-- [Showdown's Markdown syntax](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax)
+- [Showdown's Markdown Syntax](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax)
 - [Showdown Options](https://github.com/showdownjs/showdown/wiki/Showdown-options)
-- [Showdowns readme](https://github.com/jhuix/showdowns/blob/master/README.md)
-- [Showdowns Features](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
+- [Showdowns Readme](https://github.com/jhuix/showdowns/blob/master/README.md)
+- [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
 
 ## Requirements
 
@@ -92,6 +92,6 @@ Please see the [release-notes](https://github.com/jhuix/vscode-markdown-preview-
 
 ## License
 
-[MIT](https://github.com/jhuix/markdown-preview-showdown/blob/master/LICENSE) License
+[MIT](https://github.com/jhuix/vscode-markdown-preview-showdown/blob/master/LICENSE) License
 
 Copyright (c) 2019-present, [Jhuix](mailto:jhuix0117@gmail.com) (Hui Jin)
