@@ -13,6 +13,7 @@ import { PreviewConfig } from './config';
 const utils = require('./utils');
 const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
+const plantumlAPI = require('./plantuml');
 
 // tslint:disable-next-line: class-name
 interface localizedInfo {
@@ -213,6 +214,9 @@ export class ShowdownPreviewer {
             case 'revealLine':
               this.revealLine(message.args[0], message.args[1]);
               break;
+            case 'renderPlantuml':
+              this.renderLocalPlantuml(message.args[0]);
+              break;
           }
         },
         null,
@@ -245,6 +249,19 @@ export class ShowdownPreviewer {
     if (!this.firstPreview) {
       this.firstPreview = true;
     }
+  }
+
+  public renderLocalPlantuml(data: any) {
+    const uri: vscode.Uri = vscode.Uri.parse(data.sourceUri);
+    data.context = this;
+    plantumlAPI.render(data.code, path.dirname(uri.fsPath)).then((svg: string) => {
+      data.context.webpanel.webview.postMessage({
+        command: 'responsePlantuml',
+        id: data.id,
+        name: data.name,
+        response: svg
+      });
+    });
   }
 
   public async saveLocalHtml(

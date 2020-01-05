@@ -6,7 +6,6 @@
 
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as os from 'os';
 
 const extensionDirectoryPath = path.resolve(__dirname, '../');
 const PlantumlJarPath = path.resolve(extensionDirectoryPath, 'media/plantuml/plantuml.jar');
@@ -52,7 +51,7 @@ class PlantumlTask {
   private startTask() {
     this.task = child_process.spawn('java', [
       '-Djava.awt.headless=true',
-      '-DPlantuml.include.path=' + [this.fileDirectoryPath, path.resolve(os.homedir(), '.mdps')].join(path.delimiter),
+      '-DPlantuml.include.path=' + this.fileDirectoryPath,
       '-jar',
       PlantumlJarPath,
       // '-graphvizdot', 'exe'
@@ -115,8 +114,9 @@ ${content}
   let task = TASKS[fileDirectoryPath];
   if (!task) {
     // init `Plantuml.jar` task
-    TASKS[fileDirectoryPath] = new PlantumlTask(fileDirectoryPath);
-    task = TASKS[fileDirectoryPath];
+    task = new PlantumlTask(fileDirectoryPath);
+    if (!task) return '';
+    TASKS[fileDirectoryPath] = task;
   }
   return await task.generateSVG(content);
 }

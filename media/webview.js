@@ -130,6 +130,7 @@
       this.totalLines = 0;
       this.currentLine = -1;
       this.syncScrollTop = -1;
+      this.resolveCallbacks = {};
       this.config = { vscode: isVscode };
       const previewElement = document.createElement('div');
       previewElement.classList.add('workspace-container');
@@ -140,6 +141,7 @@
       previewer.setCDN(cdnName, defScheme, distScheme);
       previewer.setVegaOptions({ theme: vegaTheme, renderer: 'svg' });
       previewer.setMermaidOptions({ theme: mermaidTheme });
+      previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
       previewer.init(true);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
@@ -295,6 +297,14 @@
       }
     }
 
+    renderPlantuml(id, name, code) {
+      const that = this;
+      return new Promise((resolve) => {
+        that.resolveCallbacks[id] = resolve;
+        that.postMessage('renderPlantuml', [{ id, name, code, sourceUri: that.sourceUri }]);
+      });
+    }
+
     // Initialize `window` events.
     initWindowEvents() {
       // Keyboard events.
@@ -319,9 +329,13 @@
 
     updateMarkdown(markdown) {
       const that = this;
-      this.previewElement.innerHTML = previewer.makeHtml(markdown, (csstypes) => {
-        that.csstypes = csstypes;
-      });
+      previewer
+        .makeHtml(markdown, (csstypes) => {
+          that.csstypes = csstypes;
+        })
+        .then((html) => {
+          that.previewElement.innerHTML = html;
+        });
     }
 
     messageEvent(event) {
@@ -340,6 +354,15 @@
           case 'changeVisibleRanges':
             const line = parseInt(message.line, 10);
             this.scrollToLine(line);
+            break;
+          case 'responsePlantuml':
+            if (this.resolveCallbacks.hasOwnProperty(message.id)) {
+              const callback = this.resolveCallbacks[message.id];
+              delete this.resolveCallbacks[message.id];
+              if (callback) {
+                callback(message.response);
+              }
+            }
             break;
         }
       }
