@@ -118,7 +118,7 @@ export class ShowdownPreviewer {
   private debounceUpdatePreview = debounce(4 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
     that.updatePreview(uri);
   });
-  private debouncePostMessage = debounce(5 * 5 * 10, (webView: vscode.Webview, message: any) => {
+  private debouncePostMessage = debounce(3 * 5 * 10, (webView: vscode.Webview, message: any) => {
     if (message.command !== 'breakMessage') {
       webView.postMessage(message);
     }
@@ -759,6 +759,8 @@ var is_brotli = true;
 var max_contentsize = ${this.config.maxContentSize};
 var mermaid_theme = "${this.config.mermaidTheme}";
 var vega_theme = "${this.config.vegaTheme}";
+var plantuml_rendermode = "${this.config.plantumlRenderMode}";
+var plantuml_website = "${this.config.plantumlWebsite}";
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
 </script>

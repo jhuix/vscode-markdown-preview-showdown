@@ -10,46 +10,46 @@ import * as path from 'path';
 const extensionDirectoryPath = path.resolve(__dirname, '../');
 const PlantumlJarPath = path.resolve(extensionDirectoryPath, 'media/plantuml/plantuml.jar');
 
-const TASKS: {
-  [key: string]: PlantumlTask | null;
+const RENDERERS: {
+  [key: string]: PlantumlRenderer | null;
 } = {};
 
 const CHUNKS: {
   [key: string]: string;
 } = {};
 
-const CALLBACKS: {
+const RESOLVES: {
   [key: string]: Array<(result: string) => void>;
 } = {};
 
-class PlantumlTask {
+class PlantumlRenderer {
   private fileDirectoryPath: string;
   private chunks: string;
-  private callbacks: Array<(result: string) => void>;
-  private task: child_process.ChildProcessWithoutNullStreams | null;
+  private resolves: Array<(result: string) => void>;
+  private render: child_process.ChildProcessWithoutNullStreams | null;
 
   public constructor(fileDirectoryPath: string) {
     this.fileDirectoryPath = fileDirectoryPath;
     this.chunks = CHUNKS[this.fileDirectoryPath] || '';
-    this.callbacks = CALLBACKS[this.fileDirectoryPath] || [];
-    this.task = null;
-    this.startTask();
+    this.resolves = RESOLVES[this.fileDirectoryPath] || [];
+    this.render = null;
+    this.startRender();
   }
 
   public generateSVG(content: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this.task) {
-        this.callbacks.push(resolve);
-        this.task.stdin.write(content + '\n');
-        this.task.stdin.end();
+      if (this.render) {
+        this.resolves.push(resolve);
+        this.render.stdin.write(content + '\n');
+        this.render.stdin.end();
       } else {
         reject('Task is not exist.');
       }
     });
   }
 
-  private startTask() {
-    this.task = child_process.spawn('java', [
+  private startRender() {
+    this.render = child_process.spawn('java', [
       '-Djava.awt.headless=true',
       '-DPlantuml.include.path=' + this.fileDirectoryPath,
       '-jar',
@@ -61,7 +61,7 @@ class PlantumlTask {
       'UTF-8'
     ]);
 
-    this.task.stdout.on('data', (chunk) => {
+    this.render.stdout.on('data', (chunk) => {
       let data: string = chunk.toString();
       this.chunks += data;
       if (this.chunks.trimRight().endsWith('</svg>')) {
@@ -73,7 +73,7 @@ class PlantumlTask {
           const diagrams = data.split('<?xml ');
           diagrams.forEach((diagram, i) => {
             if (diagram.length) {
-              const callback = this.callbacks.shift();
+              const callback = this.resolves.shift();
               if (callback) {
                 callback('<?xml ' + diagram);
               }
@@ -83,17 +83,17 @@ class PlantumlTask {
       }
     });
 
-    this.task.on('error', () => this.closeSelf());
-    this.task.on('exit', () => this.closeSelf());
+    this.render.on('error', () => this.closeRender());
+    this.render.on('exit', () => this.closeRender());
   }
 
   /**
-   * stop this.task and store this.chunks and this.callbacks
+   * stop this.render and store this.chunks and this.resolves
    */
-  private closeSelf() {
-    TASKS[this.fileDirectoryPath] = null;
+  private closeRender() {
+    RENDERERS[this.fileDirectoryPath] = null;
     CHUNKS[this.fileDirectoryPath] = this.chunks;
-    CALLBACKS[this.fileDirectoryPath] = this.callbacks;
+    RESOLVES[this.fileDirectoryPath] = this.resolves;
   }
 }
 
@@ -111,12 +111,12 @@ ${content}
 @enduml`;
   }
 
-  let task = TASKS[fileDirectoryPath];
-  if (!task) {
-    // init `Plantuml.jar` task
-    task = new PlantumlTask(fileDirectoryPath);
-    if (!task) return '';
-    TASKS[fileDirectoryPath] = task;
+  let renderer = RENDERERS[fileDirectoryPath];
+  if (!renderer) {
+    // init `Plantuml.jar` renderer
+    renderer = new PlantumlRenderer(fileDirectoryPath);
+    if (!renderer) return '';
+    RENDERERS[fileDirectoryPath] = renderer;
   }
-  return await task.generateSVG(content);
+  return await renderer.generateSVG(content);
 }

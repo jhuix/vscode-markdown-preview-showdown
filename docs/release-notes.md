@@ -1,5 +1,16 @@
 # Release Notes
 
+## v1.2.0
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.4.0:
+
+   - Add render diagram mode is asynchronous using promise-resolve, but exclude showdown-sequence.
+
+2. When rendering a diagram (exclude js-sequence diagram), the page diagram does not flicker.
+
+3. Add render mode setting of plantuml diagram, can choose from 'local' or 'remote';
+
+4. Add remote render website setting of plantuml diagram;
+
 ## v1.1.8
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.8:

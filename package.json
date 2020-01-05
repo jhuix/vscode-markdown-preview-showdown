@@ -106,6 +106,20 @@
             "dark"
           ]
         },
+        "markdown-preview-showdown.plantumlRenderMode": {
+          "description": "%mdps.plantumlRenderMode%",
+          "default": "local",
+          "type": "string",
+          "enum": [
+            "local",
+            "remote"
+          ]
+        },
+        "markdown-preview-showdown.plantumlWebsite": {
+          "description": "%mdps.plantumlWebsite%",
+          "default": "www.plantuml.com/plantuml",
+          "type": "string"
+        },
         "markdown-preview-showdown.usePuppeteerCore": {
           "description": "%mdps.usePuppeteerCore%",
           "default": true,
@@ -146,7 +160,7 @@
     "vscode-test": "^1.2.3"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.3.8",
+    "@jhuix/showdowns": "^0.4.0",
     "mkdirp": "^0.5.1",
     "puppeteer-core": "^2.0.0",
     "throttle-debounce": "^2.1.0"

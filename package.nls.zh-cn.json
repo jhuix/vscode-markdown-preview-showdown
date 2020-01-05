@@ -8,7 +8,9 @@
   "mdps.maxContentSize": "当预览markdown内容以及导出文件情况下, 并且插件与预览页面之间的传递内容大小超过该值定义的最大阈值时,传递内容会使用brotli进行压缩后传输, 默认值为32768(32K)字节.",
   "mdps.mermaidTheme": "渲染Mermaid图表的主题式样, 可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"], 默认主题为\"default\"",
   "mdps.vegaTheme": "渲染Vega图表的主题式样, 可选择项为[\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"], 默认主题为\"vox\"",
+  "mdps.plantumlRenderMode": "渲染plant uml图的模式, 可选择项为[\"local\", \"remote\"]： 默认模式为\"local\"，表示为本地渲染，但是本地渲染需要JAVA支持，因而需要安装JAVA环境并设置java执行程序目录至全局PATH环境变量中；而模式\"remote\"表示远程渲染，需要设置plantumlWebsite设置项为远程渲染网址。",
+  "mdps.plantumlWebsite": "当设置项plantumlRenderMode为模式\"remote\"时，需设置的远程渲染网址, 默认网址为\"www.plantuml.com/plantuml\"",
   "mdps.usePuppeteerCore": "若该值为真, 则使用当前插件下安装使用puppeteer-core包（插件自身会自动安装）; 否则需要使用脚本`npm install -g puppeteer`手动来全局安装使用puppeteer包并.",
   "mdps.puppeteerWaitForTimeout": "在导出文件时, Puppeteer包执行导出过程运行相关进程的等待时间, 单位毫秒, 默认值为0表示无限等待直到自动完成导出.",
-  "mdps.chromePath": "使用Puppeteer包导出文件时, 需设置的Chrome浏览器执行文件（chrome.exe）的文件绝对路径; 该值为空时,则表示导出时会自动寻找Chrome浏览器的路径."
+  "mdps.chromePath": "使用Puppeteer包导出文件时, 需设置的Chrome浏览器执行文件（chrome.exe）的文件绝对路径; 该值为空时,则表示导出时会自动寻找Chrome浏览器的安装路径."
 }

@@ -18,6 +18,8 @@ export class PreviewConfig {
   public maxContentSize: number;
   public mermaidTheme: string;
   public vegaTheme: string;
+  public plantumlRenderMode: string;
+  public plantumlWebsite: string;
   public usePuppeteerCore: boolean;
   public puppeteerWaitForTimeout: number;
   public chromePath: string;
@@ -50,7 +52,13 @@ export class PreviewConfig {
       this.mermaidTheme = typeof tmpStr === 'undefined' ? '' : tmpStr;
 
       tmpStr = config.get('vegaTheme');
-      this.vegaTheme = typeof tmpStr === 'undefined' ? '' : tmpStr;
+      this.vegaTheme = typeof tmpStr === 'undefined' ? 'local' : tmpStr;
+
+      tmpStr = config.get('plantumlRenderMode');
+      this.plantumlRenderMode = typeof tmpStr === 'undefined' ? '' : tmpStr;
+
+      tmpStr = config.get('plantumlWebsite');
+      this.plantumlWebsite = typeof tmpStr === 'undefined' ? 'www.plantuml.com/plantuml' : tmpStr;
 
       tmpStr = config.get('chromePath');
       this.chromePath = typeof tmpStr === 'undefined' ? '' : tmpStr;
@@ -66,6 +74,8 @@ export class PreviewConfig {
       this.maxContentSize = Math.pow(8, 5);
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
+      this.plantumlRenderMode = 'local';
+      this.plantumlWebsite = 'www.plantuml.com/plantuml';
       this.usePuppeteerCore = false;
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';

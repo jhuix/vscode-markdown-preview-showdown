@@ -5,7 +5,7 @@
 
 A excellent markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
 
-> If you think the vscode extension is excellent or can help you, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️.
+> If you think the vscode extension can help you or also hope to encourage the author, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️.
 
 ## Features
 
@@ -17,10 +17,10 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 [@jhuix/Showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And [showdown.js](https://github.com/showdownjs/showdown) is a Javascript Markdown to HTML converter, based on the original works by John Gruber. For more information, refer to the following document:
 
+- [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
+- [Showdowns Readme](https://github.com/jhuix/showdowns/blob/master/README.md)
 - [Showdown's Markdown Syntax](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax)
 - [Showdown Options](https://github.com/showdownjs/showdown/wiki/Showdown-options)
-- [Showdowns Readme](https://github.com/jhuix/showdowns/blob/master/README.md)
-- [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
 
 ## Requirements
 
@@ -66,6 +66,14 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.vegaTheme`:
 
     Vega theme, you can choose one from ["excel", "ggplot2", "quartz", "vox", "dark"], default is "vox"  theme.
+
+* `markdown-preview-showdown.plantumlRenderMode`:
+
+    The mode of rendering plant UML diagram, you can choose one from [\"local\", \"remote\"]: the default mode is \"local\", which means local rendering, but local rendering requires Java support, so Java environment needs to be installed and the Java executor directory needs to be set to the global path environment variable; while the mode \"remote\" means remote rendering, which means the setting item of plantumlWebsite needs to be set as the remote rendering URL.
+
+* `markdown-preview-showdown.plantumlWebsite`:
+
+    When the setting item of plantumlrendermode is mode \"remote\", the remote rendering website to be set, default web site is \"www.plantuml.com/plantuml\".
 
 * `markdown-preview-showdown.usePuppeteerCore`:
 

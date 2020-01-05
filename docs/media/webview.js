@@ -2,7 +2,18 @@
  * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
  * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
  */
-(function(previewer, cdnName, defScheme, distScheme, isBrotli, maxContentSize, mermaidTheme, vegaTheme) {
+(function(
+  previewer,
+  cdnName,
+  defScheme,
+  distScheme,
+  isBrotli,
+  maxContentSize,
+  mermaidTheme,
+  vegaTheme,
+  plantumlRenderMode,
+  plantumlWebsite
+) {
   class ContextMenu {
     constructor(selector, menuItems) {
       const menus = document.createElement('ul');
@@ -130,6 +141,7 @@
       this.totalLines = 0;
       this.currentLine = -1;
       this.syncScrollTop = -1;
+      this.resolveCallbacks = {};
       this.config = { vscode: isVscode };
       const previewElement = document.createElement('div');
       previewElement.classList.add('workspace-container');
@@ -140,6 +152,11 @@
       previewer.setCDN(cdnName, defScheme, distScheme);
       previewer.setVegaOptions({ theme: vegaTheme, renderer: 'svg' });
       previewer.setMermaidOptions({ theme: mermaidTheme });
+      if (plantumlRenderMode === 'local') {
+        previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
+      } else {
+        previewer.setPlantumlOptions({ umlWebSite: plantumlWebsite, imageFormat: 'svg' });
+      }
       previewer.init(true);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
@@ -295,6 +312,14 @@
       }
     }
 
+    renderPlantuml(id, name, code) {
+      const that = this;
+      return new Promise((resolve) => {
+        that.resolveCallbacks[id] = resolve;
+        that.postMessage('renderPlantuml', [{ id, name, code, sourceUri: that.sourceUri }]);
+      });
+    }
+
     // Initialize `window` events.
     initWindowEvents() {
       // Keyboard events.
@@ -319,9 +344,13 @@
 
     updateMarkdown(markdown) {
       const that = this;
-      this.previewElement.innerHTML = previewer.makeHtml(markdown, (csstypes) => {
-        that.csstypes = csstypes;
-      });
+      previewer
+        .makeHtml(markdown, (csstypes) => {
+          that.csstypes = csstypes;
+        })
+        .then((html) => {
+          that.previewElement.innerHTML = html;
+        });
     }
 
     messageEvent(event) {
@@ -340,6 +369,15 @@
           case 'changeVisibleRanges':
             const line = parseInt(message.line, 10);
             this.scrollToLine(line);
+            break;
+          case 'responsePlantuml':
+            if (this.resolveCallbacks.hasOwnProperty(message.id)) {
+              const callback = this.resolveCallbacks[message.id];
+              delete this.resolveCallbacks[message.id];
+              if (callback) {
+                callback(message.response);
+              }
+            }
             break;
         }
       }
@@ -418,5 +456,7 @@
   typeof is_brotli === 'undefined' ? true : is_brotli,
   typeof max_contentsize === 'undefined' ? 32768 : max_contentsize,
   typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,
-  typeof vega_theme === 'undefined' ? 'vox' : vega_theme
+  typeof vega_theme === 'undefined' ? 'vox' : vega_theme,
+  typeof plantuml_rendermode === 'undefined' ? 'local' : plantuml_rendermode,
+  typeof plantuml_website === 'undefined' ? 'www.plantuml.com/plantuml' : plantuml_website
 );

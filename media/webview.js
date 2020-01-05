@@ -2,7 +2,18 @@
  * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
  * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
  */
-(function(previewer, cdnName, defScheme, distScheme, isBrotli, maxContentSize, mermaidTheme, vegaTheme) {
+(function(
+  previewer,
+  cdnName,
+  defScheme,
+  distScheme,
+  isBrotli,
+  maxContentSize,
+  mermaidTheme,
+  vegaTheme,
+  plantumlRenderMode,
+  plantumlWebsite
+) {
   class ContextMenu {
     constructor(selector, menuItems) {
       const menus = document.createElement('ul');
@@ -141,7 +152,11 @@
       previewer.setCDN(cdnName, defScheme, distScheme);
       previewer.setVegaOptions({ theme: vegaTheme, renderer: 'svg' });
       previewer.setMermaidOptions({ theme: mermaidTheme });
-      previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
+      if (plantumlRenderMode === 'local') {
+        previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
+      } else {
+        previewer.setPlantumlOptions({ umlWebSite: plantumlWebsite, imageFormat: 'svg' });
+      }
       previewer.init(true);
       if (!isBrotli) {
         this.postMessage('webviewLoaded', [document.title]);
@@ -441,5 +456,7 @@
   typeof is_brotli === 'undefined' ? true : is_brotli,
   typeof max_contentsize === 'undefined' ? 32768 : max_contentsize,
   typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,
-  typeof vega_theme === 'undefined' ? 'vox' : vega_theme
+  typeof vega_theme === 'undefined' ? 'vox' : vega_theme,
+  typeof plantuml_rendermode === 'undefined' ? 'local' : plantuml_rendermode,
+  typeof plantuml_website === 'undefined' ? 'www.plantuml.com/plantuml' : plantuml_website
 );
