@@ -2,7 +2,7 @@
   "name": "markdown-preview-showdown",
   "displayName": "%mdps.displayname%",
   "description": "%mdps.description%",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "jhuix",
   "author": {
     "name": "jhuix"
@@ -77,7 +77,7 @@
           "description": "%mdps.fontSize%",
           "default": 14,
           "type": "number"
-        },        
+        },
         "markdown-preview-showdown.scrollSync": {
           "description": "%mdps.scrollSync%",
           "default": true,
