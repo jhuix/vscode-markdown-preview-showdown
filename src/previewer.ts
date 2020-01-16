@@ -367,7 +367,7 @@ export class ShowdownPreviewer {
       border: none;
     }
     html {
-      font-size: 16px;
+      font-size: ${this.config.fontSize}px;
       line-height: 1.6;
       overflow: initial;
       box-sizing: border-box;
@@ -381,7 +381,6 @@ export class ShowdownPreviewer {
     body {
       color: #333;
       background: #f9f9f9;
-      font-size: 16px;
       min-height: 100%;
       position: relative;
       font-family: Helvetica Neue, NotoSansHans-Regular, AvenirNext-Regular, arial, Hiragino Sans GB, Microsoft Yahei, WenQuanYi Micro Hei, Arial, Helvetica, sans-serif;
@@ -518,6 +517,7 @@ export class ShowdownPreviewer {
     if (this.config.usePuppeteerCore) {
       puppeteer = require('puppeteer-core');
       if (!this.config.chromePath && process.platform === 'win32') {
+        // First find setup path of chrome from HKLM
         await utils
           .regQuery('HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe')
           .then((out: string) => {
@@ -526,6 +526,17 @@ export class ShowdownPreviewer {
           .catch((err: string) => {
             console.log(err);
           });
+        if (!this.config.chromePath) {
+          // Seconde find setup path of chrome from HKCU
+          await utils
+            .regQuery('HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe')
+            .then((out: string) => {
+              this.config.chromePath = out;
+            })
+            .catch((err: string) => {
+              console.log(err);
+            });
+        }
       }
       browser = await puppeteer.launch({
         executablePath: this.config.chromePath || require('chrome-location'),
@@ -731,7 +742,7 @@ export class ShowdownPreviewer {
 <title>${title}</title>
 <style type="text/css">
   body {
-    font-size: 16px;
+    font-size: ${this.config.fontSize}px;
     line-height: 1.6;
   }
   a {

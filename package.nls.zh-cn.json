@@ -4,6 +4,7 @@
   "mdps.title": "MDPS - MarkDown文件预览",
   "mdps.openPreview": "预览MD文件",
   "mdps.autoPreview": "自动预览markdown文件.",
+  "mdps.fontSize": "预览页面的自定义字体大小.",
   "mdps.scrollSync": "自动同步滚屏.",
   "mdps.maxContentSize": "当预览markdown内容以及导出文件情况下, 并且插件与预览页面之间的传递内容大小超过该值定义的最大阈值时,传递内容会使用brotli进行压缩后传输, 默认值为32768(32K)字节.",
   "mdps.mermaidTheme": "渲染Mermaid图表的主题式样, 可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"], 默认主题为\"default\"",

@@ -14,6 +14,7 @@ export class PreviewConfig {
 
   public locale: string;
   public autoPreview: boolean;
+  public fontSize: number;
   public scrollSync: boolean;
   public maxContentSize: number;
   public mermaidTheme: string;
@@ -48,6 +49,9 @@ export class PreviewConfig {
       let tempNumber: number | undefined = config.get('maxContentSize');
       this.maxContentSize = typeof tempNumber === 'undefined' ? Math.pow(8, 5) : tempNumber;
 
+      tempNumber = config.get('fontSize');
+      this.fontSize = typeof tempNumber === 'undefined' ? Math.pow(8, 5) : tempNumber;
+
       let tmpStr: string | undefined = config.get('mermaidTheme');
       this.mermaidTheme = typeof tmpStr === 'undefined' ? '' : tmpStr;
 
@@ -70,6 +74,7 @@ export class PreviewConfig {
       this.puppeteerWaitForTimeout = typeof tmpNum === 'undefined' ? 0 : tmpNum;
     } else {
       this.autoPreview = false;
+      this.fontSize = 14;
       this.scrollSync = true;
       this.maxContentSize = Math.pow(8, 5);
       this.mermaidTheme = 'default';

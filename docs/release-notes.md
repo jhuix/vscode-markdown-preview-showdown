@@ -1,5 +1,10 @@
 # Release Notes
 
+## v1.2.1
+1. Add custom font size setting of preview page, default "14" px.
+
+2. Fixed not auto found setup path of chrome in windows platform.
+
 ## v1.2.0
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.4.0:
 
@@ -7,9 +12,9 @@
 
 2. When rendering a diagram (exclude js-sequence diagram), the page diagram does not flicker.
 
-3. Add render mode setting of plantuml diagram, can choose from 'local' or 'remote';
+3. Add render mode setting of plantuml diagram, can choose from 'local' or 'remote'.
 
-4. Add remote render website setting of plantuml diagram;
+4. Add remote render website setting of plantuml diagram.
 
 ## v1.1.8
 

@@ -73,6 +73,11 @@
           "default": false,
           "type": "boolean"
         },
+        "markdown-preview-showdown.fontSize": {
+          "description": "%mdps.fontSize%",
+          "default": 14,
+          "type": "number"
+        },        
         "markdown-preview-showdown.scrollSync": {
           "description": "%mdps.scrollSync%",
           "default": true,

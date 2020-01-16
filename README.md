@@ -15,7 +15,7 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 ![features-gif](https://jhuix.github.io/vscode-markdown-preview-showdown/screenshot/mdps.gif)
 
-[@jhuix/Showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And [showdown.js](https://github.com/showdownjs/showdown) is a Javascript Markdown to HTML converter, based on the original works by John Gruber. For more information, refer to the following document:
+[@jhuix/showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And showdown.js is a Javascript Markdown to HTML converter, based on the original works by John Gruber. For more information, refer to the following document:
 
 - [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
 - [Showdowns Readme](https://github.com/jhuix/showdowns/blob/master/README.md)
@@ -24,15 +24,19 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 ## Requirements
 
-For export PDF or PNG or JPEG:
+- For local rendering plantuml
+  
+  When local rendering plantuml requires `Java` support, so [Java environment (JDK or JRE)](https://www.oracle.com/technetwork/java/javase/downloads/index.html) needs to be installed and the Java executor directory needs to be set to the global path environment variable.
 
-When `markdown-preview-showdown.usePuppeteerCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.chromePath`. The chrome-location globally installed by npm:
+- For export PDF or PNG or JPEG:
 
-    npm install -g chrome-location
+  When `markdown-preview-showdown.usePuppeteerCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.chromePath`. The chrome-location globally installed by npm:
 
-When `markdown-preview-showdown.usePuppeteerCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
+        npm install -g chrome-location
 
-    npm install -g puppeteer
+  When `markdown-preview-showdown.usePuppeteerCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
+
+        npm install -g puppeteer
 
 
 ## Install from VS Code (Recommended)
@@ -50,6 +54,10 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.flavor`:
 
     Flavor of preview html page, you can choose one from ["github", "ghost", "vanilla"], default is "github" flavor.
+
+* `markdown-preview-showdown.fontSize`:
+
+    Custom font size of preview page, default "14" px.
 
 * `markdown-preview-showdown.scrollSync`:
 

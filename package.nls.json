@@ -4,6 +4,7 @@
   "mdps.title": "MDPS - MarkDown Preview Showdown",
   "mdps.openPreview": "Preview MD File",
   "mdps.autoPreview": "Automatic preview markdown file.",
+  "mdps.fontSize": "Custom font size of preview page.",
   "mdps.scrollSync": "Automatic scroll sync.",
   "mdps.maxContentSize": "When markdown content or html content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission.",
   "mdps.mermaidTheme": "Mermaid theme, you can choose one from [\"default\", \"dark\", \"forest\", \"neutral\"]",
