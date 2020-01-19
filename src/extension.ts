@@ -50,18 +50,8 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   context.subscriptions.push(
-    vscode.workspace.onDidSaveTextDocument((document) => {
-      // const result = vscode.workspace.getConfiguration().get('files.autoSave');
-      if (ShowdownPreviewer.isMarkdownFile(document)) {
-        contentPreviewer.updatePreview(document.uri);
-      }
-    })
-  );
-
-  context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {
-      // const result = vscode.workspace.getConfiguration().get('files.autoSave');
-      if (ShowdownPreviewer.isMarkdownFile(event.document)) {
+      if (event.contentChanges.length && ShowdownPreviewer.isMarkdownFile(event.document)) {
         contentPreviewer.update(event.document.uri);
       }
     })

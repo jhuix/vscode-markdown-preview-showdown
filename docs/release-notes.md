@@ -1,5 +1,12 @@
 # Release Notes
 
+## v1.2.2
+1. Delete condition of files.autoSave to accelerated rendering when upate text of preview page.
+
+2. Remove extension event of onDidSaveTextDocument.
+
+3. Accelerated rendering for plantuml using java single process.
+
 ## v1.2.1
 1. Add custom font size setting of preview page, default "14" px.
 

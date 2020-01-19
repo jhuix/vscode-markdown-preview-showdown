@@ -115,7 +115,7 @@ export class ShowdownPreviewer {
   private editor: vscode.TextEditor | undefined = undefined;
   private webpanel: vscode.WebviewPanel | undefined = undefined;
   private uri: vscode.Uri | undefined = undefined;
-  private debounceUpdatePreview = debounce(4 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
+  private debounceUpdatePreview = debounce(5 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
     that.updatePreview(uri);
   });
   private debouncePostMessage = debounce(3 * 5 * 10, (webView: vscode.Webview, message: any) => {
@@ -254,7 +254,7 @@ export class ShowdownPreviewer {
   public renderLocalPlantuml(data: any) {
     const uri: vscode.Uri = vscode.Uri.parse(data.sourceUri);
     data.context = this;
-    plantumlAPI.render(data.code, path.dirname(uri.fsPath)).then((svg: string) => {
+    plantumlAPI.render(data.code, path.resolve(__dirname, '../media/plantuml')).then((svg: string) => {
       data.context.webpanel.webview.postMessage({
         command: 'responsePlantuml',
         id: data.id,
@@ -593,6 +593,7 @@ export class ShowdownPreviewer {
    * Close preview
    */
   public dispose() {
+    plantumlAPI.closeRender(path.resolve(__dirname, '../media/plantuml'));
     if (this.webpanel) {
       this.webpanel.dispose();
     }
