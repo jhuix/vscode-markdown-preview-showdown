@@ -22,16 +22,22 @@ const RESOLVES: {
   [key: string]: Array<(result: string) => void>;
 } = {};
 
+const CLOSE_RESOLVES: {
+  [key: string]: Array<(result: string) => void>;
+} = {};
+
 class PlantumlRenderer {
   private fileDirectoryPath: string;
   private chunks: string;
   private resolves: Array<(result: string) => void>;
+  private closeResolves: Array<(result: string) => void>;
   private render: child_process.ChildProcessWithoutNullStreams | null;
 
   public constructor(fileDirectoryPath: string) {
     this.fileDirectoryPath = fileDirectoryPath;
     this.chunks = CHUNKS[this.fileDirectoryPath] || '';
     this.resolves = RESOLVES[this.fileDirectoryPath] || [];
+    this.closeResolves = CLOSE_RESOLVES[this.fileDirectoryPath] || [];
     this.render = null;
     this.startRender();
   }
@@ -41,6 +47,16 @@ class PlantumlRenderer {
       if (this.render) {
         this.resolves.push(resolve);
         this.render.stdin.write(content + '\n');
+      } else {
+        reject('Task is not exist.');
+      }
+    });
+  }
+
+  public closeRender(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (this.render) {
+        this.closeResolves.push(resolve);
         this.render.stdin.end();
       } else {
         reject('Task is not exist.');
@@ -83,26 +99,31 @@ class PlantumlRenderer {
       }
     });
 
-    this.render.on('error', () => this.closeRender());
-    this.render.on('exit', () => this.closeRender());
+    this.render.on('error', () => this.exitRender());
+    this.render.on('exit', () => this.exitRender());
   }
 
   /**
    * stop this.render and store this.chunks and this.resolves
    */
-  private closeRender() {
+  private exitRender() {
     RENDERERS[this.fileDirectoryPath] = null;
     CHUNKS[this.fileDirectoryPath] = this.chunks;
     RESOLVES[this.fileDirectoryPath] = this.resolves;
+    const callback = this.closeResolves.shift();
+    if (callback) {
+      callback('true');
+    }
+    CLOSE_RESOLVES[this.fileDirectoryPath] = this.closeResolves;
   }
 }
 
 // async call
-export async function render(content: string, fileDirectoryPath = ''): Promise<string> {
+export async function render(content: string, fileDirectoryPath: string): Promise<string> {
   content = content.trim();
   const startMatch = content.match(/^\@start(.+?)\s+/m);
   if (startMatch) {
-    if (!content.match(/^\s+\@enduml/m)) {
+    if (!content.match(new RegExp(`^\\s*\\@end${startMatch[1]}`, 'm'))) {
       content = '@startuml\n@enduml'; // error
     }
   } else {
@@ -119,4 +140,11 @@ ${content}
     RENDERERS[fileDirectoryPath] = renderer;
   }
   return await renderer.generateSVG(content);
+}
+
+export function closeRender(fileDirectoryPath: string) {
+  let renderer = RENDERERS[fileDirectoryPath];
+  if (renderer) {
+    renderer.closeRender();
+  }
 }
