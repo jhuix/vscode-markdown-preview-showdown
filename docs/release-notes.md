@@ -1,5 +1,19 @@
 # Release Notes
 
+## v1.3.0
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.0:
+
+   - Add showdown-container extension.
+   - Expand the table syntax to implement headerless and colspan or rowspan merge.
+
+2. Update plantuml jar v1.2020.16.
+
+3. Local reference to photos can be working in the preview, use syntax of relative path ('./') or absolute path(file:///):
+
+            [xxx](./a.jpg) or [xxx](file:///c:/a.jpg)
+
+4. Remove features about compress the content with brotli during message transmission, so this reduces the size of the extension pack. 
+
 ## v1.2.2
 1. Delete condition of files.autoSave to accelerated rendering when upate text of preview page.
 

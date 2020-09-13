@@ -7,6 +7,7 @@
   cdnName,
   defScheme,
   distScheme,
+  uriPath,
   isBrotli,
   maxContentSize,
   mermaidTheme,
@@ -184,8 +185,8 @@
               }
               that.postMessage('openInBrowser', [
                 s.innerHTML.length > maxContentSize
-                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
-                  : s.innerHTML.trim(),
+                  ? { type: 'br', content: previewer.brEncode(that.changeFileProtocol(s.innerHTML)) }
+                  : that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
@@ -206,8 +207,8 @@
               }
               that.postMessage('exportHTML', [
                 s.innerHTML.length > maxContentSize
-                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
-                  : s.innerHTML.trim(),
+                  ? { type: 'br', content: previewer.brEncode(that.changeFileProtocol(s.innerHTML)) }
+                  : that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
@@ -228,8 +229,8 @@
               }
               that.postMessage('exportPDF', [
                 s.innerHTML.length > maxContentSize
-                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
-                  : s.innerHTML.trim(),
+                  ? { type: 'br', content: previewer.brEncode(that.changeFileProtocol(s.innerHTML)) }
+                  : that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
@@ -250,8 +251,8 @@
               }
               that.postMessage('exportPNG', [
                 s.innerHTML.length > maxContentSize
-                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
-                  : s.innerHTML.trim(),
+                  ? { type: 'br', content: previewer.brEncode(that.changeFileProtocol(s.innerHTML)) }
+                  : that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
@@ -272,8 +273,8 @@
               }
               that.postMessage('exportJPEG', [
                 s.innerHTML.length > maxContentSize
-                  ? { type: 'br', content: previewer.brEncode(s.innerHTML.trim()) }
-                  : s.innerHTML.trim(),
+                  ? { type: 'br', content: previewer.brEncode(that.changeFileProtocol(s.innerHTML)) }
+                  : that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
@@ -285,6 +286,23 @@
       };
 
       this.contextMenu = new ContextMenu(this.previewElement, menuItems);
+    }
+
+    changeFileProtocol(html) {
+      if (this.config.vscode) {
+        html = html.replace(/(\<img.*src=")vscode-webview.*file\/\/\//g, '$1file:///');
+        html = html.replace(new RegExp(`(\<img.*src=")file:\/\/\/` + uriPath, `g`), '$1.');
+      }
+      return html.trim();
+    }
+
+    changeVscodeResourceProtocol(html) {
+      if (this.config.vscode) {
+        const vscodeResourceScheme = defScheme.substr(0, defScheme.toLowerCase().indexOf('file///') + 7);
+        html = html.replace(/(\<img.*src=")file:\/\/\//g, '$1' + vscodeResourceScheme);
+        html = html.replace(/(\<img.*src=")\.\//g, '$1' + vscodeResourceScheme + uriPath + '/');
+      }
+      return html.trim();
     }
 
     // Post message to parent window
@@ -349,7 +367,7 @@
           that.csstypes = csstypes;
         })
         .then((html) => {
-          that.previewElement.innerHTML = html;
+          that.previewElement.innerHTML = that.changeVscodeResourceProtocol(html);
         });
     }
 
@@ -453,6 +471,7 @@
   typeof cdn_name === 'undefined' ? 'local' : cdn_name,
   typeof scheme_default === 'undefined' ? '' : scheme_default,
   typeof scheme_dist === 'undefined' ? '' : scheme_dist,
+  typeof uri_path === 'undefined' ? '' : uri_path,
   typeof is_brotli === 'undefined' ? true : is_brotli,
   typeof max_contentsize === 'undefined' ? 32768 : max_contentsize,
   typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,

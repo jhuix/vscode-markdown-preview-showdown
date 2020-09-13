@@ -46,7 +46,8 @@ class PlantumlRenderer {
     return new Promise((resolve, reject) => {
       if (this.render) {
         this.resolves.push(resolve);
-        this.render.stdin.write(content + '\n');
+        this.render.stdin.write(content);
+        this.render.stdin.end();
       } else {
         reject('Task is not exist.');
       }

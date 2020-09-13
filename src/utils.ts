@@ -62,13 +62,13 @@ function execFile(
 exports.execFile = execFile;
 function mkdirp(dir: string) {
   return new Promise((resolve, reject) => {
-    _mkdirp(dir, (error, made) => {
-      if (error) {
-        return reject(error);
-      } else {
+    _mkdirp(dir)
+      .then((made) => {
         return resolve(made);
-      }
-    });
+      })
+      .catch((error) => {
+        return reject(error);
+      });
   });
 }
 exports.mkdirp = mkdirp;

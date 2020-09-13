@@ -141,9 +141,8 @@ export class ShowdownPreviewer {
       const targetUri = this.uri;
       const oldResourceRoot = !targetUri
         ? ''
-        : this.getProjectDirectoryPath(targetUri, vscode.workspace.workspaceFolders) || path.dirname(targetUri.fsPath);
-      const newResourceRoot =
-        this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath);
+        : this.getProjectDirectoryPath(targetUri) || path.dirname(targetUri.fsPath);
+      const newResourceRoot = this.getProjectDirectoryPath(uri) || path.dirname(uri.fsPath);
       if (oldResourceRoot !== newResourceRoot) {
         const webpanel = this.webpanel;
         this.webpanel = undefined;
@@ -158,9 +157,7 @@ export class ShowdownPreviewer {
         vscode.Uri.file(path.join(this.context.extensionPath, 'media')),
         vscode.Uri.file(path.join(this.context.extensionPath, 'node_modules')),
         vscode.Uri.file(os.tmpdir()),
-        vscode.Uri.file(
-          this.getProjectDirectoryPath(uri, vscode.workspace.workspaceFolders) || path.dirname(uri.fsPath)
-        )
+        vscode.Uri.file(this.getProjectDirectoryPath(uri) || path.dirname(uri.fsPath))
       ];
       const previewPanel = vscode.window.createWebviewPanel(
         ShowdownPreviewer.getPackageName(),
@@ -254,14 +251,18 @@ export class ShowdownPreviewer {
   public renderLocalPlantuml(data: any) {
     const uri: vscode.Uri = vscode.Uri.parse(data.sourceUri);
     data.context = this;
-    plantumlAPI.render(data.code, path.resolve(__dirname, '../media/plantuml')).then((svg: string) => {
-      data.context.webpanel.webview.postMessage({
-        command: 'responsePlantuml',
-        id: data.id,
-        name: data.name,
-        response: svg
+    plantumlAPI
+      .render(data.code, path.resolve(__dirname, '../media/plantuml') + path.delimiter + path.dirname(uri.fsPath))
+      .then((svg: string) => {
+        if (data.context.webpanel) {
+          data.context.webpanel.webview.postMessage({
+            command: 'responsePlantuml',
+            id: data.id,
+            name: data.name,
+            response: svg
+          });
+        }
       });
-    });
   }
 
   public async saveLocalHtml(
@@ -755,28 +756,29 @@ export class ShowdownPreviewer {
 </style>
 <link rel="stylesheet" href="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.br.min.css`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.min.css`,
       true
     )}">
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
 </head>
 <body>
-<script src="${this.changeFileProtocol(
+<script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.br.min.js`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
       true
     )}"></script>
 <script>
-var is_brotli = true;
+var is_brotli = false;
 var max_contentsize = ${this.config.maxContentSize};
 var mermaid_theme = "${this.config.mermaidTheme}";
 var vega_theme = "${this.config.vegaTheme}";
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";
 var plantuml_website = "${this.config.plantumlWebsite}";
+var uri_path = "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}";
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
 </script>
-<script src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
+<script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
 </body>
 </html>`;
   }
@@ -809,7 +811,7 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
         title: caption,
         totalLines: lines,
         currentLine: initialLine,
-        markdown: text.length > this.config.maxContentSize ? { type: 'br', content: zlibcodec.brEncode(text) } : text
+        markdown: text
       });
     }
   }
@@ -841,8 +843,12 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
     }
     return pathString;
   }
-  private getProjectDirectoryPath(uri: vscode.Uri, workspaceFolders: vscode.WorkspaceFolder[] = []) {
-    const possibleWorkspaceFolders = workspaceFolders.filter((workspaceFolder) => {
+  private getProjectDirectoryPath(uri: vscode.Uri) {
+    if (vscode.workspace.workspaceFolders === undefined) {
+      return '';
+    }
+
+    const possibleWorkspaceFolders = vscode.workspace.workspaceFolders.filter((workspaceFolder) => {
       return path.dirname(uri.path.toUpperCase()).indexOf(workspaceFolder.uri.path.toUpperCase()) >= 0;
     });
     let projectDirectoryPath;
@@ -854,5 +860,13 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       projectDirectoryPath = '';
     }
     return this.formatPathIfNecessary(projectDirectoryPath);
+  }
+  private getNonce() {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
   }
 }

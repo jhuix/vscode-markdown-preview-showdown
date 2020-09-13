@@ -17,7 +17,7 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 [@jhuix/showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And showdown.js is a Javascript Markdown to HTML converter, based on the original works by John Gruber. For more information, refer to the following document:
 
-- [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md)
+- [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md) and [Preview HTML](https://jhuix.github.io/showdowns/demo/index.html)
 - [Showdowns Readme](https://github.com/jhuix/showdowns/blob/master/README.md)
 - [Showdown's Markdown Syntax](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax)
 - [Showdown Options](https://github.com/showdownjs/showdown/wiki/Showdown-options)
@@ -80,7 +80,7 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.maxContentSize`:
 
-    When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes.
+    When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes. *Be Deprecated*.
 
 * `markdown-preview-showdown.mermaidTheme`:
 
