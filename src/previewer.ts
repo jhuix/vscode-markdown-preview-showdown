@@ -594,7 +594,11 @@ export class ShowdownPreviewer {
    * Close preview
    */
   public dispose() {
-    plantumlAPI.closeRender(path.resolve(__dirname, '../media/plantuml'));
+    let dir = path.resolve(__dirname, '../media/plantuml');
+    if (this.uri) {
+      dir += path.delimiter + path.dirname(this.uri.fsPath);
+    }
+    plantumlAPI.closeRender(dir);
     if (this.webpanel) {
       this.webpanel.dispose();
     }

@@ -7,6 +7,7 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 
+const { debounce } = require('throttle-debounce');
 const extensionDirectoryPath = path.resolve(__dirname, '../');
 const PlantumlJarPath = path.resolve(extensionDirectoryPath, 'media/plantuml/plantuml.jar');
 
@@ -32,12 +33,15 @@ class PlantumlRenderer {
   private resolves: Array<(result: string) => void>;
   private closeResolves: Array<(result: string) => void>;
   private render: child_process.ChildProcessWithoutNullStreams | null;
+  private endRender = debounce(1000, (render: child_process.ChildProcessWithoutNullStreams) => {
+    render.stdin.end();
+  });
 
   public constructor(fileDirectoryPath: string) {
     this.fileDirectoryPath = fileDirectoryPath;
-    this.chunks = CHUNKS[this.fileDirectoryPath] || '';
-    this.resolves = RESOLVES[this.fileDirectoryPath] || [];
-    this.closeResolves = CLOSE_RESOLVES[this.fileDirectoryPath] || [];
+    this.chunks = CHUNKS[fileDirectoryPath] || '';
+    this.resolves = RESOLVES[fileDirectoryPath] || [];
+    this.closeResolves = CLOSE_RESOLVES[fileDirectoryPath] || [];
     this.render = null;
     this.startRender();
   }
@@ -46,8 +50,8 @@ class PlantumlRenderer {
     return new Promise((resolve, reject) => {
       if (this.render) {
         this.resolves.push(resolve);
-        this.render.stdin.write(content);
-        this.render.stdin.end();
+        this.render.stdin.write(content + '\n');
+        this.endRender(this.render);
       } else {
         reject('Task is not exist.');
       }
@@ -116,6 +120,7 @@ class PlantumlRenderer {
       callback('true');
     }
     CLOSE_RESOLVES[this.fileDirectoryPath] = this.closeResolves;
+    this.render = null;
   }
 }
 
