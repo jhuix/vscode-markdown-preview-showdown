@@ -867,8 +867,9 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
   }
   private getNonce() {
     let text = '';
+    let size = 32;
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < size; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;

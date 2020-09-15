@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 
 export class PreviewConfig {
   public static packageName: string;
+  public static defaultFontSize = 14;
 
   public static getCurrentConfig(context: vscode.ExtensionContext) {
     return new PreviewConfig(context);
@@ -74,7 +75,7 @@ export class PreviewConfig {
       this.puppeteerWaitForTimeout = typeof tmpNum === 'undefined' ? 0 : tmpNum;
     } else {
       this.autoPreview = false;
-      this.fontSize = 14;
+      this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
       this.maxContentSize = Math.pow(8, 5);
       this.mermaidTheme = 'default';
