@@ -1,5 +1,8 @@
 # Release Notes
 
+## v1.3.1
+1. Fixed it can not be previewed for multiple plantuml codes in the same file.
+
 ## v1.3.0
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.0:
 
