@@ -160,6 +160,7 @@
     "@types/mkdirp": "^1.0.1",
     "@types/node": "^12.12.58",
     "@types/vscode": "^1.47.0",
+    "eslint": "^7.10.0",
     "glob": "^7.1.4",
     "semver": "^7.3.2",
     "tslint": "^6.1.3",
