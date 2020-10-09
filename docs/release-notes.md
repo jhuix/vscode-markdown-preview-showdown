@@ -1,5 +1,10 @@
 # Release Notes
 
+## v1.3.2
+1. Add 'plantumlTheme' configuration.
+
+2. Fixed not include local uml files in plantuml codes.
+
 ## v1.3.1
 1. Fixed it can not be previewed for multiple plantuml codes in the same file.
 

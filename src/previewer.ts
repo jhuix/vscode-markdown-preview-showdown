@@ -252,7 +252,15 @@ export class ShowdownPreviewer {
     const uri: vscode.Uri = vscode.Uri.parse(data.sourceUri);
     data.context = this;
     plantumlAPI
-      .render(data.code, path.resolve(__dirname, '../media/plantuml') + path.delimiter + path.dirname(uri.fsPath))
+      .render(
+        data.code,
+        path.dirname(uri.fsPath) +
+          path.delimiter +
+          path.resolve(__dirname, '../media/plantuml') +
+          path.delimiter +
+          path.resolve(__dirname, '../node_modules/plantuml-style-c4'),
+        this.config.plantumlTheme
+      )
       .then((svg: string) => {
         if (data.context.webpanel) {
           data.context.webpanel.webview.postMessage({
@@ -281,9 +289,6 @@ export class ShowdownPreviewer {
           switch (doc.type) {
             case 'zip':
               doc = zlibcodec.decode(doc.content);
-              break;
-            case 'br':
-              doc = zlibcodec.brDecode(doc.content);
               break;
             default:
               doc = doc.content;
@@ -635,6 +640,7 @@ export class ShowdownPreviewer {
     const newConfig = PreviewConfig.getCurrentConfig(this.context);
     if (!this.config.isEqualTo(newConfig)) {
       this.config = newConfig;
+      this.updateCurrentView();
     }
   }
   public isFirstPreview() {
@@ -772,8 +778,6 @@ export class ShowdownPreviewer {
       true
     )}"></script>
 <script>
-var is_brotli = false;
-var max_contentsize = ${this.config.maxContentSize};
 var mermaid_theme = "${this.config.mermaidTheme}";
 var vega_theme = "${this.config.vegaTheme}";
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";

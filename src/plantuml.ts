@@ -11,6 +11,15 @@ const { debounce } = require('throttle-debounce');
 const extensionDirectoryPath = path.resolve(__dirname, '../');
 const PlantumlJarPath = path.resolve(extensionDirectoryPath, 'media/plantuml/plantuml.jar');
 
+const STYLES: {
+  [key: string]: string;
+} = {
+  default: '',
+  nature: 'skin/nature.puml',
+  c4: 'skin/c4.puml',
+  'c4-handwrite': 'skin/c4-handwrite.puml'
+};
+
 const RENDERERS: {
   [key: string]: PlantumlRenderer | null;
 } = {};
@@ -72,7 +81,7 @@ class PlantumlRenderer {
   private startRender() {
     this.render = child_process.spawn('java', [
       '-Djava.awt.headless=true',
-      '-DPlantuml.include.path=' + this.fileDirectoryPath,
+      '-Dplantuml.include.path=' + this.fileDirectoryPath,
       '-jar',
       PlantumlJarPath,
       // '-graphvizdot', 'exe'
@@ -125,15 +134,24 @@ class PlantumlRenderer {
 }
 
 // async call
-export async function render(content: string, fileDirectoryPath: string): Promise<string> {
+export async function render(content: string, fileDirectoryPath: string, theme: string): Promise<string> {
   content = content.trim();
-  const startMatch = content.match(/^\@start(.+?)\s+/m);
+  let style = STYLES[theme];
+  if (style && style !== '') {
+    style = '!include ' + style;
+  } else {
+    style = '';
+  }
+  const startMatch = content.match(/^\s*\@startuml[ \t]*[\S]*\s+/g);
   if (startMatch) {
-    if (!content.match(new RegExp(`^\\s*\\@end${startMatch[1]}`, 'm'))) {
+    if (!content.match(new RegExp(`^\\s*\\@enduml`, 'm'))) {
       content = '@startuml\n@enduml'; // error
+    } else if (style !== '') {
+      content = content.replace(/(^\s*\@startuml[ \t]*[\S]*\s+)([\S\s]+)/g, `$1 ${style}\n $2`);
     }
   } else {
     content = `@startuml
+${style}
 ${content}
 @enduml`;
   }

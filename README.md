@@ -78,10 +78,6 @@ This extension contributes the following settings:
 
     Automatic scroll sync, default true.
 
-* `markdown-preview-showdown.maxContentSize`:
-
-    When markdown content size exceeds 'maxContentSize' value, compress the content with brotli during message transmission, default 32768(32K) Bytes. *Be Deprecated*.
-
 * `markdown-preview-showdown.mermaidTheme`:
 
     Mermaid theme, you can choose one from ["default", "dark", "forest", "neutral"], default is "default" theme.
@@ -89,6 +85,10 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.vegaTheme`:
 
     Vega theme, you can choose one from ["excel", "ggplot2", "quartz", "vox", "dark"], default is "vox"  theme.
+
+* `markdown-preview-showdown.plantumlTheme`:
+
+    Plantuml theme, you can choose one from ["default", "nature", "c4", "c4-handwrite"], default is "default" theme.
 
 * `markdown-preview-showdown.plantumlRenderMode`:
 

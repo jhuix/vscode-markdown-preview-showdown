@@ -1,0 +1,48 @@
+@startuml nature
+
+skinparam Shadowing false
+'skinparam BackgroundColor #EEE
+
+skinparam Default {
+    FontName "'Microsoft YaHei Mono',Menlo, Monaco"
+    FontColor #000
+    FontSize  14
+    FontStyle plain
+    Shadowing false
+    TextAlignment center
+}
+
+skinparam Title {
+	FontSize  20
+	FontStyle Bold
+}
+
+skinparam Sequence {
+	ArrowColor #EF6C00
+	ArrowFontSize 12
+	LifeLineBorderColor Olive
+	'LifeLineBackgroundColor #BBDEFB
+
+	GroupBorderThickness 1
+	GroupBorderColor #1B5E20
+  GroupBackgroundColor #BBDEFB
+	
+	'Participant underline
+	ParticipantBorderColor #1565C0
+	ParticipantBackgroundColor #BBDEFB
+	ParticipantBorderThickness 0
+	'ParticipantFontName Monaco
+	'ParticipantFontSize 16
+	'ParticipantFontColor #000
+	'ParticipantShadowing false
+	
+	ActorBorderColor #1565C0
+	ActorBackgroundColor #BBDEFB
+	ActorBorderThickness 1
+	'ActorFontColor #000
+	'ActorFontSize 16
+	'ActorFontName Monaco
+	'ActorShadowing false
+}
+ 
+@enduml

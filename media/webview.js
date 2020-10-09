@@ -8,8 +8,6 @@
   defScheme,
   distScheme,
   uriPath,
-  isBrotli,
-  maxContentSize,
   mermaidTheme,
   vegaTheme,
   plantumlRenderMode,
@@ -159,9 +157,7 @@
         previewer.setPlantumlOptions({ umlWebSite: plantumlWebsite, imageFormat: 'svg' });
       }
       previewer.init(true);
-      if (!isBrotli) {
-        this.postMessage('webviewLoaded', [document.title]);
-      }
+      this.postMessage('webviewLoaded', [document.title]);
     }
 
     initMenus() {
@@ -462,8 +458,6 @@
   typeof scheme_default === 'undefined' ? '' : scheme_default,
   typeof scheme_dist === 'undefined' ? '' : scheme_dist,
   typeof uri_path === 'undefined' ? '' : uri_path,
-  typeof is_brotli === 'undefined' ? true : is_brotli,
-  typeof max_contentsize === 'undefined' ? 32768 : max_contentsize,
   typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,
   typeof vega_theme === 'undefined' ? 'vox' : vega_theme,
   typeof plantuml_rendermode === 'undefined' ? 'local' : plantuml_rendermode,

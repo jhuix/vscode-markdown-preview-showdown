@@ -1,0 +1,7 @@
+@startuml c4
+
+!include core.puml
+
+RED_ARROW
+
+@enduml

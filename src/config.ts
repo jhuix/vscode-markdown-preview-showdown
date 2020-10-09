@@ -17,9 +17,9 @@ export class PreviewConfig {
   public autoPreview: boolean;
   public fontSize: number;
   public scrollSync: boolean;
-  public maxContentSize: number;
   public mermaidTheme: string;
   public vegaTheme: string;
+  public plantumlTheme: string;
   public plantumlRenderMode: string;
   public plantumlWebsite: string;
   public usePuppeteerCore: boolean;
@@ -47,20 +47,20 @@ export class PreviewConfig {
       temp = config.get('scrollSync');
       this.scrollSync = typeof temp === 'undefined' ? true : temp;
 
-      let tempNumber: number | undefined = config.get('maxContentSize');
-      this.maxContentSize = typeof tempNumber === 'undefined' ? Math.pow(8, 5) : tempNumber;
-
-      tempNumber = config.get('fontSize');
+      let tempNumber: number | undefined = config.get('fontSize');
       this.fontSize = typeof tempNumber === 'undefined' ? Math.pow(8, 5) : tempNumber;
 
       let tmpStr: string | undefined = config.get('mermaidTheme');
-      this.mermaidTheme = typeof tmpStr === 'undefined' ? '' : tmpStr;
+      this.mermaidTheme = typeof tmpStr === 'undefined' ? 'default' : tmpStr;
 
       tmpStr = config.get('vegaTheme');
-      this.vegaTheme = typeof tmpStr === 'undefined' ? 'local' : tmpStr;
+      this.vegaTheme = typeof tmpStr === 'undefined' ? 'vox' : tmpStr;
+
+      tmpStr = config.get('plantumlTheme');
+      this.plantumlTheme = typeof tmpStr === 'undefined' ? 'default' : tmpStr;
 
       tmpStr = config.get('plantumlRenderMode');
-      this.plantumlRenderMode = typeof tmpStr === 'undefined' ? '' : tmpStr;
+      this.plantumlRenderMode = typeof tmpStr === 'undefined' ? 'local' : tmpStr;
 
       tmpStr = config.get('plantumlWebsite');
       this.plantumlWebsite = typeof tmpStr === 'undefined' ? 'www.plantuml.com/plantuml' : tmpStr;
@@ -77,9 +77,9 @@ export class PreviewConfig {
       this.autoPreview = false;
       this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
-      this.maxContentSize = Math.pow(8, 5);
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
+      this.plantumlTheme = 'default';
       this.plantumlRenderMode = 'local';
       this.plantumlWebsite = 'www.plantuml.com/plantuml';
       this.usePuppeteerCore = false;

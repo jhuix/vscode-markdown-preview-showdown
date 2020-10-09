@@ -105,20 +105,5 @@ function decode(data) {
   return zlib.inflateRawSync(Buffer.from(decode64(data), 'binary')).toString();
 }
 
-function brEncode(data) {
-  return zlib
-    .brotliCompressSync(Buffer.from(data), {
-      params: {
-        [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
-        [zlib.constants.BROTLI_PARAM_QUALITY]: 11
-      }
-    })
-    .toString('base64');
-}
-
-function brDecode(data) {
-  return zlib.brotliDecompressSync(Buffer.from(data, 'base64')).toString();
-}
-
-const zlibcodec = { encode, decode, brEncode, brDecode };
-export { zlibcodec as default, encode, decode, brEncode, brDecode };
+const zlibcodec = { encode, decode };
+export { zlibcodec as default, encode, decode };

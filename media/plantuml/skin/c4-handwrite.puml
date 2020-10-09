@@ -1,0 +1,8 @@
+@startuml c4-handwrite
+
+!include core.puml
+
+LAYOUT_AS_SKETCH()
+RED_ARROW
+
+@enduml
