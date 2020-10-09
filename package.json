@@ -2,7 +2,7 @@
   "name": "markdown-preview-showdown",
   "displayName": "%mdps.displayname%",
   "description": "%mdps.description%",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "publisher": "jhuix",
   "author": {
     "name": "jhuix"
@@ -116,7 +116,7 @@
             "c4",
             "c4-handwrite"
           ]
-        },        
+        },
         "markdown-preview-showdown.plantumlRenderMode": {
           "description": "%mdps.plantumlRenderMode%",
           "default": "local",
