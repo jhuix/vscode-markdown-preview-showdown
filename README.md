@@ -33,7 +33,7 @@ When local rendering plantuml requires `Java` support, so [Java environment (JDK
 - macOS example: /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home
 - PATH: the global path environment variable
 - Windows example: PATH=%PATH%;%JAVA_HOME%\bin
--macOS example: PATH=$PATH:$JAVA_HOME/bin
+- macOS example: PATH=$PATH:$JAVA_HOME/bin
 
 If you want to use PlantUML's functionality that requires [GraphViz](https://www.graphviz.org/download/), you need to download and install it, and to set the `GRAPHVIZ_DOT` environment variable, as explained here:
 

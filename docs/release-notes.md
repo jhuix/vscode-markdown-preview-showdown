@@ -1,5 +1,26 @@
 # Release Notes
 
+## v1.3.3
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.2:
+
+   - Update asciimath to latex that be based on ASCIIMathTeXImg.js, latest version.
+
+   - Fixed method removeAsyncExtension and removeExtension of showdowns could not remove related extensions.
+
+   - Update mermaid deps new version 8.8.2.
+
+   - Inline LaTex math syntax compatible with KaTex, and inline ascii math syntax is changed to `@@...@@` or `\~...\~`.
+
+   - Support multiple math are separated by an empty line in block math code.
+
+2. Fixed Issue#3, Issue #6.
+
+3. Enhancement Issue #2, Issue #5.
+
+4. Optimized rendering of multiple plantuml in the same file.
+
+5. When theme setting of vega or mermaid is changed, it can take effect dynamically.
+
 ## v1.3.2
 1. Add 'plantumlTheme' configuration.
 
