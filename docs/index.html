@@ -95,7 +95,8 @@
       var cdn_name = 'jsdelivr';
       var scheme_dist = 'https://jhuix.github.io/showdowns/dist/';
       var scheme_default = scheme_dist;
-      window.addEventListener('showdownsLoaded', function(e) {
+      var plantuml_rendermode = 'remote';
+      window.addEventListener('load', function(e) {
         let md = '';
         window
           .fetch('https://jhuix.github.io/vscode-markdown-preview-showdown/demo.md')
