@@ -39,6 +39,7 @@ const CLOSE_RESOLVES: {
 class PlantumlRenderer {
   private fileDirectoryPath: string;
   private chunks: string;
+  private count: number;
   private resolves: Array<(result: string) => void>;
   private closeResolves: Array<(result: string) => void>;
   private render: child_process.ChildProcessWithoutNullStreams | null;
@@ -52,15 +53,27 @@ class PlantumlRenderer {
     this.resolves = RESOLVES[fileDirectoryPath] || [];
     this.closeResolves = CLOSE_RESOLVES[fileDirectoryPath] || [];
     this.render = null;
+    this.count = 0;
     this.startRender();
   }
 
-  public generateSVG(content: string): Promise<string> {
+  public generateSVG(count: number, content: string): Promise<string> {
     return new Promise((resolve, reject) => {
       if (this.render) {
         this.resolves.push(resolve);
         this.render.stdin.write(content + '\n');
-        this.endRender(this.render);
+        if (count === 0) {
+          this.endRender(this.render);
+        } else if (count > 0) {
+          if (this.count === 0) {
+              this.count = count;
+          }
+          --this.count;
+          if (this.count <= 0) {
+            this.count = 0;
+            this.endRender(this.render);
+          }
+        }
       } else {
         reject('Task is not exist.');
       }
@@ -134,7 +147,7 @@ class PlantumlRenderer {
 }
 
 // async call
-export async function render(content: string, fileDirectoryPath: string, theme: string): Promise<string> {
+export async function render(count: number, content: string, fileDirectoryPath: string, theme: string): Promise<string> {
   content = content.trim();
   let style = STYLES[theme];
   if (style && style !== '') {
@@ -163,7 +176,7 @@ ${content}
     if (!renderer) return '';
     RENDERERS[fileDirectoryPath] = renderer;
   }
-  return await renderer.generateSVG(content);
+  return await renderer.generateSVG(count, content);
 }
 
 export function closeRender(fileDirectoryPath: string) {

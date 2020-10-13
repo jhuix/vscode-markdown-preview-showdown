@@ -6,6 +6,7 @@
   "mdps.autoPreview": "自动预览markdown文件.",
   "mdps.fontSize": "预览页面的自定义字体大小.",
   "mdps.scrollSync": "自动同步滚屏.",
+  "mdps.flavor": "渲染Markdown的风格，可选择项为[\"github\", \"ghost\", \"vanilla\", \"original\"],默认风格为\"github\"",
   "mdps.mermaidTheme": "渲染Mermaid图表的主题式样, 可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"], 默认主题为\"default\"",
   "mdps.vegaTheme": "渲染Vega图表的主题式样, 可选择项为[\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"], 默认主题为\"vox\"",
   "mdps.plantumlTheme": "渲染plant uml图的的主题式样, 可选择项为[\"default\", \"nature\", \"c4\", \"c4-handwrite\"], 默认主题为\"default\"",

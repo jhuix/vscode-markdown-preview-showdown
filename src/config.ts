@@ -17,6 +17,7 @@ export class PreviewConfig {
   public autoPreview: boolean;
   public fontSize: number;
   public scrollSync: boolean;
+  public flavor: string;
   public mermaidTheme: string;
   public vegaTheme: string;
   public plantumlTheme: string;
@@ -59,6 +60,9 @@ export class PreviewConfig {
       tmpStr = config.get('plantumlTheme');
       this.plantumlTheme = typeof tmpStr === 'undefined' ? 'default' : tmpStr;
 
+      tmpStr = config.get('flavor');
+      this.flavor = typeof tmpStr === 'undefined' ? 'github' : tmpStr;
+
       tmpStr = config.get('plantumlRenderMode');
       this.plantumlRenderMode = typeof tmpStr === 'undefined' ? 'local' : tmpStr;
 
@@ -77,6 +81,7 @@ export class PreviewConfig {
       this.autoPreview = false;
       this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
+      this.flavor = 'github';
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
       this.plantumlTheme = 'default';

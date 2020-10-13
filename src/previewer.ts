@@ -109,6 +109,7 @@ export class ShowdownPreviewer {
 
   private firstPreview: boolean;
   private config: PreviewConfig;
+  private options: Object;
   private currentLine: number;
   private context: vscode.ExtensionContext;
   private editorScrollDelay: number;
@@ -129,6 +130,7 @@ export class ShowdownPreviewer {
     this.firstPreview = false;
     this.currentLine = 0;
     this.editorScrollDelay = Date.now();
+    this.options = {};
     this.config = PreviewConfig.getCurrentConfig(context);
   }
 
@@ -253,12 +255,13 @@ export class ShowdownPreviewer {
     data.context = this;
     plantumlAPI
       .render(
+        data.count,
         data.code,
         path.dirname(uri.fsPath) +
-          path.delimiter +
-          path.resolve(__dirname, '../media/plantuml') +
-          path.delimiter +
-          path.resolve(__dirname, '../node_modules/plantuml-style-c4'),
+        path.delimiter +
+        path.resolve(__dirname, '../media/plantuml') +
+        path.delimiter +
+        path.resolve(__dirname, '../node_modules/plantuml-style-c4'),
         this.config.plantumlTheme
       )
       .then((svg: string) => {
@@ -778,6 +781,7 @@ export class ShowdownPreviewer {
       true
     )}"></script>
 <script>
+var markdown_flavor = "${this.config.flavor}";
 var mermaid_theme = "${this.config.mermaidTheme}";
 var vega_theme = "${this.config.vegaTheme}";
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";
@@ -789,6 +793,12 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
 </body>
 </html>`;
+  }
+
+  private optionsIsEqualTo(options: {}) {
+    const json1 = JSON.stringify(this.options);
+    const json2 = JSON.stringify(options);
+    return json1 === json2;
   }
 
   private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
@@ -813,8 +823,23 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       const lines = editor.document.lineCount;
       const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
       const text = editor.document.getText();
+      const options = {
+        markdown: { flavor: this.config.flavor },
+        mermaid: { theme: this.config.mermaidTheme },
+        vega: { theme: this.config.vegaTheme },
+        plantuml: {
+          renderMode: this.config.plantumlRenderMode,
+          umlWebSite: this.config.plantumlWebsite
+        },
+      };
+      let newOptions = false;
+      if (!this.optionsIsEqualTo(options)) {
+        this.options = options;
+        newOptions = true;
+      }
       this.previewPostMessage({
         command: 'updateMarkdown',
+        options: newOptions ? options : null,
         uri: uri.toString(),
         title: caption,
         totalLines: lines,

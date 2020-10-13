@@ -8,6 +8,7 @@
   defScheme,
   distScheme,
   uriPath,
+  markdownFlavor,
   mermaidTheme,
   vegaTheme,
   plantumlRenderMode,
@@ -141,7 +142,15 @@
       this.currentLine = -1;
       this.syncScrollTop = -1;
       this.resolveCallbacks = {};
-      this.config = { vscode: isVscode };
+      this.config = {
+        vscode: isVscode,
+        options: {
+          markdown: { flavor: markdownFlavor },
+          vega: { theme: vegaTheme },
+          mermaid: { theme: mermaidTheme },
+          plantuml: { renderMode: plantumlRenderMode, umlWebSite: plantumlWebsite }
+        }
+      };
       const previewElement = document.createElement('div');
       previewElement.classList.add('workspace-container');
       this.previewElement = previewElement;
@@ -149,15 +158,26 @@
       this.initWindowEvents();
       this.initMenus();
       previewer.setCDN(cdnName, defScheme, distScheme);
-      previewer.setVegaOptions({ theme: vegaTheme, renderer: 'svg' });
-      previewer.setMermaidOptions({ theme: mermaidTheme });
-      if (plantumlRenderMode === 'local') {
-        previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
-      } else {
-        previewer.setPlantumlOptions({ umlWebSite: plantumlWebsite, imageFormat: 'svg' });
-      }
+      this.updateOptions();
       previewer.init(true);
       this.postMessage('webviewLoaded', [document.title]);
+    }
+
+    updateOptions() {
+      if (this.config.options.markdown.flavor) {
+        previewer.addOptions(this.config.options.markdown);
+      }
+      if (this.config.options.vega.theme) {
+        previewer.setVegaOptions(Object.assign(this.config.options.vega, { renderer: 'svg' }));
+      }
+      if (this.config.options.mermaid.theme) {
+        previewer.setMermaidOptions(this.config.options.mermaid);
+      }
+      if (this.config.options.plantuml.renderMode === 'local') {
+        previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
+      } else {
+        previewer.setPlantumlOptions({ umlWebSite: this.config.options.plantuml.umlWebSite, imageFormat: 'svg' });
+      }
     }
 
     initMenus() {
@@ -316,11 +336,12 @@
       }
     }
 
-    renderPlantuml(id, name, code) {
+    renderPlantuml(id, name, code, count) {
+      count = count || 0;
       const that = this;
       return new Promise((resolve) => {
         that.resolveCallbacks[id] = resolve;
-        that.postMessage('renderPlantuml', [{ id, name, code, sourceUri: that.sourceUri }]);
+        that.postMessage('renderPlantuml', [{ id, name, code, count, sourceUri: that.sourceUri }]);
       });
     }
 
@@ -339,14 +360,15 @@
       window.addEventListener('message', (event) => {
         this.messageEvent(event);
       });
-      window.addEventListener('showdownsLoaded', (event) => {
-        if (event.detail.name === 'wasm_brotli_browser_bg.wasm') {
-          this.postMessage('webviewLoaded', [document.title]);
-        }
-      });
     }
 
-    updateMarkdown(markdown) {
+    updateMarkdown(markdown, options) {
+      options = options || null;
+      if (options instanceof Object) {
+        this.config.options = Object.assign(this.config.options, options);
+        this.updateOptions();
+      }
+
       const that = this;
       previewer
         .makeHtml(markdown, (csstypes) => {
@@ -363,7 +385,7 @@
         switch (message.command) {
           case 'updateMarkdown':
             this.sourceUri = message.uri;
-            this.updateMarkdown(message.markdown);
+            this.updateMarkdown(message.markdown, message.options);
             if (message.title) {
               document.title = message.title;
             }
@@ -458,6 +480,7 @@
   typeof scheme_default === 'undefined' ? '' : scheme_default,
   typeof scheme_dist === 'undefined' ? '' : scheme_dist,
   typeof uri_path === 'undefined' ? '' : uri_path,
+  typeof markdown_flavor === 'undefined' ? '' : markdown_flavor,
   typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,
   typeof vega_theme === 'undefined' ? 'vox' : vega_theme,
   typeof plantuml_rendermode === 'undefined' ? 'local' : plantuml_rendermode,
