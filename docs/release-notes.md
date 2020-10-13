@@ -9,13 +9,13 @@
 
    - Update mermaid deps new version 8.8.2.
 
-   - Inline LaTex math syntax compatible with KaTex, and inline ascii math syntax is changed to `@@...@@` or `\~...\~`.
+   - Inline LaTex math syntax compatible with [KaTex default delimiters](https://katex.org/docs/autorender.html#api), and inline ascii math syntax is changed to `@@...@@` or `\~...\~`.
 
    - Support multiple math are separated by an empty line in block math code.
 
-2. Fixed Issue#3, Issue #6.
+2. Fixed [Issue #3](https://github.com/jhuix/vscode-markdown-preview-showdown/issues/3), [Issue #6](https://github.com/jhuix/vscode-markdown-preview-showdown/issues/6).
 
-3. Enhancement Issue #2, Issue #5.
+3. Enhancement [Issue #2](https://github.com/jhuix/vscode-markdown-preview-showdown/issues/2), [Issue #5](https://github.com/jhuix/vscode-markdown-preview-showdown/issues/5).
 
 4. Optimized rendering of multiple plantuml in the same file.
 
