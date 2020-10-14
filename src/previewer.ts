@@ -775,21 +775,22 @@ export class ShowdownPreviewer {
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
 </head>
 <body>
-<script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
-      webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
-      true
-    )}"></script>
 <script>
 var markdown_flavor = "${this.config.flavor}";
 var mermaid_theme = "${this.config.mermaidTheme}";
 var vega_theme = "${this.config.vegaTheme}";
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";
 var plantuml_website = "${this.config.plantumlWebsite}";
+var katex_delimiters = \`${this.config.katexDelimiters}\`;
 var uri_path = "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}";
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
 </script>
+<script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
+  webview,
+  `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
+  true
+)}"></script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
 </body>
 </html>`;
@@ -826,6 +827,7 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       const options = {
         markdown: { flavor: this.config.flavor },
         mermaid: { theme: this.config.mermaidTheme },
+        katex: { delimiters: this.config.katexDelimiters },
         vega: { theme: this.config.vegaTheme },
         plantuml: {
           renderMode: this.config.plantumlRenderMode,

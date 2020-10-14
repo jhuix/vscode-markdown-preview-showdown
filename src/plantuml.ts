@@ -7,7 +7,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 
-const { debounce } = require('throttle-debounce');
 const extensionDirectoryPath = path.resolve(__dirname, '../');
 const PlantumlJarPath = path.resolve(extensionDirectoryPath, 'media/plantuml/plantuml.jar');
 
@@ -43,9 +42,6 @@ class PlantumlRenderer {
   private resolves: Array<(result: string) => void>;
   private closeResolves: Array<(result: string) => void>;
   private render: child_process.ChildProcessWithoutNullStreams | null;
-  private endRender = debounce(1000, (render: child_process.ChildProcessWithoutNullStreams) => {
-    render.stdin.end();
-  });
 
   public constructor(fileDirectoryPath: string) {
     this.fileDirectoryPath = fileDirectoryPath;
@@ -63,7 +59,7 @@ class PlantumlRenderer {
         this.resolves.push(resolve);
         this.render.stdin.write(content + '\n');
         if (count === 0) {
-          this.endRender(this.render);
+          this.render.stdin.end();
         } else if (count > 0) {
           if (this.count === 0) {
               this.count = count;
@@ -71,7 +67,7 @@ class PlantumlRenderer {
           --this.count;
           if (this.count <= 0) {
             this.count = 0;
-            this.endRender(this.render);
+            this.render.stdin.end();
           }
         }
       } else {

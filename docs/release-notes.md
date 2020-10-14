@@ -1,5 +1,18 @@
 # Release Notes
 
+## v1.3.4
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.3:
+
+   - Optimize showdown and converter objects of markdown parse, add flavor setting features.
+
+   - Add delimiters setting of katex math features.
+
+2. Add delimiters setting of katex math features.
+
+3. Add flavor setting of preview html features.
+
+4. Optimized preview html page.
+
 ## v1.3.3
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.2:
 

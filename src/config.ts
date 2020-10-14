@@ -18,6 +18,7 @@ export class PreviewConfig {
   public fontSize: number;
   public scrollSync: boolean;
   public flavor: string;
+  public katexDelimiters: string;
   public mermaidTheme: string;
   public vegaTheme: string;
   public plantumlTheme: string;
@@ -63,6 +64,9 @@ export class PreviewConfig {
       tmpStr = config.get('flavor');
       this.flavor = typeof tmpStr === 'undefined' ? 'github' : tmpStr;
 
+      tmpStr = config.get('katexDelimiters');
+      this.katexDelimiters = typeof tmpStr === 'undefined' ? '' : tmpStr;
+
       tmpStr = config.get('plantumlRenderMode');
       this.plantumlRenderMode = typeof tmpStr === 'undefined' ? 'local' : tmpStr;
 
@@ -82,6 +86,7 @@ export class PreviewConfig {
       this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
       this.flavor = 'github';
+      this.katexDelimiters = '';
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
       this.plantumlTheme = 'default';

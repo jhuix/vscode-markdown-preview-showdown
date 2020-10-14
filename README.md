@@ -68,7 +68,7 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.flavor`:
 
-    Flavor of preview html page, you can choose one from ["github", "ghost", "vanilla"], default is "github" flavor.
+    Flavor of preview html page, you can choose one from ["github", "ghost", "vanilla", "original"], default flavor is "github".
 
 * `markdown-preview-showdown.fontSize`:
 
@@ -77,6 +77,10 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.scrollSync`:
 
     Automatic scroll sync, default true.
+
+* `markdown-preview-showdown.katexDelimiters`:
+    
+    Delimiters of katex math，format is {\"left\": \"chars\", \"right\": \"chars\", \"display\": true | false | undefined, \"asciimath\": true | undefined}; Multiple delimiters are separated by ',', example：{\"left\": \"$$\", \"right\": \"$$\", \"display\": true },{\"left\": \"\\(\", \"right\": \"\\)\"},{\"left\": \"@@\", \"right\": \"@@\", \"asciimath\": true}.
 
 * `markdown-preview-showdown.mermaidTheme`:
 
