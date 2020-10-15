@@ -747,6 +747,16 @@ export class ShowdownPreviewer {
     if (this.config.locale !== 'en') {
       langMeta = `<meta http-equiv="Content-Language" content="${this.config.locale}">`;
     }
+    let katexDelimiters = JSON.stringify({
+      texmath: {
+        inline: this.config.latexmathInlineDelimiters,
+        display: this.config.latexmathDisplayDelimiters,
+      },
+      asciimath: {
+        inline: this.config.asciimathInlineDelimiters,
+        display: this.config.asciimathDisplayDelimiters,
+      }
+    });
 
     webview.html = `<!DOCTYPE html>
 <html>
@@ -781,7 +791,7 @@ var mermaid_theme = "${this.config.mermaidTheme}";
 var vega_theme = "${this.config.vegaTheme}";
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";
 var plantuml_website = "${this.config.plantumlWebsite}";
-var katex_delimiters = \`${this.config.katexDelimiters}\`;
+var katex_delimiters = \`${katexDelimiters}\`;
 var uri_path = "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}";
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
@@ -827,7 +837,18 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       const options = {
         markdown: { flavor: this.config.flavor },
         mermaid: { theme: this.config.mermaidTheme },
-        katex: { delimiters: this.config.katexDelimiters },
+        katex: {
+          delimiters: {
+            texmath: {
+              inline: this.config.latexmathInlineDelimiters,
+              display: this.config.latexmathDisplayDelimiters,
+            },
+            asciimath: {
+              inline: this.config.asciimathInlineDelimiters,
+              display: this.config.asciimathDisplayDelimiters,
+            }
+          }
+        },
         vega: { theme: this.config.vegaTheme },
         plantuml: {
           renderMode: this.config.plantumlRenderMode,

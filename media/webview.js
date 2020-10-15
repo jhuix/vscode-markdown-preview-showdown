@@ -148,11 +148,16 @@
         options: {
           markdown: { flavor: markdownFlavor },
           vega: { theme: vegaTheme },
-          katex: { delimiters: katexDelimiters },
+          katex: { delimiters: {} },
           mermaid: { theme: mermaidTheme },
           plantuml: { renderMode: plantumlRenderMode, umlWebSite: plantumlWebsite }
         }
       };
+      try {
+        this.config.options.katex.delimiters = JSON.parse(katexDelimiters);
+      } catch {
+        this.config.options.katex.delimiters = {};
+      }
       const previewElement = document.createElement('div');
       previewElement.classList.add('workspace-container');
       this.previewElement = previewElement;
@@ -172,23 +177,6 @@
       if (this.config.options.vega.theme) {
         previewer.setVegaOptions(Object.assign(this.config.options.vega, { renderer: 'svg' }));
       }
-      if (this.config.options.katex.delimiters) {
-        const options = JSON.parse('[' + this.config.options.katex.delimiters + ']');
-        if (Array.isArray(options)) {
-          let delimiters = [];
-          options.forEach((option) => {
-            if (option.hasOwnProperty('left') && option.hasOwnProperty('right')) {
-              if (!option.hasOwnProperty('display')) {
-                option.display = false;
-              }
-              delimiters.push(option);
-            }
-          });
-          if (delimiters.length) {
-            previewer.setKatexOptions({ delimiters: delimiters });
-          }
-        }
-      }
       if (this.config.options.mermaid.theme) {
         previewer.setMermaidOptions(this.config.options.mermaid);
       }
@@ -197,6 +185,7 @@
       } else {
         previewer.setPlantumlOptions({ umlWebSite: this.config.options.plantuml.umlWebSite, imageFormat: 'svg' });
       }
+      previewer.setKatexOptions(this.config.options.katex);      
     }
 
     initMenus() {
@@ -504,5 +493,5 @@
   typeof vega_theme === 'undefined' ? 'vox' : vega_theme,
   typeof plantuml_rendermode === 'undefined' ? 'local' : plantuml_rendermode,
   typeof plantuml_website === 'undefined' ? 'www.plantuml.com/plantuml' : plantuml_website,
-  typeof katex_delimiters === 'undefined' ? '' : katex_delimiters
+  typeof katex_delimiters === 'undefined' ? '{}' : katex_delimiters
 );

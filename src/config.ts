@@ -13,12 +13,19 @@ export class PreviewConfig {
     return new PreviewConfig(context);
   }
 
+  public static getData<T>(data: T | undefined, defaultValue: T): T {
+    return typeof data === 'undefined' ? defaultValue : data;
+  }
+
   public locale: string;
   public autoPreview: boolean;
   public fontSize: number;
   public scrollSync: boolean;
   public flavor: string;
-  public katexDelimiters: string;
+  public latexmathInlineDelimiters: Array<Object>;
+  public latexmathDisplayDelimiters: Array<Object>;
+  public asciimathInlineDelimiters: Array<Object>;
+  public asciimathDisplayDelimiters: Array<Object>;
   public mermaidTheme: string;
   public vegaTheme: string;
   public plantumlTheme: string;
@@ -43,50 +50,47 @@ export class PreviewConfig {
       PreviewConfig.packageName = require(path.resolve(context.extensionPath, 'package.json')).name;
       const config = vscode.workspace.getConfiguration(PreviewConfig.packageName);
 
-      let temp: boolean | undefined = config.get('autoPreview');
-      this.autoPreview = typeof temp === 'undefined' ? true : temp;
-
-      temp = config.get('scrollSync');
-      this.scrollSync = typeof temp === 'undefined' ? true : temp;
-
-      let tempNumber: number | undefined = config.get('fontSize');
-      this.fontSize = typeof tempNumber === 'undefined' ? Math.pow(8, 5) : tempNumber;
-
-      let tmpStr: string | undefined = config.get('mermaidTheme');
-      this.mermaidTheme = typeof tmpStr === 'undefined' ? 'default' : tmpStr;
-
-      tmpStr = config.get('vegaTheme');
-      this.vegaTheme = typeof tmpStr === 'undefined' ? 'vox' : tmpStr;
-
-      tmpStr = config.get('plantumlTheme');
-      this.plantumlTheme = typeof tmpStr === 'undefined' ? 'default' : tmpStr;
-
-      tmpStr = config.get('flavor');
-      this.flavor = typeof tmpStr === 'undefined' ? 'github' : tmpStr;
-
-      tmpStr = config.get('katexDelimiters');
-      this.katexDelimiters = typeof tmpStr === 'undefined' ? '' : tmpStr;
-
-      tmpStr = config.get('plantumlRenderMode');
-      this.plantumlRenderMode = typeof tmpStr === 'undefined' ? 'local' : tmpStr;
-
-      tmpStr = config.get('plantumlWebsite');
-      this.plantumlWebsite = typeof tmpStr === 'undefined' ? 'www.plantuml.com/plantuml' : tmpStr;
-
-      tmpStr = config.get('chromePath');
-      this.chromePath = typeof tmpStr === 'undefined' ? '' : tmpStr;
-
-      temp = config.get('usePuppeteerCore');
-      this.usePuppeteerCore = typeof temp !== 'undefined' ? temp : this.chromePath ? true : false;
-
-      const tmpNum: number | undefined = config.get('puppeteerWaitForTimeout');
-      this.puppeteerWaitForTimeout = typeof tmpNum === 'undefined' ? 0 : tmpNum;
+      this.autoPreview = PreviewConfig.getData(config.get('autoPreview'), true);
+      this.scrollSync = PreviewConfig.getData(config.get('scrollSync'), true);
+      this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
+      this.mermaidTheme = PreviewConfig.getData(config.get('mermaidTheme'), 'default');
+      this.vegaTheme = PreviewConfig.getData(config.get('vegaTheme'), 'vox');
+      this.plantumlTheme = PreviewConfig.getData(config.get('plantumlTheme'), 'default');
+      this.flavor = PreviewConfig.getData(config.get('flavor'), 'github');
+      this.plantumlRenderMode = PreviewConfig.getData(config.get('plantumlRenderMode'), 'local');
+      this.plantumlWebsite = PreviewConfig.getData(config.get('plantumlWebsite'), 'www.plantuml.com/plantuml');
+      this.chromePath = PreviewConfig.getData(config.get('chromePath'), '');
+      this.usePuppeteerCore = PreviewConfig.getData(config.get('usePuppeteerCore'), this.chromePath ? true : false);
+      this.puppeteerWaitForTimeout = PreviewConfig.getData(config.get('puppeteerWaitForTimeout'), 0);
+      try {
+        this.latexmathInlineDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('latexmathInlineDelimiters'), '') + ']');
+      }catch{
+        this.latexmathInlineDelimiters = [];
+      }
+      try {
+        this.latexmathDisplayDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('latexmathDisplayDelimiters'), '') + ']');
+      }catch{
+        this.latexmathDisplayDelimiters = [];
+      }
+      try {
+        this.asciimathInlineDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('asciimathInlineDelimiters'), '') + ']');
+      }catch{
+        this.asciimathInlineDelimiters = [];
+      }
+      try {
+        this.asciimathDisplayDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('asciimathDisplayDelimiters'), '') + ']');
+      }catch{
+        this.asciimathDisplayDelimiters = [];
+      }
     } else {
       this.autoPreview = false;
       this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
       this.flavor = 'github';
-      this.katexDelimiters = '';
+      this.latexmathInlineDelimiters = [];
+      this.latexmathDisplayDelimiters = [];
+      this.asciimathInlineDelimiters = [];
+      this.asciimathDisplayDelimiters = [];
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
       this.plantumlTheme = 'default';

@@ -26,7 +26,7 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 ### For local rendering plantuml
   
-When local rendering plantuml requires `Java` support, so [Java environment (JDK or JRE)](https://www.oracle.com/technetwork/java/javase/downloads/index.html) needs to be installed and the Java executor directory needs to be set to the global path environment variable for the extension to work：
+When local rendering plantuml requires `Java` support, so [Java environment (JDK or JRE)](https://www.oracle.com/technetwork/java/javase/downloads/index.html) needs to be installed and the Java executor directory needs to be set to the global path environment variable for the extension to work: 
 
 - JAVA_HOME: Java SDK installed directory (must have a bin sub-directory)
 - Windows example: C:\Program Files\Java\jdk1.8.0_101)
@@ -76,11 +76,23 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.scrollSync`:
 
-    Automatic scroll sync, default true.
+    Automatic scroll sync, default true, it is experimental.
 
-* `markdown-preview-showdown.katexDelimiters`:
-    
-    Delimiters of katex math，format is {\"left\": \"chars\", \"right\": \"chars\", \"display\": true | false | undefined, \"asciimath\": true | undefined}; Multiple delimiters are separated by ',', example：{\"left\": \"$$\", \"right\": \"$$\", \"display\": true },{\"left\": \"\\(\", \"right\": \"\\)\"},{\"left\": \"@@\", \"right\": \"@@\", \"asciimath\": true}.
+* `markdown-preview-showdown.latexmathInlineDelimiters`:
+
+  Delimiters of latex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string.
+
+* `markdown-preview-showdown.latexmathDisplayDelimiters`:
+
+  Delimiters of latex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$$\", \"right\": \"$$\"},{\"left\": \"\\[\", \"right\": \"\\]\"}; Default value is an empty string.
+
+* `markdown-preview-showdown.asciimathInlineDelimiters`:
+
+  Delimiters of ascii math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"@\", \"right\": \"@\"},{\"left\": \"~\", \"right\": \"~\"}; Default value is an empty string.
+
+* `markdown-preview-showdown.asciimathDisplayDelimiters`:
+
+  Delimiters of ascii math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"@@\", \"right\": \"@@\"},{\"left\": \"\\~\", \"right\": \"\\~\"}; Default value is an empty string.
 
 * `markdown-preview-showdown.mermaidTheme`:
 
@@ -112,7 +124,7 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.chromePath`:
 
-    Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.
+    Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically `(only for windows)`.
 
 ## Keybindings
 
