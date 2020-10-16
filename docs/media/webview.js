@@ -8,12 +8,13 @@
   defScheme,
   distScheme,
   uriPath,
-  markdownFlavor,
-  mermaidTheme,
-  vegaTheme,
   plantumlRenderMode,
   plantumlWebsite,
-  katexDelimiters
+  markdownFlavor,
+  markdownOptions,
+  mermaidOptions,
+  katexOptions,
+  vegaOptions
 ) {
   class ContextMenu {
     constructor(selector, menuItems) {
@@ -146,18 +147,24 @@
       this.config = {
         vscode: isVscode,
         options: {
-          markdown: { flavor: markdownFlavor },
-          vega: { theme: vegaTheme },
-          katex: { delimiters: {} },
-          mermaid: { theme: mermaidTheme },
+          flavor: markdownFlavor,
           plantuml: { renderMode: plantumlRenderMode, umlWebSite: plantumlWebsite }
         }
       };
       try {
-        this.config.options.katex.delimiters = JSON.parse(katexDelimiters);
-      } catch {
-        this.config.options.katex.delimiters = {};
-      }
+        if (markdownOptions && markdownOptions !== '{}') {
+          this.config.options.markdown = JSON.parse(markdownOptions);
+        }
+        if (mermaidOptions && mermaidOptions !== '{}') {
+          this.config.options.mermaid = JSON.parse(mermaidOptions);
+        }
+        if (katexOptions && katexOptions !== '{}') {
+          this.config.options.katex = JSON.parse(katexOptions);
+        }
+        if (vegaOptions && vegaOptions !== '{}') {
+          this.config.options.vega = JSON.parse(vegaOptions);
+        }
+      } catch {}
       const previewElement = document.createElement('div');
       previewElement.classList.add('workspace-container');
       this.previewElement = previewElement;
@@ -165,27 +172,34 @@
       this.initWindowEvents();
       this.initMenus();
       previewer.setCDN(cdnName, defScheme, distScheme);
-      this.updateOptions();
+      this.updateOptions(this.config.options);
       previewer.init(true);
       this.postMessage('webviewLoaded', [document.title]);
     }
 
-    updateOptions() {
-      if (this.config.options.markdown.flavor) {
-        previewer.setShowdownFlavor(this.config.options.markdown.flavor);
+    updateOptions(options) {
+      if (options.flavor) {
+        previewer.setShowdownFlavor(options.flavor);
       }
-      if (this.config.options.vega.theme) {
-        previewer.setVegaOptions(Object.assign(this.config.options.vega, { renderer: 'svg' }));
+      if (options.markdown) {
+        previewer.setShowdownOptions(options.markdown);
       }
-      if (this.config.options.mermaid.theme) {
-        previewer.setMermaidOptions(this.config.options.mermaid);
+      if (options.vega) {
+        previewer.setVegaOptions(Object.assign({ renderer: 'svg' }, options.vega));
       }
-      if (this.config.options.plantuml.renderMode === 'local') {
-        previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
-      } else {
-        previewer.setPlantumlOptions({ umlWebSite: this.config.options.plantuml.umlWebSite, imageFormat: 'svg' });
+      if (options.mermaid) {
+        previewer.setMermaidOptions(options.mermaid);
       }
-      previewer.setKatexOptions(this.config.options.katex);      
+      if (options.plantuml) {
+        if (options.plantuml.renderMode === 'local') {
+          previewer.setPlantumlOptions({ imageFormat: 'svg', svgRender: this.renderPlantuml.bind(this) });
+        } else {
+          previewer.setPlantumlOptions({ imageFormat: 'svg', umlWebSite: options.plantuml.umlWebSite });
+        }
+      }
+      if (options.katex) {
+        previewer.setKatexOptions(options.katex);
+      }
     }
 
     initMenus() {
@@ -373,8 +387,8 @@
     updateMarkdown(markdown, options) {
       options = options || null;
       if (options instanceof Object) {
-        this.config.options = Object.assign(this.config.options, options);
-        this.updateOptions();
+        this.config.options = options;
+        this.updateOptions(options);
       }
 
       const that = this;
@@ -488,10 +502,11 @@
   typeof scheme_default === 'undefined' ? '' : scheme_default,
   typeof scheme_dist === 'undefined' ? '' : scheme_dist,
   typeof uri_path === 'undefined' ? '' : uri_path,
-  typeof markdown_flavor === 'undefined' ? '' : markdown_flavor,
-  typeof mermaid_theme === 'undefined' ? 'default' : mermaid_theme,
-  typeof vega_theme === 'undefined' ? 'vox' : vega_theme,
   typeof plantuml_rendermode === 'undefined' ? 'local' : plantuml_rendermode,
   typeof plantuml_website === 'undefined' ? 'www.plantuml.com/plantuml' : plantuml_website,
-  typeof katex_delimiters === 'undefined' ? '{}' : katex_delimiters
+  typeof markdown_flavor === 'undefined' ? '' : markdown_flavor,
+  typeof markdown_options === 'undefined' ? '{}' : markdown_options,
+  typeof mermaid_options === 'undefined' ? '{}' : mermaid_options,
+  typeof katex_options === 'undefined' ? '{}' : katex_options,
+  typeof vega_options === 'undefined' ? '{}' : vega_options
 );

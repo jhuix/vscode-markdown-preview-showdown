@@ -22,10 +22,6 @@ export class PreviewConfig {
   public fontSize: number;
   public scrollSync: boolean;
   public flavor: string;
-  public latexmathInlineDelimiters: Array<Object>;
-  public latexmathDisplayDelimiters: Array<Object>;
-  public asciimathInlineDelimiters: Array<Object>;
-  public asciimathDisplayDelimiters: Array<Object>;
   public mermaidTheme: string;
   public vegaTheme: string;
   public plantumlTheme: string;
@@ -35,6 +31,20 @@ export class PreviewConfig {
   public puppeteerWaitForTimeout: number;
   public chromePath: string;
   public printBackground: boolean;
+  public mathDelimiters: {
+    texmath: {
+      display: Array<Object>,
+      inline: Array<Object>
+    },
+    asciimath: {
+      display: Array<Object>,
+      inline: Array<Object>
+    }
+  };
+  public markdownOptions: Object;
+  public mermaidOptions: Object;
+  public katexOptions: Object;
+  public vegaOptions: Object;
 
   public constructor(context: vscode.ExtensionContext) {
     this.printBackground = false;
@@ -53,44 +63,60 @@ export class PreviewConfig {
       this.autoPreview = PreviewConfig.getData(config.get('autoPreview'), true);
       this.scrollSync = PreviewConfig.getData(config.get('scrollSync'), true);
       this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
-      this.mermaidTheme = PreviewConfig.getData(config.get('mermaidTheme'), 'default');
-      this.vegaTheme = PreviewConfig.getData(config.get('vegaTheme'), 'vox');
-      this.plantumlTheme = PreviewConfig.getData(config.get('plantumlTheme'), 'default');
+      this.mermaidTheme = PreviewConfig.getData(config.get('mermaid.theme'), 'default');
+      this.mermaidOptions = PreviewConfig.getData(config.get('mermaid.options'), {});
+      this.vegaTheme = PreviewConfig.getData(config.get('vega.theme'), 'vox');
+      this.vegaOptions = PreviewConfig.getData(config.get('vega.options'), {});
+      this.plantumlTheme = PreviewConfig.getData(config.get('plantuml.theme'), 'default');
       this.flavor = PreviewConfig.getData(config.get('flavor'), 'github');
-      this.plantumlRenderMode = PreviewConfig.getData(config.get('plantumlRenderMode'), 'local');
-      this.plantumlWebsite = PreviewConfig.getData(config.get('plantumlWebsite'), 'www.plantuml.com/plantuml');
-      this.chromePath = PreviewConfig.getData(config.get('chromePath'), '');
-      this.usePuppeteerCore = PreviewConfig.getData(config.get('usePuppeteerCore'), this.chromePath ? true : false);
-      this.puppeteerWaitForTimeout = PreviewConfig.getData(config.get('puppeteerWaitForTimeout'), 0);
+      this.markdownOptions = PreviewConfig.getData(config.get('markdown.options'), {});
+      this.plantumlRenderMode = PreviewConfig.getData(config.get('plantuml.renderMode'), 'local');
+      this.plantumlWebsite = PreviewConfig.getData(config.get('plantuml.website'), 'www.plantuml.com/plantuml');
+      this.chromePath = PreviewConfig.getData(config.get('puppeteer.chromePath'), '');
+      this.usePuppeteerCore = PreviewConfig.getData(config.get('puppeteer.useCore'), this.chromePath ? true : false);
+      this.puppeteerWaitForTimeout = PreviewConfig.getData(config.get('puppeteer.waitForTimeout'), 0);
+      this.katexOptions = PreviewConfig.getData(config.get('katex.options'), {});
+      const mathDelimiters = PreviewConfig.getData(config.get('katex.mathDelimiters'), {
+        latexInline: "",
+        latexDisplay: "",
+        asciiInline: "",
+        asciiDisplay: ""
+      });
+      this.mathDelimiters = {
+        texmath: {
+          display: [],
+          inline: []
+        },
+        asciimath: {
+          display: [],
+          inline: []
+        }
+      };
       try {
-        this.latexmathInlineDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('latexmathInlineDelimiters'), '') + ']');
-      }catch{
-        this.latexmathInlineDelimiters = [];
+        this.mathDelimiters.texmath.inline = JSON.parse('[' + mathDelimiters.latexInline + ']');
+      } catch {
+        this.mathDelimiters.texmath.inline = [];
       }
       try {
-        this.latexmathDisplayDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('latexmathDisplayDelimiters'), '') + ']');
-      }catch{
-        this.latexmathDisplayDelimiters = [];
+        this.mathDelimiters.texmath.display = JSON.parse('[' + mathDelimiters.latexDisplay + ']');
+      } catch {
+        this.mathDelimiters.texmath.display = [];
       }
       try {
-        this.asciimathInlineDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('asciimathInlineDelimiters'), '') + ']');
-      }catch{
-        this.asciimathInlineDelimiters = [];
+        this.mathDelimiters.asciimath.inline = JSON.parse('[' + mathDelimiters.asciiInline + ']');
+      } catch {
+        this.mathDelimiters.asciimath.inline = [];
       }
       try {
-        this.asciimathDisplayDelimiters = JSON.parse('[' + PreviewConfig.getData(config.get('asciimathDisplayDelimiters'), '') + ']');
-      }catch{
-        this.asciimathDisplayDelimiters = [];
+        this.mathDelimiters.asciimath.display = JSON.parse('[' + mathDelimiters.asciiDisplay + ']');
+      } catch {
+        this.mathDelimiters.asciimath.display = [];
       }
     } else {
       this.autoPreview = false;
       this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
       this.flavor = 'github';
-      this.latexmathInlineDelimiters = [];
-      this.latexmathDisplayDelimiters = [];
-      this.asciimathInlineDelimiters = [];
-      this.asciimathDisplayDelimiters = [];
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
       this.plantumlTheme = 'default';
@@ -99,6 +125,20 @@ export class PreviewConfig {
       this.usePuppeteerCore = false;
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';
+      this.mathDelimiters = {
+        texmath: {
+          display: [],
+          inline: []
+        },
+        asciimath: {
+          display: [],
+          inline: []
+        }
+      };      
+      this.markdownOptions = {};
+      this.mermaidOptions = {};
+      this.katexOptions = {};
+      this.vegaOptions = {};
     }
   }
 

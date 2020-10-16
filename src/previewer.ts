@@ -109,7 +109,14 @@ export class ShowdownPreviewer {
 
   private firstPreview: boolean;
   private config: PreviewConfig;
-  private options: Object;
+  private options: {
+    flavor: string | undefined,
+    plantuml: Object | undefined | null,
+    markdown: Object | undefined | null,
+    mermaid: Object | undefined | null,
+    katex: Object | undefined | null,
+    vega: Object | undefined | null
+  };
   private currentLine: number;
   private context: vscode.ExtensionContext;
   private editorScrollDelay: number;
@@ -130,8 +137,16 @@ export class ShowdownPreviewer {
     this.firstPreview = false;
     this.currentLine = 0;
     this.editorScrollDelay = Date.now();
-    this.options = {};
+    this.options = {
+      flavor: '',
+      plantuml: {},
+      markdown: {},
+      mermaid: {},
+      katex: {},
+      vega: {}
+    };
     this.config = PreviewConfig.getCurrentConfig(context);
+    this._getChangedOptions(false);
   }
 
   public async openPreview(
@@ -747,16 +762,6 @@ export class ShowdownPreviewer {
     if (this.config.locale !== 'en') {
       langMeta = `<meta http-equiv="Content-Language" content="${this.config.locale}">`;
     }
-    let katexDelimiters = JSON.stringify({
-      texmath: {
-        inline: this.config.latexmathInlineDelimiters,
-        display: this.config.latexmathDisplayDelimiters,
-      },
-      asciimath: {
-        inline: this.config.asciimathInlineDelimiters,
-        display: this.config.asciimathDisplayDelimiters,
-      }
-    });
 
     webview.html = `<!DOCTYPE html>
 <html>
@@ -786,31 +791,120 @@ export class ShowdownPreviewer {
 </head>
 <body>
 <script>
-var markdown_flavor = "${this.config.flavor}";
-var mermaid_theme = "${this.config.mermaidTheme}";
-var vega_theme = "${this.config.vegaTheme}";
+var markdown_flavor = "${this.options.flavor}";
+var markdown_options = \`${JSON.stringify(this.options.markdown)}\`;
+var mermaid_options = \`${JSON.stringify(this.options.mermaid)}\`;
+var katex_options = \`${JSON.stringify(this.options.katex)}\`;
+var vega_options = \`${JSON.stringify(this.options.vega)}\`;
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";
 var plantuml_website = "${this.config.plantumlWebsite}";
-var katex_delimiters = \`${katexDelimiters}\`;
 var uri_path = "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}";
 var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
 var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
 </script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
-  webview,
-  `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
-  true
-)}"></script>
+      webview,
+      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
+      true
+    )}"></script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
 </body>
 </html>`;
   }
 
-  private optionsIsEqualTo(options: {}) {
-    const json1 = JSON.stringify(this.options);
-    const json2 = JSON.stringify(options);
+  private _objectIsEqual(first: Object | undefined | null, second: Object | undefined | null) {
+    if (!first) {
+      return !second;
+    }
+
+    if (!second) {
+      return false;
+    }
+
+    const json1 = JSON.stringify(first);
+    const json2 = JSON.stringify(second);
     return json1 === json2;
   }
+
+  private _getChangedOptions(depth: boolean) {
+    let options: {
+      flavor: string | undefined,
+      plantuml: Object | undefined | null,
+      markdown: Object | undefined | null,
+      mermaid: Object | undefined | null,
+      katex: Object | undefined | null,
+      vega: Object | undefined | null
+    } = {
+      flavor: this.config.flavor,
+      plantuml: {},
+      markdown: {},
+      mermaid: {},
+      katex: {},
+      vega: {}
+    };
+    Object.assign(options.markdown, this.config.markdownOptions);
+    Object.assign(options.plantuml, {
+      renderMode: this.config.plantumlRenderMode,
+      umlWebSite: this.config.plantumlWebsite
+    });
+    Object.assign(options.mermaid, this.config.mermaidOptions, { theme: this.config.mermaidTheme });
+    Object.assign(options.katex, this.config.katexOptions, { delimiters: this.config.mathDelimiters });
+    Object.assign(options.vega, this.config.vegaOptions, { theme: this.config.vegaTheme });
+
+    if (!this._objectIsEqual(this.options, options)) {
+      if (depth) {
+        if (options.flavor && options.flavor !== this.options.flavor) {
+          this.options.flavor = options.flavor;
+        } else {
+          delete options.flavor;
+        }
+        if (!this._objectIsEqual(options.plantuml, this.options.plantuml)) {
+          this.options.plantuml = {};
+          Object.assign(this.options.plantuml, options.plantuml);
+        } else {
+          delete options.plantuml;
+        }
+        if (!this._objectIsEqual(options.markdown, this.options.markdown)) {
+          this.options.markdown = {};
+          Object.assign(this.options.markdown, options.markdown);
+        } else {
+          delete options.markdown;
+        }
+        if (!this._objectIsEqual(options.mermaid, this.options.mermaid)) {
+          this.options.mermaid = {};
+          Object.assign(this.options.mermaid, options.mermaid);
+        } else {
+          delete options.mermaid;
+        }
+        if (!this._objectIsEqual(options.katex, this.options.katex)) {
+          this.options.katex = {};
+          Object.assign(this.options.katex, options.katex);
+        } else {
+          delete options.katex;
+        }
+        if (!this._objectIsEqual(options.vega, this.options.vega)) {
+          this.options.vega = {};
+          Object.assign(this.options.vega, options.vega);
+        } else {
+          delete options.vega;
+        }
+      } else {
+        this.options = {
+          flavor: '',
+          plantuml: {},
+          markdown: {},
+          mermaid: {},
+          katex: {},
+          vega: {}
+        };
+        Object.assign(this.options, options);
+      }
+      return options;
+    }
+
+    return null;
+  }
+
 
   private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
     const editor = this.getEditor();
@@ -834,35 +928,10 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       const lines = editor.document.lineCount;
       const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
       const text = editor.document.getText();
-      const options = {
-        markdown: { flavor: this.config.flavor },
-        mermaid: { theme: this.config.mermaidTheme },
-        katex: {
-          delimiters: {
-            texmath: {
-              inline: this.config.latexmathInlineDelimiters,
-              display: this.config.latexmathDisplayDelimiters,
-            },
-            asciimath: {
-              inline: this.config.asciimathInlineDelimiters,
-              display: this.config.asciimathDisplayDelimiters,
-            }
-          }
-        },
-        vega: { theme: this.config.vegaTheme },
-        plantuml: {
-          renderMode: this.config.plantumlRenderMode,
-          umlWebSite: this.config.plantumlWebsite
-        },
-      };
-      let newOptions = false;
-      if (!this.optionsIsEqualTo(options)) {
-        this.options = options;
-        newOptions = true;
-      }
+
       this.previewPostMessage({
         command: 'updateMarkdown',
-        options: newOptions ? options : null,
+        options: this._getChangedOptions(true),
         uri: uri.toString(),
         title: caption,
         totalLines: lines,

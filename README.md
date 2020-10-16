@@ -45,11 +45,11 @@ After setting these environment variables you need to restart VSCode for the ext
 
 ### For export PDF or PNG or JPEG:
 
-  When `markdown-preview-showdown.usePuppeteerCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.chromePath`. The chrome-location globally installed by npm:
+  When `markdown-preview-showdown.puppeteer.useCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.puppeteer.chromePath`. The chrome-location globally installed by npm:
 
         npm install -g chrome-location
 
-  When `markdown-preview-showdown.usePuppeteerCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
+  When `markdown-preview-showdown.puppeteer.useCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
 
         npm install -g puppeteer
 
@@ -78,51 +78,39 @@ This extension contributes the following settings:
 
     Automatic scroll sync, default true, it is experimental.
 
-* `markdown-preview-showdown.latexmathInlineDelimiters`:
+* `markdown-preview-showdown.katex.mathDelimiters`:
 
-  Delimiters of latex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string.
+  Delimiters of katex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string.
 
-* `markdown-preview-showdown.latexmathDisplayDelimiters`:
-
-  Delimiters of latex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$$\", \"right\": \"$$\"},{\"left\": \"\\[\", \"right\": \"\\]\"}; Default value is an empty string.
-
-* `markdown-preview-showdown.asciimathInlineDelimiters`:
-
-  Delimiters of ascii math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"@\", \"right\": \"@\"},{\"left\": \"~\", \"right\": \"~\"}; Default value is an empty string.
-
-* `markdown-preview-showdown.asciimathDisplayDelimiters`:
-
-  Delimiters of ascii math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"@@\", \"right\": \"@@\"},{\"left\": \"\\~\", \"right\": \"\\~\"}; Default value is an empty string.
-
-* `markdown-preview-showdown.mermaidTheme`:
+* `markdown-preview-showdown.mermaid.theme`:
 
     Mermaid theme, you can choose one from ["default", "dark", "forest", "neutral"], default is "default" theme.
 
-* `markdown-preview-showdown.vegaTheme`:
+* `markdown-preview-showdown.vega.theme`:
 
     Vega theme, you can choose one from ["excel", "ggplot2", "quartz", "vox", "dark"], default is "vox"  theme.
 
-* `markdown-preview-showdown.plantumlTheme`:
+* `markdown-preview-showdown.plantuml.theme`:
 
     Plantuml theme, you can choose one from ["default", "nature", "c4", "c4-handwrite"], default is "default" theme.
 
-* `markdown-preview-showdown.plantumlRenderMode`:
+* `markdown-preview-showdown.plantuml.renderMode`:
 
     The mode of rendering plant UML diagram, you can choose one from [\"local\", \"remote\"]: the default mode is \"local\", which means local rendering, but local rendering requires Java support, so Java environment needs to be installed and the Java executor directory needs to be set to the global path environment variable; while the mode \"remote\" means remote rendering, which means the setting item of plantumlWebsite needs to be set as the remote rendering URL.
 
-* `markdown-preview-showdown.plantumlWebsite`:
+* `markdown-preview-showdown.plantuml.website`:
 
     When the setting item of plantumlrendermode is mode \"remote\", the remote rendering website to be set, default web site is \"www.plantuml.com/plantuml\".
 
-* `markdown-preview-showdown.usePuppeteerCore`:
+* `markdown-preview-showdown.puppeteer.useCore`:
 
     If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required, defualt true.
 
-* `markdown-preview-showdown.puppeteerWaitForTimeout`:
+* `markdown-preview-showdown.puppeteer.waitForTimeout`:
 
     Puppeteer waits for a certain timeout in milliseconds before the document export, default false.
 
-* `markdown-preview-showdown.chromePath`:
+* `markdown-preview-showdown.puppeteer.chromePath`:
 
     Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically `(only for windows)`.
 
