@@ -80,7 +80,16 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.katex.mathDelimiters`:
 
-  Delimiters of katex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string.
+  Delimiters of katex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string, it means that the internal default value is used.
+  
+  The internal default values of each attribute are as follows:
+  
+  | Attribute Name | Internal Default Value |
+  | -------------- | ---------------------- |
+  | latexinline | { \"left\": \"\\\\(\", \"right\": \"\\\\)\" } |
+  | latexdisplay | { \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" } |
+  | asciiinline | { \"left\": \"@@\", \"right\": \"@@\" } |
+  | asciidisplay | { \"left\": \"\\\\~\", \"right\": \"\\\\~\" } |
 
 * `markdown-preview-showdown.mermaid.theme`:
 
