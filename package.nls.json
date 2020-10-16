@@ -8,7 +8,7 @@
   "mdps.scrollSync": "Automatic scroll sync.",
   "mdps.flavor": "Flavor of preview html page, you can choose one from [\"github\", \"ghost\", \"vanilla\", \"original\"], default flavor is \"github\".",
   "mdps.mermaid.theme": "Mermaid theme, you can choose one from [\"default\", \"dark\", \"forest\", \"neutral\"].",
-  "mdps.katex.mathDelimiters": "Delimiters of katex math，format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string.",  
+  "mdps.katex.mathDelimiters": "Delimiters of katex math，format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$\", \"right\": \"$\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string, it means that the internal default value is used.\n\nThe internal default values of each attribute are as follows:\nThe default value of latexinline is { \"left\": \"\\\\(\", \"right\": \"\\\\)\" }\nThe default value of latexdisplay is { \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" }\nThe default value of asciiinline is { \"left\": \"@@\", \"right\": \"@@\" }\nThe default value of asciidisplay is { \"left\": \"\\\\~\", \"right\": \"\\\\~\" }",
   "mdps.latexmath.inline.delimiters": "Delimiters of latex math.",
   "mdps.latexmath.display.delimiters": "Delimiters of latex math.",
   "mdps.asciimath.inline.delimiters": "Delimiters of ascii math.",
