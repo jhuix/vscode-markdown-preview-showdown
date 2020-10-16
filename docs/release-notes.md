@@ -1,5 +1,19 @@
 # Release Notes
 
+## v1.3.6
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.5:
+
+   - Fixed failed to mark CSS link related to render only inline katex math..
+
+   - Add a additional delimiters format of katex options.
+
+2. Adjust the name of all settings;
+
+3. Split katexDelimiters setting into 4 delimiters settings.
+
+4. Fixed failed to render inine katex math when open html in browser or create local html.
+
+
 ## v1.3.4
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.3:
 
