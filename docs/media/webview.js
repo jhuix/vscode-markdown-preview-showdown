@@ -153,18 +153,19 @@
       };
       try {
         if (markdownOptions && markdownOptions !== '{}') {
-          this.config.options.markdown = JSON.parse(markdownOptions);
+          this.config.options.markdown = JSON.parse(`${markdownOptions}`);
         }
         if (mermaidOptions && mermaidOptions !== '{}') {
-          this.config.options.mermaid = JSON.parse(mermaidOptions);
+          this.config.options.mermaid = JSON.parse(`${mermaidOptions}`);
         }
         if (katexOptions && katexOptions !== '{}') {
-          this.config.options.katex = JSON.parse(katexOptions);
+          this.config.options.katex = JSON.parse(`${katexOptions}`);
         }
         if (vegaOptions && vegaOptions !== '{}') {
-          this.config.options.vega = JSON.parse(vegaOptions);
+          this.config.options.vega = JSON.parse(`${vegaOptions}`);
         }
       } catch {}
+
       const previewElement = document.createElement('div');
       previewElement.classList.add('workspace-container');
       this.previewElement = previewElement;
@@ -178,6 +179,7 @@
     }
 
     updateOptions(options) {
+      console.log(options);
       if (options.flavor) {
         previewer.setShowdownFlavor(options.flavor);
       }

@@ -710,12 +710,11 @@ export class ShowdownPreviewer {
     if (
       !this.config.scrollSync ||
       Date.now() < this.editorScrollDelay ||
-      !ShowdownPreviewer.isMarkdownFile(editor.document) ||
       !editor.visibleRanges.length
     ) {
-      this.previewPostMessage({
-        command: 'breakMessage'
-      });
+      // this.previewPostMessage({
+      //   command: 'breakMessage'
+      // });
       return;
     }
 
@@ -792,10 +791,10 @@ export class ShowdownPreviewer {
 <body>
 <script>
 var markdown_flavor = "${this.options.flavor}";
-var markdown_options = \`${JSON.stringify(this.options.markdown)}\`;
-var mermaid_options = \`${JSON.stringify(this.options.mermaid)}\`;
-var katex_options = \`${JSON.stringify(this.options.katex)}\`;
-var vega_options = \`${JSON.stringify(this.options.vega)}\`;
+var markdown_options = \`${JSON.stringify(this.options.markdown).replace(/\\/g, "\\\\")}\`;
+var mermaid_options = \`${JSON.stringify(this.options.mermaid).replace(/\\/g, "\\\\")}\`;
+var katex_options = \`${JSON.stringify(this.options.katex).replace(/\\/g, "\\\\")}\`;
+var vega_options = \`${JSON.stringify(this.options.vega).replace(/\\/g, "\\\\")}\`;
 var plantuml_rendermode = "${this.config.plantumlRenderMode}";
 var plantuml_website = "${this.config.plantumlWebsite}";
 var uri_path = "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}";
@@ -848,7 +847,7 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       umlWebSite: this.config.plantumlWebsite
     });
     Object.assign(options.mermaid, this.config.mermaidOptions, { theme: this.config.mermaidTheme });
-    Object.assign(options.katex, this.config.katexOptions, { delimiters: this.config.mathDelimiters });
+    Object.assign(options.katex, this.config.katexOptions, { mathDelimiters: this.config.mathDelimiters });
     Object.assign(options.vega, this.config.vegaOptions, { theme: this.config.vegaTheme });
 
     if (!this._objectIsEqual(this.options, options)) {
