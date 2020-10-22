@@ -97,30 +97,26 @@
         "markdown-preview-showdown.katex.mathDelimiters": {
           "type": "object",
           "default": {
-            "latexInline": "",
-            "latexDisplay": "",
-            "asciiInline": "",
-            "asciiDisplay": ""
+            "latexInline": " { \"left\": \"$\", \"right\": \"$\" },{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" }",
+            "latexDisplay": "{ \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" }",
+            "asciiInline": "{ \"left\": \"@ \", \"right\": \" @\" },{ \"left\": \"~ \", \"right\": \" ~\" }",
+            "asciiDisplay": "{ \"left\": \"@@\", \"right\": \"@@\" }"
           },
           "properties": {
             "latexInline": {
               "type": "string",
-              "default": "",
               "description": "%mdps.latexmath.inline.delimiters%"
             },
             "latexDisplay": {
               "type": "string",
-              "default": "",
               "description": "%mdps.latexmath.display.delimiters%"
             },
             "asciiInline": {
               "type": "string",
-              "default": "",
               "description": "%mdps.asciimath.inline.delimiters%"
             },
             "asciiDisplay": {
               "type": "string",
-              "default": "",
               "description": "%mdps.asciimath.display.delimiters%"
             }
           },
@@ -212,7 +208,7 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.5.5",
+    "@jhuix/showdowns": "^0.5.6",
     "mkdirp": "^1.0.4",
     "plantuml-style-c4": "^1.1.3",
     "puppeteer-core": "^5.3.0",

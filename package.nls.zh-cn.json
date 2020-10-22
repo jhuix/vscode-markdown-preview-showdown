@@ -8,7 +8,7 @@
   "mdps.scrollSync": "自动同步滚屏。",
   "mdps.flavor": "预览HTML页面的风格，可选择项为[\"github\", \"ghost\", \"vanilla\", \"original\"],默认风格为\"github\"。",
   "mdps.mermaid.theme": "渲染Mermaid图表的主题式样，可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"]，默认主题为\"default\"。",
-  "mdps.katex.mathDelimiters": "Katex数学公式的分割标识，格式为{\"left\": \"chars\", \"right\": \"chars\"}；有多项分割标识用逗号分隔，例如：{\"left\": \"\\\\$\", \"right\": \"\\\\$\"},{\"left\": \"\\\\(\", \"right\": \"\\\\)\"}；各属性默认值为空字符串表示使用内部默认值。\n\n各属性内部默认值如下：\nlatexInline的内部默认值为{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" }\nlatexDisplay的内部默认值为{ \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" }\nasciiInline的内部默认值为{ \"left\": \"@@\", \"right\": \"@@\" }\nasciiDisplay的内部默认值为{ \"left\": \"\\\\~\", \"right\": \"\\\\~\" }",
+  "mdps.katex.mathDelimiters": "Katex数学公式的分割标识，格式为{\"left\": \"chars\", \"right\": \"chars\"}；有多项分割标识用逗号分隔，例如：{\"left\": \"\\\\$\", \"right\": \"\\\\$\"},{\"left\": \"\\\\(\", \"right\": \"\\\\)\"}；各属性默认值为空字符串表示使用内部默认值。\n\n各属性内部默认值如下：\nlatexInline的内部默认值为{ \"left\": \"$\", \"right\": \"$\" },{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" }\nlatexDisplay的内部默认值为{ \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" }\nasciiInline的内部默认值为{ \"left\": \"@ \", \"right\": \" @\" },{ \"left\": \"~ \", \"right\": \" ~\" }\nasciiDisplay的内部默认值为{ \"left\": \"@@\", \"right\": \"@@\" }",
   "mdps.latexmath.inline.delimiters": "Latex数学公式的内联分割标识。",
   "mdps.latexmath.display.delimiters": "Latex数学公式的展示分割标识。",
   "mdps.asciimath.inline.delimiters": "Ascii数学公式的内联分割标识。",

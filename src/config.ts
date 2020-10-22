@@ -97,20 +97,50 @@ export class PreviewConfig {
       } catch {
         this.mathDelimiters.texmath.inline = [];
       }
+      if (this.mathDelimiters.texmath.inline.length === 0) {
+        this.mathDelimiters.texmath.inline = [
+          { left: '$', right: '$' },
+          { left: '\\(', right: '\\)' }
+        ];
+      }
+
       try {
         this.mathDelimiters.texmath.display = JSON.parse('[' + mathDelimiters.latexDisplay + ']');
       } catch {
         this.mathDelimiters.texmath.display = [];
       }
+      if (this.mathDelimiters.texmath.display.length === 0) {
+        this.mathDelimiters.texmath.display = [
+          { left: '$$', right: '$$' },
+          { left: '\\[', right: '\\]' }
+        ];
+      }
+
       try {
         this.mathDelimiters.asciimath.inline = JSON.parse('[' + mathDelimiters.asciiInline + ']');
       } catch {
         this.mathDelimiters.asciimath.inline = [];
       }
+      if (this.mathDelimiters.asciimath.inline.length === 0) {
+        this.mathDelimiters.asciimath.inline = [
+          { left: '@ ', right: ' @' },
+          { left: '~ ', right: ' ~' }
+        ];
+      }
+
       try {
         this.mathDelimiters.asciimath.display = JSON.parse('[' + mathDelimiters.asciiDisplay + ']');
       } catch {
         this.mathDelimiters.asciimath.display = [];
+      }
+      if (this.mathDelimiters.asciimath.display.length === 0) {
+        this.mathDelimiters.asciimath.display = [
+          { left: '@@', right: '@@' }
+        ];
+      }
+
+      const a = {
+        mathDelimiters: this.mathDelimiters
       }
     } else {
       this.autoPreview = false;
@@ -134,7 +164,7 @@ export class PreviewConfig {
           display: [],
           inline: []
         }
-      };      
+      };
       this.markdownOptions = {};
       this.mermaidOptions = {};
       this.katexOptions = {};
