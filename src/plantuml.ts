@@ -7,6 +7,7 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 
+const output = require('./output');
 const extensionDirectoryPath = path.resolve(__dirname, '../');
 const PlantumlJarPath = path.resolve(extensionDirectoryPath, 'media/plantuml/plantuml.jar');
 
@@ -51,6 +52,11 @@ class PlantumlRenderer {
     this.render = null;
     this.count = 0;
     this.startRender();
+    output.log('Plantuml Renderer is created.');
+  }
+
+  public isActivated(): boolean {
+    return !!this.render;
   }
 
   public generateSVG(count: number, content: string): Promise<string> {
@@ -60,18 +66,22 @@ class PlantumlRenderer {
         this.render.stdin.write(content + '\n');
         if (count === 0) {
           this.render.stdin.end();
+          this.render = null;
+          output.log('Plantuml generate svg write end: count=' + count);
         } else if (count > 0) {
           if (this.count === 0) {
-              this.count = count;
+            this.count = count;
           }
           --this.count;
           if (this.count <= 0) {
             this.count = 0;
             this.render.stdin.end();
+            this.render = null;
+            output.log('Plantuml generate svg write end: count=' + count);
           }
         }
       } else {
-        reject('Task is not exist.');
+        reject('Render is not activated.');
       }
     });
   }
@@ -81,8 +91,10 @@ class PlantumlRenderer {
       if (this.render) {
         this.closeResolves.push(resolve);
         this.render.stdin.end();
+        this.render = null;
+        output.log('Plantuml Renderer is closed.');
       } else {
-        reject('Task is not exist.');
+        reject('Render is not activated.');
       }
     });
   }
@@ -130,20 +142,34 @@ class PlantumlRenderer {
    * stop this.render and store this.chunks and this.resolves
    */
   private exitRender() {
+    output.log('Plantuml Renderer is exit: resolves=' + this.resolves.length);
     RENDERERS[this.fileDirectoryPath] = null;
-    CHUNKS[this.fileDirectoryPath] = this.chunks;
-    RESOLVES[this.fileDirectoryPath] = this.resolves;
-    const callback = this.closeResolves.shift();
-    if (callback) {
-      callback('true');
-    }
-    CLOSE_RESOLVES[this.fileDirectoryPath] = this.closeResolves;
+    // CHUNKS[this.fileDirectoryPath] = this.chunks;
+    this.resolves.forEach((callback) => {
+      if (callback) {
+        callback('');
+      }
+    });
+    this.resolves = [];
+    // RESOLVES[this.fileDirectoryPath] = this.resolves;
+    this.closeResolves.forEach((callback) => {
+      if (callback) {
+        callback('true');
+      }
+    });
+    this.closeResolves = [];
+    // CLOSE_RESOLVES[this.fileDirectoryPath] = this.closeResolves;
     this.render = null;
   }
 }
 
 // async call
-export async function render(count: number, content: string, fileDirectoryPath: string, theme: string): Promise<string> {
+export async function render(
+  count: number,
+  content: string,
+  fileDirectoryPath: string,
+  theme: string
+): Promise<string> {
   content = content.trim();
   let style = STYLES[theme];
   if (style && style !== '') {
@@ -166,7 +192,7 @@ ${content}
   }
 
   let renderer = RENDERERS[fileDirectoryPath];
-  if (!renderer) {
+  if (!renderer || !renderer.isActivated()) {
     // init `Plantuml.jar` renderer
     renderer = new PlantumlRenderer(fileDirectoryPath);
     if (!renderer) return '';
