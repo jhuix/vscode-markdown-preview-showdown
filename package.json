@@ -14,12 +14,15 @@
     "Other"
   ],
   "keywords": [
+    "diagram",
+    "flowchart",
     "markdown",
+    "mermaid",
+    "plantuml",
     "preview",
     "showdown",
     "showdowns",
-    "html",
-    "vscode",
+    "vega",
     "MDPS"
   ],
   "icon": "media/logo.png",
