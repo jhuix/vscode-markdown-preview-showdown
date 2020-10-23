@@ -179,7 +179,6 @@
     }
 
     updateOptions(options) {
-      console.log(options);
       if (options.flavor) {
         previewer.setShowdownFlavor(options.flavor);
       }

@@ -138,10 +138,6 @@ export class PreviewConfig {
           { left: '@@', right: '@@' }
         ];
       }
-
-      const a = {
-        mathDelimiters: this.mathDelimiters
-      }
     } else {
       this.autoPreview = false;
       this.fontSize = PreviewConfig.defaultFontSize;

@@ -1,5 +1,16 @@
 # Release Notes
 
+## v1.3.7
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.6:
+
+2. Modify default values of the 4 math delimiters;
+
+3. Fixed possible invalid custom values of math delimiters.
+
+4. Fixed the bug with fast input failed to render the latest content in markdown files that has multi plantuml.
+
+5. Add output console of 'MDPS Extension' to display output log.
+
 ## v1.3.6
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.5:
 

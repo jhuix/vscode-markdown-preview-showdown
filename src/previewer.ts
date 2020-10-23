@@ -11,6 +11,7 @@ import * as vscode from 'vscode';
 import { PreviewConfig } from './config';
 
 const utils = require('./utils');
+const output = require('./output');
 const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
 const plantumlAPI = require('./plantuml');
@@ -147,6 +148,7 @@ export class ShowdownPreviewer {
     };
     this.config = PreviewConfig.getCurrentConfig(context);
     this._getChangedOptions(false);
+    output.log('Showdown Previewer is created.');
   }
 
   public async openPreview(
@@ -288,6 +290,9 @@ export class ShowdownPreviewer {
             response: svg
           });
         }
+      })
+      .catch((err: any) => {
+        output.log(err)
       });
   }
 
@@ -548,7 +553,7 @@ export class ShowdownPreviewer {
             this.config.chromePath = out;
           })
           .catch((err: string) => {
-            console.log(err);
+            output.log(err);
           });
         if (!this.config.chromePath) {
           // Seconde find setup path of chrome from HKCU
@@ -558,7 +563,7 @@ export class ShowdownPreviewer {
               this.config.chromePath = out;
             })
             .catch((err: string) => {
-              console.log(err);
+              output.log(err);
             });
         }
       }

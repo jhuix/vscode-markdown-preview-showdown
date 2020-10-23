@@ -4,6 +4,7 @@
  */
 import * as vscode from 'vscode';
 import { ShowdownPreviewer } from './previewer';
+const output = require('./output');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -42,6 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     context.subscriptions.push(
       vscode.workspace.onDidOpenTextDocument((document) => {
+        output.log('onDidOpenTextDocument: ' + document.uri);
         if (ShowdownPreviewer.isMarkdownFile(document) && contentPreviewer.isAutoPreview()) {
           openPreview(document.uri);
         }
@@ -58,7 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.workspace.onDidChangeConfiguration(() => {
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      output.log('onDidChangeConfiguration' + event.affectsConfiguration.toString());
       contentPreviewer.updateConfiguration();
     })
   );
@@ -66,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.onDidChangeVisibleTextEditors((textEditors) => {
       textEditors.map((textEditor) => {
-        if (textEditor.viewColumn === vscode.ViewColumn.One) {
+        if (textEditor.viewColumn === vscode.ViewColumn.One && ShowdownPreviewer.isMarkdownFile(textEditor.document)) {
           contentPreviewer.changeVisibleRanges(textEditor);
         }
       });
@@ -81,7 +84,9 @@ export function activate(context: vscode.ExtensionContext) {
   // between the onDidChangeTextEditorVisibleRanges and onDidChangeVisibleTextEditors event.
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorVisibleRanges((event) => {
-      contentPreviewer.changeVisibleRanges(event.textEditor);
+      if (ShowdownPreviewer.isMarkdownFile(event.textEditor.document)) {
+        contentPreviewer.changeVisibleRanges(event.textEditor);
+      }
     })
   );
 
@@ -99,4 +104,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
