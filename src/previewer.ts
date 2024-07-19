@@ -832,12 +832,12 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
 
   private _getChangedOptions(depth: boolean) {
     let options: {
-      flavor: string | undefined,
-      plantuml: Object | undefined | null,
-      markdown: Object | undefined | null,
-      mermaid: Object | undefined | null,
-      katex: Object | undefined | null,
-      vega: Object | undefined | null
+      flavor: string,
+      plantuml: Object,
+      markdown: Object,
+      mermaid: Object,
+      katex: Object,
+      vega: Object
     } = {
       flavor: this.config.flavor,
       plantuml: {},
@@ -859,38 +859,26 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
       if (depth) {
         if (options.flavor && options.flavor !== this.options.flavor) {
           this.options.flavor = options.flavor;
-        } else {
-          delete options.flavor;
         }
         if (!this._objectIsEqual(options.plantuml, this.options.plantuml)) {
           this.options.plantuml = {};
           Object.assign(this.options.plantuml, options.plantuml);
-        } else {
-          delete options.plantuml;
         }
         if (!this._objectIsEqual(options.markdown, this.options.markdown)) {
           this.options.markdown = {};
           Object.assign(this.options.markdown, options.markdown);
-        } else {
-          delete options.markdown;
         }
         if (!this._objectIsEqual(options.mermaid, this.options.mermaid)) {
           this.options.mermaid = {};
           Object.assign(this.options.mermaid, options.mermaid);
-        } else {
-          delete options.mermaid;
         }
         if (!this._objectIsEqual(options.katex, this.options.katex)) {
           this.options.katex = {};
           Object.assign(this.options.katex, options.katex);
-        } else {
-          delete options.katex;
         }
         if (!this._objectIsEqual(options.vega, this.options.vega)) {
           this.options.vega = {};
           Object.assign(this.options.vega, options.vega);
-        } else {
-          delete options.vega;
         }
       } else {
         this.options = {

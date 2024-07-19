@@ -24,7 +24,7 @@ function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileO
       if (error) {
         return reject(error.toString());
       } else {
-        return resolve();
+        resolve(true);
       }
     });
   });
@@ -36,7 +36,7 @@ function write(fd: number, text: any) {
       if (error) {
         return reject(error.toString());
       } else {
-        return resolve();
+        resolve(true);
       }
     });
   });
