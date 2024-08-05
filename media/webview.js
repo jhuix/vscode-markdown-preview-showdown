@@ -406,8 +406,17 @@
         .makeHtml(markdown, (csstypes) => {
           that.csstypes = csstypes;
         })
-        .then((html) => {
-          that.previewElement.innerHTML = that.changeVscodeResourceProtocol(html);
+        .then((res) => {
+          if (typeof res === 'object') {
+            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res.html);
+            previewer.completedHtml(res.scripts);
+          } else {
+            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(html);
+          }
+        })
+        .catch((err) => {
+          that.previewElement.innerHTML = '';
+          console.log(err);
         });
     }
 
