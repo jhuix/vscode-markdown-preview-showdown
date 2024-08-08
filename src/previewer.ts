@@ -878,7 +878,7 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
 </script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.js`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
       true
     )}"></script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
