@@ -23,9 +23,12 @@
     "mermaid",
     "plantuml",
     "preview",
+    "railroad",
     "showdown",
     "showdowns",
     "vega",
+    "viz",
+    "wavedrom",
     "MDPS"
   ],
   "icon": "media/logo.png",
