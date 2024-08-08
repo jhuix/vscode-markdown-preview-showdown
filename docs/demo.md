@@ -680,7 +680,7 @@ OR
 
 ```vega-lite {"align":"right"}
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Plots two functions using a generated sequence.",
   "width": 300,
   "height": 150,
