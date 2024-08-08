@@ -2,7 +2,7 @@
  * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
  * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
  */
-(function(
+(function (
   previewer,
   cdnName,
   defScheme,
@@ -26,6 +26,7 @@
       this.menus = menus;
       this.selector = selector ? selector : document;
       this.csstypes = {};
+      this.scripts = [];
       this.initMenuItem(menuItems);
       document.body.appendChild(this.menus);
       this.initWindowEvents();
@@ -37,7 +38,7 @@
         event.preventDefault();
         that.show(event.clientX, event.clientY);
       });
-      document.addEventListener('click', function(e) {
+      document.addEventListener('click', function (e) {
         that.hide();
       });
     }
@@ -214,7 +215,7 @@
           {
             type: 'menu',
             title: localize('menu.browsehtml'),
-            onclick: function(e, s) {
+            onclick: function (e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
               if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
@@ -222,19 +223,26 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('openInBrowser', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
           {
             type: 'menu',
             title: localize('menu.exporthtml'),
-            onclick: function(e, s) {
+            onclick: function (e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
               if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
@@ -242,19 +250,26 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('exportHTML', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
           {
             type: 'menu',
             title: localize('menu.exportpdf'),
-            onclick: function(e, s) {
+            onclick: function (e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
               if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
@@ -262,23 +277,36 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('exportPDF', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
           {
             type: 'menu',
             title: localize('menu.exportpng'),
-            onclick: function(e, s) {
+            onclick: function (e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
               if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
                 let styleHTML = elVegaEmbedStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
@@ -287,14 +315,15 @@
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
           {
             type: 'menu',
             title: localize('menu.exportjpg'),
-            onclick: function(e, s) {
+            onclick: function (e, s) {
               let styles = [];
               const elVegaEmbedStyle = document.getElementById('vega-embed-style');
               if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
@@ -302,12 +331,19 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('exportJPEG', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           }
@@ -319,15 +355,31 @@
 
     changeFileProtocol(html) {
       if (this.config.vscode) {
-        html = html.replace(/(\<img.*src=")vscode-webview.*file\/\/\//g, '$1file:///');
-        html = html.replace(new RegExp(`(\<img.*src=")file:\/\/\/` + uriPath, `g`), '$1.');
+        html = html.replace(new RegExp(`(\<img.*src=")(.*?vscode-webview.*?)"`, `g`), function (match, tag, url) {
+          let imgUrl = new URL(decodeURIComponent(url));
+          imgUrl.protocol = 'file:';
+          imgUrl.host = '';
+          // url = imgUrl.toString().toLowerCase().replace("file:///" + uriPath.toLowerCase(), ".");
+          url = imgUrl.toString();
+          console.log(url);
+          return tag + url + '"';
+        });
+        html = html.replace(new RegExp(`"([^"]*?file.*?\.vscode-resource\.vscode-cdn\.net\/)(.*?)"`, `g`), function(match, tag, url){
+          let imgUrl = new URL(decodeURIComponent(url));
+          imgUrl.protocol = 'file:';
+          imgUrl.host = '';
+          url = imgUrl.toString();
+          console.log(url);
+          return '"' + url + '"';
+        })
       }
       return html.trim();
     }
 
     changeVscodeResourceProtocol(html) {
       if (this.config.vscode) {
-        const vscodeResourceScheme = defScheme.substr(0, defScheme.toLowerCase().indexOf('file///') + 7);
+        let resUrl = new URL(defScheme);
+        const vscodeResourceScheme = resUrl.origin + '/';
         html = html.replace(/(\<img.*src=")file:\/\/\//g, '$1' + vscodeResourceScheme);
         html = html.replace(/(\<img.*src=")\.\//g, '$1' + vscodeResourceScheme + uriPath + '/');
       }
@@ -397,8 +449,20 @@
         .makeHtml(markdown, (csstypes) => {
           that.csstypes = csstypes;
         })
-        .then((html) => {
-          that.previewElement.innerHTML = that.changeVscodeResourceProtocol(html);
+        .then((res) => {
+          if (typeof res === 'object') {
+            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res.html);
+            that.scripts = res.scripts;
+            previewer.completedHtml(res.scripts, '.showdowns');
+          } else {
+            that.scripts = [];
+            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res);
+          }
+        })
+        .catch((err) => {
+          that.scripts = [];
+          that.previewElement.innerHTML = '';
+          console.log(err);
         });
     }
 

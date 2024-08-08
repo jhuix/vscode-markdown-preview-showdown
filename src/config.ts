@@ -99,7 +99,6 @@ export class PreviewConfig {
       }
       if (this.mathDelimiters.texmath.inline.length === 0) {
         this.mathDelimiters.texmath.inline = [
-          { left: '$', right: '$' },
           { left: '\\(', right: '\\)' }
         ];
       }
@@ -112,7 +111,12 @@ export class PreviewConfig {
       if (this.mathDelimiters.texmath.display.length === 0) {
         this.mathDelimiters.texmath.display = [
           { left: '$$', right: '$$' },
-          { left: '\\[', right: '\\]' }
+          { left: '\\[', right: '\\]' },
+          { left: "\\begin{equation}", right: "\\end{equation}" },
+          { left: "\\begin{align}", right: "\\end{align}" },
+          { left: "\\begin{alignat}", right: "\\end{alignat}" },
+          { left: "\\begin{gather}", right: "\\end{gather}" },
+          { left: "\\begin{CD}", right: "\\end{CD}" }              
         ];
       }
 
@@ -123,8 +127,7 @@ export class PreviewConfig {
       }
       if (this.mathDelimiters.asciimath.inline.length === 0) {
         this.mathDelimiters.asciimath.inline = [
-          { left: '@ ', right: ' @' },
-          { left: '~ ', right: ' ~' }
+          { left: '\\$', right: '\\$' }
         ];
       }
 

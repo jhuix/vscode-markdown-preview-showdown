@@ -16,6 +16,19 @@ const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
 const plantumlAPI = require('./plantuml');
 
+
+// tslint:disable-next-line: class-name
+interface outerScript {
+  name: string|undefined|null;
+  src:  string|undefined|null;
+}
+
+// tslint:disable-next-line: class-name
+interface innerScript {
+  id: string|undefined|null;
+  code: string|undefined|null;
+}
+
 // tslint:disable-next-line: class-name
 interface localizedInfo {
   [key: string]: string;
@@ -196,13 +209,13 @@ export class ShowdownPreviewer {
         (message) => {
           switch (message.command) {
             case 'openInBrowser':
-              this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4]);
+              this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4], message.args[5]);
               break;
             case 'exportHTML':
-              this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4]);
+              this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4], message.args[5]);
               break;
             case 'exportPDF':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4]);
+              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4], message.args[5]);
               break;
             case 'exportPNG':
               this.exportChrome(
@@ -211,6 +224,7 @@ export class ShowdownPreviewer {
                 message.args[2],
                 message.args[3],
                 message.args[4],
+                message.args[5],
                 'png'
               );
               break;
@@ -221,6 +235,7 @@ export class ShowdownPreviewer {
                 message.args[2],
                 message.args[3],
                 message.args[4],
+                message.args[5],
                 'jpg'
               );
               break;
@@ -296,12 +311,19 @@ export class ShowdownPreviewer {
       });
   }
 
+
   public async saveLocalHtml(
     htmlPath: string,
     doc: { type: string; content: string } | string,
     title: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: []
+    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: [],
+    scripts: [{
+      outer: [outerScript]|outerScript|undefined|null;
+      id: string|undefined|null;
+      code: string|undefined|null;
+      inner: [innerScript]|innerScript|undefined|null
+    }]
   ) {
     if (!title) {
       title = 'Preview Markdown File';
@@ -329,10 +351,22 @@ export class ShowdownPreviewer {
       }
     );
 
+    let abcStyle = '';
     let katexStyle = '';
     let railroadStyle = '';
     let sequencesStyle = '';
     if (typeof csstypes === 'object') {
+      if (csstypes.hasOwnProperty('hasAbc') && csstypes.hasAbc) {
+        const abcCSS = await utils.readFile(
+          path.join(this.context.extensionPath, 'node_modules/abcjs/abcjs-audio.css'),
+          {
+            encoding: 'utf-8'
+          }
+        );
+
+        abcStyle = `<style type="text/css">${abcCSS}</style>`;
+      }
+
       if (csstypes.hasOwnProperty('hasKatex') && csstypes.hasKatex) {
         const katexCSS = await utils.readFile(
           path.join(this.context.extensionPath, 'node_modules/katex/dist/katex.min.css'),
@@ -379,6 +413,23 @@ export class ShowdownPreviewer {
     if (styles.length > 0) {
       for (let item of styles) {
         otherStyles = otherStyles + item;
+      }
+    }
+
+    var scriptElements = '';
+    if (scripts.length > 0) {
+      for (let i = 0; i < scripts.length; i++) {
+        const script = scripts[i];
+        if (typeof script === 'object' && script.hasOwnProperty('outer') && script.outer) {
+          if (!Array.isArray(script.outer)) {
+            script.outer = [script.outer];
+          }
+          script.outer.forEach(o => {
+            const src = o.src?.replace('vscode-webview:', 'https:');
+            const name = o.name?.toLocaleLowerCase();
+            scriptElements += `<script id='script-${name}' src='${src}'></script>`;
+          });
+        }
       }
     }
 
@@ -454,7 +505,8 @@ export class ShowdownPreviewer {
       background: rgba(128, 135, 139, 0.8);
     }
     </style>
-    <style type="text/css">${showdowncss}</style>${katexStyle}${railroadStyle}${sequencesStyle}${otherStyles}
+    <style type="text/css">${showdowncss}</style>${abcStyle}${katexStyle}${railroadStyle}${sequencesStyle}${otherStyles}
+    ${scriptElements}
     </head>
     <body>
     <div class="workspace-container">${doc}</div>
@@ -470,8 +522,14 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: []
+    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: [],
+    scripts: [{
+      outer: [outerScript]|outerScript|undefined|null;
+      id: string|undefined|null;
+      code: string|undefined|null;
+      inner: [innerScript]|innerScript|undefined|null
+    }]
   ) {
     let dest = '';
     if (uri) {
@@ -483,7 +541,7 @@ export class ShowdownPreviewer {
     } else {
       dest = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
-    await this.saveLocalHtml(dest, doc, title, csstypes, styles);
+    await this.saveLocalHtml(dest, doc, title, csstypes, styles, scripts);
 
     const actionItem = localize(this.config.locale, 'msg.exploredir');
     vscode.window
@@ -500,15 +558,21 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: []
+    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    styles: [],
+    scripts: [{
+      outer: [outerScript]|outerScript|undefined|null;
+      id: string|undefined|null;
+      code: string|undefined|null;
+      inner: [innerScript]|innerScript|undefined|null
+    }]
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
       let dest = srcUri.fsPath;
       const extname = path.extname(dest);
       dest = dest.replace(new RegExp(extname + '$'), '.html');
-      await this.saveLocalHtml(dest, doc, title, csstypes, styles);
+      await this.saveLocalHtml(dest, doc, title, csstypes, styles, scripts);
       const actionItem = localize(this.config.locale, 'msg.exploredir');
       vscode.window
         .showInformationMessage(localize(this.config.locale, 'msg.createdfile', path.basename(dest), dest), actionItem)
@@ -525,8 +589,14 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
+    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
     styles: [],
+    scripts: [{
+      outer: [outerScript]|outerScript|undefined|null;
+      id: string|undefined|null;
+      code: string|undefined|null;
+      inner: [innerScript]|innerScript|undefined|null
+    }],
     fileType = 'pdf'
   ) {
     if (!uri) return;
@@ -536,7 +606,7 @@ export class ShowdownPreviewer {
     const fsHash = crypto.createHash('md5');
     fsHash.update(dest);
     const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
-    await this.saveLocalHtml(htmlPath, doc, title, csstypes, styles);
+    await this.saveLocalHtml(htmlPath, doc, title, csstypes, styles, scripts);
 
     const extname = path.extname(dest);
     dest = dest.replace(new RegExp(extname + '$'), `.${fileType}`);
@@ -808,7 +878,7 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
 </script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.js`,
       true
     )}"></script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>

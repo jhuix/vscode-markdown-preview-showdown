@@ -26,6 +26,7 @@
       this.menus = menus;
       this.selector = selector ? selector : document;
       this.csstypes = {};
+      this.scripts = [];
       this.initMenuItem(menuItems);
       document.body.appendChild(this.menus);
       this.initWindowEvents();
@@ -222,12 +223,19 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('openInBrowser', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
@@ -242,12 +250,19 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('exportHTML', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
@@ -262,12 +277,19 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('exportPDF', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
@@ -282,12 +304,19 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }
               that.postMessage('exportPNG', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           },
@@ -302,12 +331,19 @@
                 styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
                 styles.push(styleHTML);
               }
+              const abcAudioStyle = document.getElementById('css-abc-audio');
+              if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+                let styleHTML = abcAudioStyle.outerHTML;
+                styleHTML = styleHTML.replace(/\<br[\/]?\>/g, '');
+                styles.push(styleHTML);
+              }              
               that.postMessage('exportJPEG', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.csstypes,
-                styles
+                styles,
+                that.scripts
               ]);
             }
           }
@@ -320,7 +356,7 @@
     changeFileProtocol(html) {
       if (this.config.vscode) {
         html = html.replace(new RegExp(`(\<img.*src=")(.*?vscode-webview.*?)"`, `g`), function (match, tag, url) {
-          let imgUrl = new URL(url);
+          let imgUrl = new URL(decodeURIComponent(url));
           imgUrl.protocol = 'file:';
           imgUrl.host = '';
           // url = imgUrl.toString().toLowerCase().replace("file:///" + uriPath.toLowerCase(), ".");
@@ -328,7 +364,14 @@
           console.log(url);
           return tag + url + '"';
         });
-        // html = html.replace(new RegExp(`(\<img.*src=")file:\/\/\/` + uriPath, `g`), '$1.');
+        html = html.replace(new RegExp(`"([^"]*?file.*?\.vscode-resource\.vscode-cdn\.net\/)(.*?)"`, `g`), function(match, tag, url){
+          let imgUrl = new URL(decodeURIComponent(url));
+          imgUrl.protocol = 'file:';
+          imgUrl.host = '';
+          url = imgUrl.toString();
+          console.log(url);
+          return '"' + url + '"';
+        })
       }
       return html.trim();
     }
@@ -409,12 +452,15 @@
         .then((res) => {
           if (typeof res === 'object') {
             that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res.html);
-            previewer.completedHtml(res.scripts);
+            that.scripts = res.scripts;
+            previewer.completedHtml(res.scripts, '.showdowns');
           } else {
-            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(html);
+            that.scripts = [];
+            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res);
           }
         })
         .catch((err) => {
+          that.scripts = [];
           that.previewElement.innerHTML = '';
           console.log(err);
         });
