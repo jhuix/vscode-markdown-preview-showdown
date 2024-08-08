@@ -1,5 +1,5 @@
 
-<h1 align="center">MDPS: MarkDown-Preview-Showdown</h1>
+<h1 align="center">MDPS: Markdown-Preview-Showdown</h1>
 
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="https://jhuix.github.io/vscode-markdown-preview-showdown/screenshot/vscode-mdps.png" alt="markdown-preview-showdown"></a></p>
 
@@ -9,7 +9,7 @@ A excellent markdown preview vscode extension with [showdowns](https://github.co
 
 ## Features
 
-[MarkDown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC, export HTML, export PDF etc.
+[Markdown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC, export HTML, export PDF etc.
 
 MDPS converte markdown content to html that using the [@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package. See to [Demo Features](https://jhuix.github.io/vscode-markdown-preview-showdown):
 
@@ -80,15 +80,15 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.katex.mathDelimiters`:
 
-  Delimiters of katex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"$ \", \"right\": \" $\"},{\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string, it means that the internal default values is used.
+  Delimiters of katex math, format is {\"left\": \"chars\", \"right\": \"chars\"}; Multiple delimiters are separated by ',', example: {\"left\": \"\\(\", \"right\": \"\\)\"}; Default value is an empty string, it means that the internal default values is used.
   
   The internal default values of each attribute are as follows:
   
   | Attribute Name | Internal Default Value |
   | -------------- | ---------------------- |
-  | latexinline | { \"left\": \"$ \", \"right\": \" $\" },{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" } |
+  | latexinline | { \"left\": \"\\\\(\", \"right\": \"\\\\)\" } |
   | latexdisplay | { \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" } |
-  | asciiinline | { \"left\": \"@ \", \"right\": \" @\" },{ \"left\": \"~ \", \"right\": \" ~\" } |
+  | asciiinline | { \"left\": \"\\\\~\", \"right\": \"\\\\~\" } |
   | asciidisplay | { \"left\": \"@@\", \"right\": \"@@\" } |
 
 * `markdown-preview-showdown.mermaid.theme`:
