@@ -43,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     context.subscriptions.push(
       vscode.workspace.onDidOpenTextDocument((document) => {
-        output.log('onDidOpenTextDocument: ' + document.uri);
+        // output.log('onDidOpenTextDocument: ' + document.uri);
         if (ShowdownPreviewer.isMarkdownFile(document) && contentPreviewer.isAutoPreview()) {
           openPreview(document.uri);
         }
@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {
-      output.log('onDidChangeConfiguration' + event.affectsConfiguration.toString());
+      // output.log('onDidChangeConfiguration' + event.affectsConfiguration.toString());
       contentPreviewer.updateConfiguration();
     })
   );

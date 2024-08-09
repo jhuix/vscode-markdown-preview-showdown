@@ -361,7 +361,6 @@
           imgUrl.host = '';
           // url = imgUrl.toString().toLowerCase().replace("file:///" + uriPath.toLowerCase(), ".");
           url = imgUrl.toString();
-          console.log(url);
           return tag + url + '"';
         });
         html = html.replace(new RegExp(`"([^"]*?file.*?\.vscode-resource\.vscode-cdn\.net\/)(.*?)"`, `g`), function(match, tag, url){
@@ -369,7 +368,6 @@
           imgUrl.protocol = 'file:';
           imgUrl.host = '';
           url = imgUrl.toString();
-          console.log(url);
           return '"' + url + '"';
         })
       }

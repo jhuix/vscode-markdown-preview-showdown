@@ -761,14 +761,14 @@ Bob-->Alice: I am good thanks!
 #### Markdown Syntax
 
 ````
-```echarts {"align": "left | center | right", "codeblock": true | false, "width":400, "height":300}
+```echarts {"align": "left | center | right", "codeblock": true | false, "width":400, "height":300, "type": "javascript" | "json"}
 <code content>
 ```
 ````
 
 #### Echarts example
 
-```echarts {"align":"center"}
+```echarts {"align":"center", "width":640, "height":480}
 {
   "title": { "text": "最近 30 天" },
   "tooltip": { "trigger": "axis", "axisPointer": { "lineStyle": { "width": 0 } } },
@@ -796,6 +796,43 @@ Bob-->Alice: I am good thanks!
     }
   ]
 }
+```
+
+```echarts {"align":"center", "width":640, "height":480, "type":"javascript"}
+const data = [];
+for (let i = 0; i <= 100; i++) {
+  let theta = (i / 100) * 360;
+  let r = 5 * (1 + Math.sin((theta / 180) * Math.PI));
+  data.push([r, theta]);
+}
+const option = {
+  title: {
+    text: 'Two Value-Axes in Polar'
+  },
+  legend: {
+    data: ['line']
+  },
+  polar: {},
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    }
+  },
+  angleAxis: {
+    type: 'value',
+    startAngle: 0
+  },
+  radiusAxis: {},
+  series: [
+    {
+      coordinateSystem: 'polar',
+      name: 'line',
+      type: 'line',
+      data: data
+    }
+  ]
+};
 ```
 
 ### ABC
