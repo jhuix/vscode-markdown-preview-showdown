@@ -194,6 +194,11 @@
           "default": "",
           "type": "string",
           "scope": "machine"
+        },
+        "markdown-preview-showdown.cssPath": {
+          "description": "%mdps.cssPath%",
+          "default": [],
+          "scope": "machine"
         }
       }
     }

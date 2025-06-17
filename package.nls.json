@@ -19,5 +19,6 @@
   "mdps.plantuml.website": "When the setting item of plantumlrendermode is mode \"remote\", the remote rendering website to be set, default web site is \"www.plantuml.com/plantuml\".",
   "mdps.puppeteer.useCore": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
   "mdps.puppeteer.waitForTimeout": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
-  "mdps.puppeteer.chromePath": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically."
+  "mdps.puppeteer.chromePath": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.",
+  "mdps.cssPath": "Path to custom styles for preview and export. May be relative or absolute."
 }
