@@ -17,6 +17,7 @@ export class PreviewConfig {
     return typeof data === 'undefined' ? defaultValue : data;
   }
 
+  public cssPath: string;
   public locale: string;
   public autoPreview: boolean;
   public fontSize: number;
@@ -49,7 +50,8 @@ export class PreviewConfig {
   public constructor(context: vscode.ExtensionContext) {
     this.printBackground = false;
     this.locale = 'en';
-    // Get gurrent localization id, default 'en'.
+    this.cssPath = '';
+    // Get current localization id, default 'en'.
     if (typeof process.env.VSCODE_NLS_CONFIG === 'string') {
       const vscodeOptions = JSON.parse(process.env.VSCODE_NLS_CONFIG);
       if (vscodeOptions.hasOwnProperty('locale') && vscodeOptions.locale) {
@@ -61,6 +63,7 @@ export class PreviewConfig {
       const config = vscode.workspace.getConfiguration(PreviewConfig.packageName);
 
       this.autoPreview = PreviewConfig.getData(config.get('autoPreview'), true);
+      this.cssPath = PreviewConfig.getData(config.get('cssPath'), '');
       this.scrollSync = PreviewConfig.getData(config.get('scrollSync'), true);
       this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
       this.mermaidTheme = PreviewConfig.getData(config.get('mermaid.theme'), 'default');
@@ -143,6 +146,7 @@ export class PreviewConfig {
       }
     } else {
       this.autoPreview = false;
+      this.cssPath = '';
       this.fontSize = PreviewConfig.defaultFontSize;
       this.scrollSync = true;
       this.flavor = 'github';

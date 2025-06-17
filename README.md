@@ -123,6 +123,25 @@ This extension contributes the following settings:
 
     Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically `(only for windows)`.
 
+* `markdown-preview-showdown.cssPath`:
+
+    A relative (./default.css) or absolute path (x:/styles/default.css) to a css file containing custom styles. For example, the following style will allow font ligatures to display in the preview or exported versions where `class="fira"` is used:
+
+```css
+      .fira {
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1, "clig" 1;
+      line-height: 1.0;
+      margin: 0 !important;
+      padding: 0  !important;
+      border: none !important;
+      display: inline !important;
+      background: none !important;
+      vertical-align: baseline;
+    }
+```
+
 ## Keybindings
 
 |OS|Key|Command|

@@ -410,6 +410,15 @@ export class ShowdownPreviewer {
     }
 
     let otherStyles = '';
+    // Include custom CSS from cssPath if specified and file exists
+    if (this.config.cssPath) {
+      try {
+        const customCss = await utils.readFile(this.config.cssPath, { encoding: 'utf-8' });
+        otherStyles += `<style type="text/css">${customCss}</style>`;
+      } catch (e) {
+        // Ignore if file not found or error reading
+      }
+    }
     if (styles.length > 0) {
       for (let item of styles) {
         otherStyles = otherStyles + item;
@@ -812,7 +821,7 @@ export class ShowdownPreviewer {
   private async generateHTML() {
     if (this.webpanel && this.uri) {
       this.webpanel.title = localize(this.config.locale, 'msg.previewfile', path.basename(this.uri.fsPath));
-      this.generateHTMLTemplate(this.uri, this.webpanel.webview);
+      await this.generateHTMLTemplate(this.uri, this.webpanel.webview);
     }
   }
   /**
@@ -829,12 +838,22 @@ export class ShowdownPreviewer {
     return diskPath.toString();
   }
 
-  private generateHTMLTemplate(uri: vscode.Uri, webview: vscode.Webview) {
+  private async generateHTMLTemplate(uri: vscode.Uri, webview: vscode.Webview) {
     const title = path.basename(uri.fsPath, path.extname(uri.fsPath));
 
     let langMeta = '';
     if (this.config.locale !== 'en') {
       langMeta = `<meta http-equiv="Content-Language" content="${this.config.locale}">`;
+    }
+
+    let customCss = '';
+    if (this.config.cssPath) {
+      try {
+        customCss = await utils.readFile(this.config.cssPath, { encoding: 'utf-8' });
+      } catch (e) {
+        // File not found or error reading, ignore or handle as needed
+        customCss = '';
+      }
     }
 
     webview.html = `<!DOCTYPE html>
@@ -862,6 +881,7 @@ export class ShowdownPreviewer {
       true
     )}">
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
+<style type="text/css">${customCss}</style>
 </head>
 <body>
 <script>
