@@ -2,10 +2,37 @@
  * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
  * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
  */
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import * as _mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
+import * as https from 'https';
 
+function getFile(url: string) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        let data = '';
+        if (response.statusCode !== 200) {
+          reject(`Request Failed. Status Code: ${response.statusCode}`);
+          return;
+        }
+
+        // 接收数据
+        response.on('data', (d) => {
+          data += d;
+        });
+
+        // 完成接收数据
+        response.on('end', () => {
+          resolve(data);
+        });
+      })
+      .on('error', (err) => {
+        reject('Error: ' + err.message);
+      });
+  });
+}
+exports.getFile = getFile;
 function readFile(file: fs.PathLike | number, options: { encoding?: null; flag?: string } | undefined | null) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, options, (error, text) => {
@@ -45,10 +72,10 @@ exports.write = write;
 function execFile(
   file: string,
   args: ReadonlyArray<string> | undefined | null,
-  options: child_process.ExecFileOptionsWithBufferEncoding
+  options: childProcess.ExecFileOptionsWithBufferEncoding
 ) {
   return new Promise((resolve, reject) => {
-    child_process.execFile(file, args, options, (error, stdout, stderr) => {
+    childProcess.execFile(file, args, options, (error, stdout, stderr) => {
       if (error) {
         return reject(error.toString());
       } else if (stderr) {
@@ -60,9 +87,9 @@ function execFile(
   });
 }
 exports.execFile = execFile;
-function mkdirp(dir: string) {
+function mkdir(dir: string) {
   return new Promise((resolve, reject) => {
-    _mkdirp(dir)
+    mkdirp(dir)
       .then((made) => {
         return resolve(made);
       })
@@ -71,7 +98,7 @@ function mkdirp(dir: string) {
       });
   });
 }
-exports.mkdirp = mkdirp;
+exports.mkdirp = mkdir;
 /**
  * open html file in browser or open pdf file in reader ... etc
  * @param filePath string
@@ -83,14 +110,14 @@ function openFile(filePath: string) {
       filePath = 'file:///' + filePath;
     }
     if (filePath.startsWith('file:///')) {
-      return child_process.execFile('explorer.exe', [filePath]);
+      return childProcess.execFile('explorer.exe', [filePath]);
     } else {
-      return child_process.exec(`start ${filePath}`);
+      return childProcess.exec(`start ${filePath}`);
     }
   } else if (process.platform === 'darwin') {
-    child_process.execFile('open', [filePath]);
+    childProcess.execFile('open', [filePath]);
   } else {
-    child_process.execFile('xdg-open', [filePath]);
+    childProcess.execFile('xdg-open', [filePath]);
   }
 }
 exports.openFile = openFile;
@@ -99,7 +126,7 @@ exports.openFile = openFile;
 function regQuery(key: string, valueName?: string) {
   return new Promise((resolve, reject) => {
     const cmd = `REG QUERY \"${key}\"` + (valueName ? ` /v ${valueName}` : ' /ve');
-    child_process.exec(cmd, (error, stdout, stderr) => {
+    childProcess.exec(cmd, (error, stdout, stderr) => {
       if (error) {
         return reject(error.toString());
       } else if (stderr) {
@@ -109,10 +136,7 @@ function regQuery(key: string, valueName?: string) {
         if (outs.length < 2) {
           return resolve('');
         }
-        outs = outs[1]
-          .trim()
-          .replace(/ +/g, ' ')
-          .split(' ');
+        outs = outs[1].trim().replace(/ +/g, ' ').split(' ');
         return resolve(outs.length > 2 ? outs.slice(2).join(' ') : '');
       }
     });

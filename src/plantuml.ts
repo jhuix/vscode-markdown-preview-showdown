@@ -4,7 +4,7 @@
  */
 'use strict';
 
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as path from 'path';
 
 const output = require('./output');
@@ -42,7 +42,7 @@ class PlantumlRenderer {
   private count: number;
   private resolves: Array<(result: string) => void>;
   private closeResolves: Array<(result: string) => void>;
-  private render: child_process.ChildProcessWithoutNullStreams | null;
+  private render: childProcess.ChildProcessWithoutNullStreams | null;
 
   public constructor(fileDirectoryPath: string) {
     this.fileDirectoryPath = fileDirectoryPath;
@@ -100,7 +100,7 @@ class PlantumlRenderer {
   }
 
   private startRender() {
-    this.render = child_process.spawn('java', [
+    this.render = childProcess.spawn('java', [
       '-Djava.awt.headless=true',
       '-Dplantuml.include.path=' + this.fileDirectoryPath,
       '-jar',
@@ -195,7 +195,7 @@ ${content}
   if (!renderer || !renderer.isActivated()) {
     // init `Plantuml.jar` renderer
     renderer = new PlantumlRenderer(fileDirectoryPath);
-    if (!renderer) return '';
+    if (!renderer) { return ''; }
     RENDERERS[fileDirectoryPath] = renderer;
   }
   return await renderer.generateSVG(count, content);

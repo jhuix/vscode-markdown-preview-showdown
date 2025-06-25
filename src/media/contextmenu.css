@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+.context-menu-list {
+  position: absolute;
+  display: inline-block;
+  max-width: 26em;
+  padding: 0.25em 0;
+  margin: 0.3em;
+  font-family: inherit;
+  font-size: inherit;
+  list-style-type: none;
+  background: #fff;
+  border: 1px solid #bebebe;
+  border-radius: 0.2em;
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.context-menu-item {
+  position: relative;
+  padding: 0.2em 2em;
+  color: #2f2f2f;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: #fff;
+}
+
+.context-menu-separator {
+  padding: 0;
+  margin: 0.35em 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.context-menu-item:hover {
+  color: #fff;
+  cursor: pointer;
+  background-color: #2980b9;
+}
+
+.context-menu-item:disabled {
+  color: #bbb;
+  cursor: default;
+  background-color: #fff;
+}
+
+.context-menu-submenu:after {
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  z-index: 1;
+  width: 0;
+  height: 0;
+  content: '';
+  border-color: transparent transparent transparent #2f2f2f;
+  border-style: solid;
+  border-width: 0.25em 0 0.25em 0.25em;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.context-menu-item > .context-menu-list {
+  top: 0.3em;
+  right: -0.3em;
+  display: none;
+}
+
+.context-menu-item.context-menu-visible > .context-menu-list {
+  display: block;
+}
+
+.context-menu-accesskey {
+  text-decoration: underline;
+}

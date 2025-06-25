@@ -16,20 +16,32 @@ const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
 const plantumlAPI = require('./plantuml');
 
+interface cssLink {
+  id: string | undefined | null;
+  link: string;
+}
 
-// tslint:disable-next-line: class-name
+interface cssStyle {
+  id: string | undefined | null;
+  style: string;
+}
+
 interface outerScript {
-  name: string|undefined|null;
-  src:  string|undefined|null;
+  name: string | undefined | null;
+  src: string | undefined | null;
 }
 
-// tslint:disable-next-line: class-name
 interface innerScript {
-  id: string|undefined|null;
-  code: string|undefined|null;
+  id: string | undefined | null;
+  code: string | undefined | null;
+  host: string | undefined | null;
 }
 
-// tslint:disable-next-line: class-name
+interface showdownScript extends innerScript {
+  outer: [outerScript] | outerScript | undefined | null;
+  inner: [innerScript] | innerScript | undefined | null;
+}
+
 interface localizedInfo {
   [key: string]: string;
 }
@@ -124,12 +136,12 @@ export class ShowdownPreviewer {
   private firstPreview: boolean;
   private config: PreviewConfig;
   private options: {
-    flavor: string | undefined,
-    plantuml: Object | undefined | null,
-    markdown: Object | undefined | null,
-    mermaid: Object | undefined | null,
-    katex: Object | undefined | null,
-    vega: Object | undefined | null
+    flavor: string | undefined;
+    plantuml: Object | undefined | null;
+    markdown: Object | undefined | null;
+    mermaid: Object | undefined | null;
+    katex: Object | undefined | null;
+    vega: Object | undefined | null;
   };
   private currentLine: number;
   private context: vscode.ExtensionContext;
@@ -209,13 +221,34 @@ export class ShowdownPreviewer {
         (message) => {
           switch (message.command) {
             case 'openInBrowser':
-              this.openInBrowser(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4], message.args[5]);
+              this.openInBrowser(
+                message.args[0],
+                message.args[1],
+                message.args[2],
+                message.args[3],
+                message.args[4],
+                message.args[5]
+              );
               break;
             case 'exportHTML':
-              this.exportHTML(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4], message.args[5]);
+              this.exportHTML(
+                message.args[0],
+                message.args[1],
+                message.args[2],
+                message.args[3],
+                message.args[4],
+                message.args[5]
+              );
               break;
             case 'exportPDF':
-              this.exportChrome(message.args[0], message.args[1], message.args[2], message.args[3], message.args[4], message.args[5]);
+              this.exportChrome(
+                message.args[0],
+                message.args[1],
+                message.args[2],
+                message.args[3],
+                message.args[4],
+                message.args[5]
+              );
               break;
             case 'exportPNG':
               this.exportChrome(
@@ -290,10 +323,10 @@ export class ShowdownPreviewer {
         data.count,
         data.code,
         path.dirname(uri.fsPath) +
-        path.delimiter +
-        path.resolve(__dirname, '../media/plantuml') +
-        path.delimiter +
-        path.resolve(__dirname, '../node_modules/plantuml-style-c4'),
+          path.delimiter +
+          path.resolve(__dirname, '../media/plantuml') +
+          path.delimiter +
+          path.resolve(__dirname, '../node_modules/plantuml-style-c4'),
         this.config.plantumlTheme
       )
       .then((svg: string) => {
@@ -307,23 +340,18 @@ export class ShowdownPreviewer {
         }
       })
       .catch((err: any) => {
-        output.log(err)
+        output.log(err);
       });
   }
-
 
   public async saveLocalHtml(
     htmlPath: string,
     doc: { type: string; content: string } | string,
     title: string,
-    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: [],
-    scripts: [{
-      outer: [outerScript]|outerScript|undefined|null;
-      id: string|undefined|null;
-      code: string|undefined|null;
-      inner: [innerScript]|innerScript|undefined|null
-    }]
+    tocDirection: string,
+    cssLinks: [cssLink] | null,
+    cssStyles: [cssStyle] | null,
+    scripts: [showdownScript] | null
   ) {
     if (!title) {
       title = 'Preview Markdown File';
@@ -351,86 +379,131 @@ export class ShowdownPreviewer {
       }
     );
 
-    let abcStyle = '';
-    let katexStyle = '';
-    let railroadStyle = '';
-    let sequencesStyle = '';
-    if (typeof csstypes === 'object') {
-      if (csstypes.hasOwnProperty('hasAbc') && csstypes.hasAbc) {
-        const abcCSS = await utils.readFile(
-          path.join(this.context.extensionPath, 'node_modules/abcjs/abcjs-audio.css'),
-          {
-            encoding: 'utf-8'
-          }
-        );
-
-        abcStyle = `<style type="text/css">${abcCSS}</style>`;
-      }
-
-      if (csstypes.hasOwnProperty('hasKatex') && csstypes.hasKatex) {
-        const katexCSS = await utils.readFile(
-          path.join(this.context.extensionPath, 'node_modules/katex/dist/katex.min.css'),
-          {
-            encoding: 'utf-8'
-          }
-        );
-
-        katexStyle = `<style type="text/css">${katexCSS.replace(
+    const getCssContent = (content: string, id: string | undefined | null): string => {
+      if (id === 'css-katex') {
+        return `<style id="${id}" type="text/css">${content.replace(
           /url\(fonts/gi,
           'url(https://cdn.jsdelivr.net/npm/katex/dist/fonts'
-        )}</style>`;
+        )}</style>\n`;
       }
 
-      if (csstypes.hasOwnProperty('hasRailroad') && csstypes.hasRailroad) {
-        const railroadCSS = await utils.readFile(
-          path.join(this.context.extensionPath, 'node_modules/railroad-diagrams/railroad-diagrams.css'),
-          {
-            encoding: 'utf-8'
-          }
-        );
-
-        railroadStyle = `<style type="text/css">${railroadCSS}</style>`;
-      }
-
-      if (csstypes.hasOwnProperty('hasSequence') && csstypes.hasSequence) {
-        const sequencesCSS = await utils.readFile(
-          path.join(
-            this.context.extensionPath,
-            'node_modules/@rokt33r/js-sequence-diagrams/dist/sequence-diagram-min.css'
-          ),
-          {
-            encoding: 'utf-8'
-          }
-        );
-
-        sequencesStyle = `<style type="text/css">${sequencesCSS.replace(/url\(([\s\S]*?)\)/gi, (match: string) => {
+      if (id === 'css-sequence') {
+        return `<style id="${id}" type="text/css">${content.replace(/url\(([\s\S]*?)\)/gi, (match: string) => {
           return match.replace('danielbd', 'https://cdn.jsdelivr.net/npm/@rokt33r/js-sequence-diagrams/dist/danielbd');
-        })}</style>`;
+        })}</style>\n`;
       }
-    }
 
-    let otherStyles = '';
-    if (styles.length > 0) {
-      for (let item of styles) {
-        otherStyles = otherStyles + item;
+      if (id) {
+        return `<style id="${id}" type="text/css">${content}</style>\n`;
       }
-    }
 
-    var scriptElements = '';
-    if (scripts.length > 0) {
-      for (let i = 0; i < scripts.length; i++) {
-        const script = scripts[i];
-        if (typeof script === 'object' && script.hasOwnProperty('outer') && script.outer) {
-          if (!Array.isArray(script.outer)) {
-            script.outer = [script.outer];
+      return `<style type="text/css">${content}</style>\n`;
+    };
+
+    let cssContents = '';
+    if (cssLinks && cssLinks.length > 0) {
+      for (let css of cssLinks) {
+        try {
+          const url = new URL(css.link);
+          if (url.protocol === 'https:' || url.protocol === 'http:') {
+            const cssContent = await utils.getFile(url);
+            cssContents += getCssContent(cssContent, css.id);
+            continue;
           }
-          script.outer.forEach(o => {
-            const src = o.src?.replace('vscode-webview:', 'https:');
-            const name = o.name?.toLocaleLowerCase();
-            scriptElements += `<script id='script-${name}' src='${src}'></script>`;
+
+          if (url.protocol === 'dist:' && css.link.length > 7) {
+            const link = css.link.substring(7);
+            const cssContent = await utils.readFile(path.join(this.context.extensionPath, 'node_modules', link), {
+              encoding: 'utf-8'
+            });
+            cssContents += getCssContent(cssContent, css.id);
+            continue;
+          }
+
+          if (url.protocol === 'file:' && css.link.length > 8) {
+            const link = css.link.substring(8);
+            const cssContent = await utils.readFile(path.join('', link), {
+              encoding: 'utf-8'
+            });
+            cssContents += getCssContent(cssContent, css.id);
+          }
+          continue;
+        } catch {}
+        let cssContent = '';
+        let rootPath = '';
+        const prefix = 'css-ex-';
+        if (css.id?.substring(0, prefix.length) === prefix) {
+          rootPath = this.uri ? path.dirname(this.uri.fsPath) : '';
+        } else {
+          rootPath = path.join(this.context.extensionPath, 'node_modules');
+        }
+        try {
+          cssContent = await utils.readFile(path.join(rootPath, css.link), {
+            encoding: 'utf-8'
           });
+        } catch {}
+        if (cssContent.length > 0) {
+          cssContents += getCssContent(cssContent, css.id);
         }
       }
+    }
+    if (cssStyles && cssStyles.length > 0) {
+      for (let css of cssStyles) {
+        if (css.id) {
+          cssContents += `<style id="${css.id}" type="text/css">${css.style}</style>\n`;
+        } else {
+          cssContents += `<style type="text/css">${css.style}</style>\n`;
+        }
+      }
+    }
+
+    let outerScripts = '';
+    let innerScripts = '';
+    let bodyScripts = '';
+    if (scripts && scripts.length > 0) {
+      for (let i = 0; i < scripts.length; i++) {
+        const script = scripts[i];
+        if (typeof script === 'object') {
+          if (script.hasOwnProperty('outer') && script.outer) {
+            if (!Array.isArray(script.outer)) {
+              script.outer = [script.outer];
+            }
+            script.outer.forEach((o) => {
+              const src = o.src?.replace('vscode-webview:', 'https:');
+              const name = o.name?.toLocaleLowerCase();
+              outerScripts += `<script id='script-${name}' src='${src}'></script>\n`;
+            });
+          }
+
+          if (script.hasOwnProperty('code') && script.code) {
+            if (script.id) {
+              bodyScripts = `<script id='script-${script.id}'>${script.code}</script>\n`;
+            } else {
+              bodyScripts = `<script>${script.code}</script>\n`;
+            }
+          }
+
+          if (script.hasOwnProperty('inner') && script.inner) {
+            if (!Array.isArray(script.inner)) {
+              script.inner = [script.inner];
+            }
+            script.inner.forEach((s) => {
+              if (s.code) {
+                if (s.id) {
+                  innerScripts += `<script id='script-${s.id}'>${s.code}</script>\n`;
+                } else {
+                  innerScripts += `<script>${s.code}</script>\n`;
+                }
+              }
+            });
+          }
+        }
+      }
+    }
+
+    let dyncClass = '';
+    if (tocDirection === 'row') {
+      dyncClass = 'main-toc-row';
     }
 
     const html = `<!DOCTYPE html>
@@ -466,6 +539,7 @@ export class ShowdownPreviewer {
       font-family: Helvetica Neue, NotoSansHans-Regular, AvenirNext-Regular, arial, Hiragino Sans GB, Microsoft Yahei, WenQuanYi Micro Hei, Arial, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
       height: 100%;
+      font-size: 1.4rem;
     }
     a {
       color: rgb(0, 122, 204);
@@ -481,7 +555,15 @@ export class ShowdownPreviewer {
     }
     .workspace-container {
       overflow: hidden;
-      margin: 8px 15px 8px 15px;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+    .workspace-container.main-toc-row {
+      flex-direction: row;
+      justify-content: flex-end;  
+    }
+    .main-toc-row .total-toc {
+      width: 30em !important;
     }
     ::-webkit-scrollbar {
       -webkit-appearance: none;
@@ -505,11 +587,13 @@ export class ShowdownPreviewer {
       background: rgba(128, 135, 139, 0.8);
     }
     </style>
-    <style type="text/css">${showdowncss}</style>${abcStyle}${katexStyle}${railroadStyle}${sequencesStyle}${otherStyles}
-    ${scriptElements}
+    <style type="text/css">${showdowncss}</style>
+    ${cssContents}
+    ${outerScripts}
     </head>
     <body>
-    <div class="workspace-container">${doc}</div>
+    <div class="workspace-container ${dyncClass}">${doc}${innerScripts}</div>
+    ${bodyScripts}
     </body>
     </html>`;
 
@@ -522,14 +606,9 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: [],
-    scripts: [{
-      outer: [outerScript]|outerScript|undefined|null;
-      id: string|undefined|null;
-      code: string|undefined|null;
-      inner: [innerScript]|innerScript|undefined|null
-    }]
+    cssLinks: [cssLink] | null,
+    cssStyles: [cssStyle] | null,
+    scripts: [showdownScript] | null
   ) {
     let dest = '';
     if (uri) {
@@ -541,7 +620,7 @@ export class ShowdownPreviewer {
     } else {
       dest = path.join(path.resolve(os.tmpdir()), `mdsp-temp.html`);
     }
-    await this.saveLocalHtml(dest, doc, title, csstypes, styles, scripts);
+    await this.saveLocalHtml(dest, doc, title, 'row', cssLinks, cssStyles, scripts);
 
     const actionItem = localize(this.config.locale, 'msg.exploredir');
     vscode.window
@@ -558,21 +637,16 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: [],
-    scripts: [{
-      outer: [outerScript]|outerScript|undefined|null;
-      id: string|undefined|null;
-      code: string|undefined|null;
-      inner: [innerScript]|innerScript|undefined|null
-    }]
+    cssLinks: [cssLink] | null,
+    cssStyles: [cssStyle] | null,
+    scripts: [showdownScript] | null
   ) {
     if (uri) {
       const srcUri = vscode.Uri.parse(uri);
       let dest = srcUri.fsPath;
       const extname = path.extname(dest);
       dest = dest.replace(new RegExp(extname + '$'), '.html');
-      await this.saveLocalHtml(dest, doc, title, csstypes, styles, scripts);
+      await this.saveLocalHtml(dest, doc, title, 'row', cssLinks, cssStyles, scripts);
       const actionItem = localize(this.config.locale, 'msg.exploredir');
       vscode.window
         .showInformationMessage(localize(this.config.locale, 'msg.createdfile', path.basename(dest), dest), actionItem)
@@ -589,14 +663,9 @@ export class ShowdownPreviewer {
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
-    csstypes: { hasAbc: boolean; hasKatex: boolean; hasRailroad: boolean; hasSequence: boolean },
-    styles: [],
-    scripts: [{
-      outer: [outerScript]|outerScript|undefined|null;
-      id: string|undefined|null;
-      code: string|undefined|null;
-      inner: [innerScript]|innerScript|undefined|null
-    }],
+    cssLinks: [cssLink] | null,
+    cssStyles: [cssStyle] | null,
+    scripts: [showdownScript] | null,
     fileType = 'pdf'
   ) {
     if (!uri) return;
@@ -606,7 +675,7 @@ export class ShowdownPreviewer {
     const fsHash = crypto.createHash('md5');
     fsHash.update(dest);
     const htmlPath = path.join(path.resolve(os.tmpdir()), `mdsp-${fsHash.digest('hex')}.html`);
-    await this.saveLocalHtml(htmlPath, doc, title, csstypes, styles, scripts);
+    await this.saveLocalHtml(htmlPath, doc, title, 'column', cssLinks, cssStyles, scripts);
 
     const extname = path.extname(dest);
     dest = dest.replace(new RegExp(extname + '$'), `.${fileType}`);
@@ -638,7 +707,7 @@ export class ShowdownPreviewer {
         }
       }
       browser = await puppeteer.launch({
-        executablePath: this.config.chromePath || require('chrome-location'),
+        executablePath: this.config.chromePath || require('chrome-location').getChromeLocation(),
         headless: true
       });
     } else {
@@ -782,11 +851,7 @@ export class ShowdownPreviewer {
   }
 
   public changeVisibleRanges(editor: vscode.TextEditor) {
-    if (
-      !this.config.scrollSync ||
-      Date.now() < this.editorScrollDelay ||
-      !editor.visibleRanges.length
-    ) {
+    if (!this.config.scrollSync || Date.now() < this.editorScrollDelay || !editor.visibleRanges.length) {
       // this.previewPostMessage({
       //   command: 'breakMessage'
       // });
@@ -834,26 +899,47 @@ export class ShowdownPreviewer {
 
     let langMeta = '';
     if (this.config.locale !== 'en') {
-      langMeta = `<meta http-equiv="Content-Language" content="${this.config.locale}">`;
+      langMeta = ` lang="${this.config.locale}"`;
     }
 
     webview.html = `<!DOCTYPE html>
-<html>
+<html${langMeta}>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">${langMeta}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <style type="text/css">
-  body {
+  html {
     font-size: ${this.config.fontSize}px;
+  }
+  body {
+    font-size: 1.4rem;
     line-height: 1.6;
+    padding: 0;
   }
   a {
-    color: #569cd6;
+    color: #569cd6 !important;
+  }
+  i {
+    color: currentColor !important;
   }
   a:hover {
     color: #00a3f5;
+  }
+  .workspace-container {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .workspace-container.main-toc-row {
+    flex-direction: row;
+    justify-content: flex-end;  
+  }
+  .main-toc-row .total-toc {
+    width: 30em !important;
+  }
+  .toc-switch {
+    right: 2rem !important;
   }
 </style>
 <link rel="stylesheet" href="${this.changeFileProtocol(
@@ -865,16 +951,24 @@ export class ShowdownPreviewer {
 </head>
 <body>
 <script>
-var markdown_flavor = "${this.options.flavor}";
-var markdown_options = \`${JSON.stringify(this.options.markdown).replace(/\\/g, "\\\\")}\`;
-var mermaid_options = \`${JSON.stringify(this.options.mermaid).replace(/\\/g, "\\\\")}\`;
-var katex_options = \`${JSON.stringify(this.options.katex).replace(/\\/g, "\\\\")}\`;
-var vega_options = \`${JSON.stringify(this.options.vega).replace(/\\/g, "\\\\")}\`;
-var plantuml_rendermode = "${this.config.plantumlRenderMode}";
-var plantuml_website = "${this.config.plantumlWebsite}";
-var uri_path = "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}";
-var scheme_default = "${this.changeFileProtocol(webview, `node_modules/`, true)}";
-var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}";
+window.mdsp = {
+  options: {
+    vscode: true,
+    cdnName: "local",
+    defScheme: "${this.changeFileProtocol(webview, `node_modules/`, true)}",
+    distScheme: "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}",
+    uriPath: "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}",
+    flavor: "${this.options.flavor}",
+    markdown: ${JSON.stringify(this.options.markdown).replace(/\\/g, '\\\\')},
+    plantuml: {
+      renderMode: "${this.config.plantumlRenderMode}",
+      umlWebSite: "${this.config.plantumlWebsite}"
+    },
+    mermaid: ${JSON.stringify(this.options.mermaid).replace(/\\/g, '\\\\')},
+    katex: ${JSON.stringify(this.options.katex).replace(/\\/g, '\\\\')},
+    vega: ${JSON.stringify(this.options.vega).replace(/\\/g, '\\\\')},
+  }
+}
 </script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
       webview,
@@ -902,12 +996,12 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
 
   private _getChangedOptions(depth: boolean) {
     let options: {
-      flavor: string,
-      plantuml: Object,
-      markdown: Object,
-      mermaid: Object,
-      katex: Object,
-      vega: Object
+      flavor: string;
+      plantuml: Object;
+      markdown: Object;
+      mermaid: Object;
+      katex: Object;
+      vega: Object;
     } = {
       flavor: this.config.flavor,
       plantuml: {},
@@ -966,7 +1060,6 @@ var scheme_dist = "${this.changeFileProtocol(webview, `node_modules/@jhuix/showd
 
     return null;
   }
-
 
   private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
     const editor = this.getEditor();

@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 
 export class PreviewConfig {
   public static packageName: string;
-  public static defaultFontSize = 14;
+  public static defaultFontSize = 10;
 
   public static getCurrentConfig(context: vscode.ExtensionContext) {
     return new PreviewConfig(context);

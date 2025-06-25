@@ -1,5 +1,21 @@
 # Release Notes
 
+## v1.4.2
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.9:
+
+2. Modify default font size is 10px;
+
+## v1.3.10
+1. Update @jhuix/showdowns v0.6.4:
+
+2. Support echarts and abcjs plugin.
+
+3. Update name and keywords of package.
+
+
+## v1.3.8
+1. Update @jhuix/showdowns v0.5.7.
+
 ## v1.3.7
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.6:
 

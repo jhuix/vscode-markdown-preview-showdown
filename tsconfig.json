@@ -2,15 +2,17 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
-    "outDir": "out",
+    "outDir": "dist",
     "lib": [
-      "es6"
+      "es6",
+      "dom"
     ],
     "allowJs": true,
     "sourceMap": true,
     "rootDir": "src",
-    "strict": true /* enable all strict type-checking options */
+    "strict": true, /* enable all strict type-checking options */
     /* Additional Checks */
+    "forceConsistentCasingInFileNames": true
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
     // "noUnusedParameters": true,  /* Report errors on unused parameters. */
@@ -19,7 +21,6 @@
     "src/**/*"
   ],
   "exclude": [
-    "media",
     "node_modules",
     ".vscode-test"
   ]
