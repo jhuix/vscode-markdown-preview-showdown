@@ -1,23 +1,38 @@
 # Release Notes
 
 ## v1.4.2
-1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.9:
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.10:
 
-2. Modify default font size is 10px;
+   - Add css defined extension.
+
+   - Add cssLinks output attribute.
+
+2. Update other dependencies to new version.
+
+3. Modify default font size  of settting is 10px;
+
+4. Use esbuild to build code.
+
+5. Use ESLint to check the code.
+
+## v1.4.1
+1. Update @jhuix/showdowns v0.6.7.
+
+## v1.4.0
+1. Update @jhuix/showdowns v0.6.6.
 
 ## v1.3.10
-1. Update @jhuix/showdowns v0.6.4:
+1. Update @jhuix/showdowns v0.6.4.
 
 2. Support echarts and abcjs plugin.
 
 3. Update name and keywords of package.
 
-
 ## v1.3.8
 1. Update @jhuix/showdowns v0.5.7.
 
 ## v1.3.7
-1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.6:
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.6.
 
 2. Modify default values of the 4 math delimiters;
 
@@ -30,7 +45,7 @@
 ## v1.3.6
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.5:
 
-   - Fixed failed to mark CSS link related to render only inline katex math..
+   - Fixed failed to mark CSS link related to render only inline katex math.
 
    - Add a additional delimiters format of katex options.
 
