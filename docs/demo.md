@@ -588,7 +588,7 @@ OR
 
 ```vega {"align":"center"}
 {
-  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
   "width": 200,
   "height": 200,
   "autosize": "none",
@@ -682,7 +682,7 @@ OR
 
 ```vega-lite {"align":"right"}
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Plots two functions using a generated sequence.",
   "width": 300,
   "height": 150,
