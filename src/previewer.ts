@@ -541,18 +541,6 @@ export class ShowdownPreviewer {
       height: 100%;
       font-size: 1.4rem;
     }
-    a {
-      color: rgb(0, 122, 204);
-    }
-    a:hover,
-    a:focus {
-      color: rgb(0, 137, 255);
-    }
-    code {
-      background-color: #f8f8f8;
-      border-color: #dfdfdf;
-      color: #333;
-    }
     .workspace-container {
       overflow: hidden;
       display: flex;
@@ -561,9 +549,6 @@ export class ShowdownPreviewer {
     .workspace-container.main-toc-row {
       flex-direction: row;
       justify-content: flex-end;  
-    }
-    .main-toc-row .total-toc {
-      width: 30em !important;
     }
     ::-webkit-scrollbar {
       -webkit-appearance: none;
@@ -590,10 +575,24 @@ export class ShowdownPreviewer {
     <style type="text/css">${showdowncss}</style>
     ${cssContents}
     ${outerScripts}
+    <style type="text/css">
+    a {
+      color: rgb(0, 122, 204);
+    }
+    a:hover,
+    a:focus {
+      color: rgb(0, 137, 255);
+    }
+    code {
+      background-color: #f8f8f8;
+      border-color: #dfdfdf;
+      color: #333;
+    }
+    </style>
     </head>
     <body>
+    ${bodyScripts}    
     <div class="workspace-container ${dyncClass}">${doc}${innerScripts}</div>
-    ${bodyScripts}
     </body>
     </html>`;
 
@@ -917,15 +916,6 @@ export class ShowdownPreviewer {
     line-height: 1.6;
     padding: 0;
   }
-  a {
-    color: #569cd6 !important;
-  }
-  i {
-    color: currentColor !important;
-  }
-  a:hover {
-    color: #00a3f5;
-  }
   .workspace-container {
     overflow: hidden;
     display: flex;
@@ -935,12 +925,6 @@ export class ShowdownPreviewer {
     flex-direction: row;
     justify-content: flex-end;  
   }
-  .main-toc-row .total-toc {
-    width: 30em !important;
-  }
-  .toc-switch {
-    right: 2rem !important;
-  }
 </style>
 <link rel="stylesheet" href="${this.changeFileProtocol(
       webview,
@@ -948,6 +932,17 @@ export class ShowdownPreviewer {
       true
     )}">
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
+<style type="text/css">
+  a {
+    color: #569cd6;
+  }
+  i {
+    color: currentColor;
+  }
+  a:hover {
+    color: #00a3f5;
+  }
+</style>
 </head>
 <body>
 <script>
