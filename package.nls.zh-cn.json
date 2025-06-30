@@ -5,6 +5,7 @@
   "mdps.openPreview": "预览MD文件",
   "mdps.autoPreview": "自动预览markdown文件。",
   "mdps.fontSize": "预览页面的自定义字体大小。",
+  "mdps.autoToc": "自动产生markdown文件的总目录。",
   "mdps.scrollSync": "自动同步滚屏。",
   "mdps.flavor": "预览HTML页面的风格，可选择项为[\"github\", \"ghost\", \"vanilla\", \"original\"],默认风格为\"github\"。",
   "mdps.mermaid.theme": "渲染Mermaid图表的主题式样，可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"]，默认主题为\"default\"。",

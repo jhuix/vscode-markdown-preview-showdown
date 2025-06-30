@@ -949,7 +949,8 @@ export class ShowdownPreviewer {
 window.mdsp = {
   options: {
     vscode: true,
-    cdnName: "local",
+    autoToc: ${this.config.autoToc ? 'true' : 'false'},
+    cdnName: "local",    
     defScheme: "${this.changeFileProtocol(webview, `node_modules/`, true)}",
     distScheme: "${this.changeFileProtocol(webview, `node_modules/@jhuix/showdowns/dist/`, true)}",
     uriPath: "${path.dirname(uri.fsPath).replace(/\\/g, `/`)}",

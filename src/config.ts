@@ -20,6 +20,7 @@ export class PreviewConfig {
   public locale: string;
   public autoPreview: boolean;
   public fontSize: number;
+  public autoToc: boolean;
   public scrollSync: boolean;
   public flavor: string;
   public mermaidTheme: string;
@@ -62,6 +63,7 @@ export class PreviewConfig {
 
       this.autoPreview = PreviewConfig.getData(config.get('autoPreview'), true);
       this.scrollSync = PreviewConfig.getData(config.get('scrollSync'), true);
+      this.autoToc = PreviewConfig.getData(config.get('autoToc'), true);
       this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
       this.mermaidTheme = PreviewConfig.getData(config.get('mermaid.theme'), 'default');
       this.mermaidOptions = PreviewConfig.getData(config.get('mermaid.options'), {});
@@ -144,6 +146,7 @@ export class PreviewConfig {
     } else {
       this.autoPreview = false;
       this.fontSize = PreviewConfig.defaultFontSize;
+      this.autoToc = true;
       this.scrollSync = true;
       this.flavor = 'github';
       this.mermaidTheme = 'default';

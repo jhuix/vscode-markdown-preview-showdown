@@ -24,6 +24,7 @@
   function initOptions(opts) {
     const defOptions = {
       vscode: false,
+      autoToc: true,
       cdnName: 'local',
       defScheme: '',
       distScheme: '../node_modules/@jhuix/showdowns/dist/',
@@ -424,11 +425,14 @@
       });
     }
 
-    updateMarkdown(markdown, options) {
-      options = options || null;
-      if (options instanceof Object) {
-        this.config.options = options;
-        this.updateOptions(options);
+    updateMarkdown(markdown, mdOptions) {
+      mdOptions = mdOptions || null;
+      if (mdOptions instanceof Object) {
+        this.config.options = mdOptions;
+        this.updateOptions(mdOptions);
+      }
+      if (options.autoToc) {
+        markdown = '[TOC]\n\n' + markdown;
       }
 
       const that = this;

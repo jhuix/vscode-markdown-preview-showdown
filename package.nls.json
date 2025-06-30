@@ -5,6 +5,7 @@
   "mdps.openPreview": "Preview MD File",
   "mdps.autoPreview": "Automatic preview markdown file.",
   "mdps.fontSize": "Custom font size of preview page.",
+  "mdps.autoToc": "Automatic generate the total directory of the markdown file.",
   "mdps.scrollSync": "Automatic scroll sync.",
   "mdps.flavor": "Flavor of preview html page, you can choose one from [\"github\", \"ghost\", \"vanilla\", \"original\"], default flavor is \"github\".",
   "mdps.mermaid.theme": "Mermaid theme, you can choose one from [\"default\", \"dark\", \"forest\", \"neutral\"].",
