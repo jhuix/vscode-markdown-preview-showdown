@@ -1,6 +1,6 @@
 const esbuild = require('esbuild');
 
-const production = process.argv.includes('--production');
+const production = process.argv.includes('--production') || process.argv.includes('--omit=dev');
 const watch = process.argv.includes('--watch');
 
 /**

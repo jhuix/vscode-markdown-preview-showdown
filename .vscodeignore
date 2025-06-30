@@ -12,3 +12,5 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 *-lock.json
+**/eslint.config.mjs
+esbuild*.js
