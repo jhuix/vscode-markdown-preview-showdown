@@ -1,5 +1,21 @@
 # Release Notes
 
+## v1.4.4
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.12:
+
+   - Update title of showdows-toc displays the text in the current language.
+
+   - Fixed to fliter duplicate definitions of total toc.
+
+2. Add 'autoToc' setting.
+
+## v1.4.3
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.11:
+
+   - Add vertical divider for vertical total toc.
+
+2. Optimize the loading order of output CSS and scripts.
+
 ## v1.4.2
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.10:
 
