@@ -49,11 +49,11 @@ After setting these environment variables you need to restart VSCode for the ext
 
 ### For export PDF or PNG or JPEG:
 
-  When `markdown-preview-showdown.puppeteer.useCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.puppeteer.chromePath`. The chrome-location globally installed by npm:
+  When `markdown-preview-showdown.puppeteer.useCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.puppeteer.chromePath`. The chrome-location package also already exists in the extension, but it can also be globally installed by npm:
 
         npm install -g chrome-location
 
-  When `markdown-preview-showdown.puppeteer.useCore` setting is false, this extension require puppeteer package. The puppeteer globally installed by npm:
+  When `markdown-preview-showdown.puppeteer.useCore` setting is false, this extension require puppeteer package that needs to be globally installed by npm:
 
         npm install -g puppeteer
 
@@ -76,11 +76,11 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.autoToc`:
 
-    Automatic generate the total directory of the markdown file, default true.
+    Automatic generate the total table of content of the markdown file, default true.
 
 * `markdown-preview-showdown.fontSize`:
 
-    Custom font size of preview page, default "14" px.
+    Custom font size of preview page, default "10" px.
 
 * `markdown-preview-showdown.scrollSync`:
 
