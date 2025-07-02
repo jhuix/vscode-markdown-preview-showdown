@@ -1,15 +1,15 @@
 
 <h1 align="center">MDPS: Markdown-Preview-Showdown</h1>
 
+A excellent markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
+
+> If you think the vscode extension can help you or also hope to encourage the author, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️.
+
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps0.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps1.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps2.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps3.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps4.png" alt="markdown-preview-showdown"></a></p>
-
-A excellent markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
-
-> If you think the vscode extension can help you or also hope to encourage the author, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️.
 
 ## Features
 
