@@ -1,5 +1,12 @@
 # Release Notes
 
+## v1.4.5
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.13:
+
+   - Update css of toc.
+
+2. Preview html with generator's annotation.
+
 ## v1.4.4
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.12:
 
