@@ -10,6 +10,7 @@
   "mdps.flavor": "预览HTML页面的风格，可选择项为[\"github\", \"ghost\", \"vanilla\", \"original\"],默认风格为\"github\"。",
   "mdps.mermaid.theme": "渲染Mermaid图表的主题式样，可选择项为[\"default\", \"dark\", \"forest\", \"neutral\"]，默认主题为\"default\"。",
   "mdps.katex.mathDelimiters": "Katex数学公式的分割标识，格式为{\"left\": \"chars\", \"right\": \"chars\"}；有多项分割标识用逗号分隔，例如：{\"left\": \"\\\\(\", \"right\": \"\\\\)\"}；各属性默认值为空字符串表示使用内部默认值。\n\n各属性内部默认值如下：\nlatexInline的内部默认值为{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" }\nlatexDisplay的内部默认值为{ \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" }\nasciiInline的内部默认值为{ \"left\": \"\\\\$\", \"right\": \"\\\\$\" }\nasciiDisplay的内部默认值为{ \"left\": \"@@\", \"right\": \"@@\" }",
+  "mdps.kroki.website": "Kroki远程渲染网址, 默认网址为\"kroki.io\"，支持渲染图形：BlockDiag (BlockDiag, SeqDiag, ActDiag, NwDiag, PacketDiag, RackDiag), BPMN, Bytefield, C4 (with PlantUML), Diagrams.net (experimental), Ditaa, Erd, Excalidraw, GraphViz, Mermaid, Nomnoml, PlantUML, Structurizr, SvgBob, Symbolator, UMLet, Vega, Vega-Lite, WaveDrom and WireViz…​",
   "mdps.latexmath.inline.delimiters": "Latex数学公式的内联分割标识。",
   "mdps.latexmath.display.delimiters": "Latex数学公式的展示分割标识。",
   "mdps.asciimath.inline.delimiters": "Ascii数学公式的内联分割标识。",
@@ -18,7 +19,6 @@
   "mdps.plantuml.theme": "渲染plant uml图的的主题式样，可选择项为[\"default\", \"nature\", \"c4\", \"c4-handwrite\"], 默认主题为\"default\"。",
   "mdps.plantuml.renderMode": "渲染plant uml图的模式，可选择项为[\"local\", \"remote\"]：默认模式为\"local\"，表示为本地渲染，但是本地渲染需要JAVA支持，因而需要安装JAVA环境并设置java执行程序目录至全局PATH环境变量中；而模式\"remote\"表示远程渲染，需要设置plantumlWebsite设置项为远程渲染网址。",
   "mdps.plantuml.website": "当设置项plantuml.renderMode为模式\"remote\"时，需设置的远程渲染网址，默认网址为\"www.plantuml.com/plantuml\"。",
-  "mdps.kroki.website": "Kroki远程渲染网址, 默认网址为\"kroki.io\"，支持渲染图形：[BlockDiag,BPMN,Bytefield,SeqDiag,ActDiag,NwDiag,PacketDiag,RackDiag,C4 with PlantUML,D2,DBML,Ditaa,Erd,Excalidraw,GraphViz,Mermaid,Nomnoml,Pikchr,PlantUML,Structurizr,Svgbob,Symbolator,TikZ,UMlet,Vega,Vega-Lite,WaveDrom,WireViz]",
   "mdps.puppeteer.useCore": "若该值为真，则使用当前插件下安装使用puppeteer-core包（插件自身会自动安装）；否则需要使用脚本`npm install -g puppeteer`手动来全局安装使用puppeteer包并。",
   "mdps.puppeteer.waitForTimeout": "在导出文件时，Puppeteer包执行导出过程运行相关进程的等待时间，单位毫秒，默认值为0表示无限等待直到自动完成导出。",
   "mdps.puppeteer.chromePath": "使用Puppeteer包导出文件时，需设置的Chrome浏览器执行文件（chrome.exe）的文件绝对路径；该值为空时，则表示导出时会自动寻找Chrome浏览器的安装路径。"

@@ -99,6 +99,11 @@ This extension contributes the following settings:
   | asciiinline | { \"left\": \"\\\\~\", \"right\": \"\\\\~\" } |
   | asciidisplay | { \"left\": \"@@\", \"right\": \"@@\" } |
 
+* `markdown-preview-showdown.kroki.website`:
+
+     The kroki remote rendering website to be set, default web site is \"kroki.io\".
+     [Support diagram types](https://kroki.io/#support) for BlockDiag (BlockDiag, SeqDiag, ActDiag, NwDiag, PacketDiag, RackDiag), BPMN, Bytefield, C4 (with PlantUML), Diagrams.net (experimental), Ditaa, Erd, Excalidraw, GraphViz, Mermaid, Nomnoml, PlantUML, Structurizr, SvgBob, Symbolator, UMLet, Vega, Vega-Lite, WaveDrom and WireViz…​
+
 * `markdown-preview-showdown.mermaid.theme`:
 
     Mermaid theme, you can choose one from ["default", "dark", "forest", "neutral"], default is "default" theme.
