@@ -37,6 +37,9 @@
       },
       mermaid: {},
       katex: {},
+      kroki: {
+        serverUrl: 'kroki.io'
+      },
       vega: {}
     };
     return opts ? deepMerge(defOptions, opts) : defOptions;
@@ -137,6 +140,7 @@
       'menu.browsehtml': 'Browse HTML Page',
       'menu.exporthtml': 'Export ➝ HTML',
       'menu.exportpdf': 'Export ➝ PDF',
+      'menu.exportwebp': 'Export ➝ WEBP',
       'menu.exportpng': 'Export ➝ PNG',
       'menu.exportjpg': 'Export ➝ JPG'
     },
@@ -144,6 +148,7 @@
       'menu.browsehtml': '用浏览器打开',
       'menu.exporthtml': '导出文件 ➝ HTML',
       'menu.exportpdf': '导出文件 ➝ PDF',
+      'menu.exportwebp': '导出文件 ➝ WEBP',
       'menu.exportpng': '导出图片 ➝ PNG',
       'menu.exportjpg': '导出图片 ➝ JPG'
     }
@@ -174,6 +179,7 @@
           plantuml: options.plantuml,
           mermaid: options.mermaid,
           katex: options.katex,
+          kroki: options.kroki,
           vega: options.vega
         }
       };
@@ -230,6 +236,9 @@
       }
       if (options.katex) {
         previewer.setKatexOptions(options.katex);
+      }
+      if (options.kroki) {
+        previewer.setKrokiOptions(options.kroki);
       }
     }
 
@@ -297,6 +306,20 @@
             title: localize('menu.exportpdf'),
             onclick: function (e, s) {
               that.postMessage('exportPDF', [
+                that.changeFileProtocol(s.innerHTML),
+                document.title,
+                that.sourceUri,
+                that.cssLinks,
+                that.getOtherStyles(),
+                that.scripts
+              ]);
+            }
+          },
+          {
+            type: 'menu',
+            title: localize('menu.exportwebp'),
+            onclick: function (e, s) {
+              that.postMessage('exportWEBP', [
                 that.changeFileProtocol(s.innerHTML),
                 document.title,
                 that.sourceUri,

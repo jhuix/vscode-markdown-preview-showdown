@@ -17,7 +17,8 @@
   "mdps.vega.theme": "Vega theme, you can choose one from [\"excel\", \"ggplot2\", \"quartz\", \"vox\", \"dark\"], default theme is \"vox\".",
   "mdps.plantuml.theme": "Plantuml theme, you can choose one from [\"default\", \"nature\", \"c4\", \"c4-handwrite\"].",
   "mdps.plantuml.renderMode": "The mode of rendering plant UML diagram, you can choose one from [\"local\", \"remote\"]: the default mode is \"local\", which means local rendering, but local rendering requires Java support, so Java environment needs to be installed and the Java executor directory needs to be set to the global path environment variable; while the mode \"remote\" means remote rendering, which means the setting item of plantumlWebsite needs to be set as the remote rendering URL.",
-  "mdps.plantuml.website": "When the setting item of plantumlrendermode is mode \"remote\", the remote rendering website to be set, default web site is \"www.plantuml.com/plantuml\".",
+  "mdps.plantuml.website": "When the setting item of plantuml.rendermode is mode \"remote\", the remote rendering website to be set, default web site is \"www.plantuml.com/plantuml\".",
+  "mdps.kroki.website": "The kroki remote rendering website to be set, default web site is \"kroki.io\", support render diagram: [BlockDiag,BPMN,Bytefield,SeqDiag,ActDiag,NwDiag,PacketDiag,RackDiag,C4 with PlantUML,D2,DBML,Ditaa,Erd,Excalidraw,GraphViz,Mermaid,Nomnoml,Pikchr,PlantUML,Structurizr,Svgbob,Symbolator,TikZ,UMlet,Vega,Vega-Lite,WaveDrom,WireViz].",
   "mdps.puppeteer.useCore": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
   "mdps.puppeteer.waitForTimeout": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
   "mdps.puppeteer.chromePath": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically."

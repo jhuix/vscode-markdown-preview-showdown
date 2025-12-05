@@ -141,6 +141,7 @@ export class ShowdownPreviewer {
     markdown: Object | undefined | null;
     mermaid: Object | undefined | null;
     katex: Object | undefined | null;
+    kroki: Object | undefined | null;
     vega: Object | undefined | null;
   };
   private currentLine: number;
@@ -169,6 +170,7 @@ export class ShowdownPreviewer {
       markdown: {},
       mermaid: {},
       katex: {},
+      kroki: {},
       vega: {}
     };
     this.config = PreviewConfig.getCurrentConfig(context);
@@ -248,6 +250,17 @@ export class ShowdownPreviewer {
                 message.args[3],
                 message.args[4],
                 message.args[5]
+              );
+              break;
+            case 'exportWEBP':
+              this.exportChrome(
+                message.args[0],
+                message.args[1],
+                message.args[2],
+                message.args[3],
+                message.args[4],
+                message.args[5],
+                'webp'
               );
               break;
             case 'exportPNG':
@@ -503,7 +516,9 @@ export class ShowdownPreviewer {
 
     let dyncClass = '';
     if (tocDirection === 'row') {
-      dyncClass = 'main-toc-row';
+      dyncClass = 'class="main-toc-row"';
+    } else {
+      dyncClass = 'class="main-toc-column"';
     }
 
     let langMeta = '';
@@ -551,21 +566,19 @@ export class ShowdownPreviewer {
       position: relative;
       font-family: Helvetica Neue, NotoSansHans-Regular, AvenirNext-Regular, arial, Hiragino Sans GB, Microsoft Yahei, WenQuanYi Micro Hei, Arial, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
-      height: 100%;
       font-size: 1.4rem;
-      overflow: hidden;
     }
     .workspace-container {
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
+      height: 100%;
     }
-    .main-toc-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      height: calc(100vh - 15px);
-      border-bottom: 1px solid #dfdfdf;
+    @media not print {
+      .main-toc-row {
+        height: calc(100vh - 15px);
+      }
     }
     .extension {
       position: fixed;
@@ -578,8 +591,8 @@ export class ShowdownPreviewer {
     }
     ::-webkit-scrollbar {
       -webkit-appearance: none;
-      width: 10px;
-      height: 10px;
+      width: 5px;
+      height: 5px;
     }
     ::-webkit-scrollbar-track {
       background: rgb(241, 241, 241);
@@ -619,7 +632,7 @@ export class ShowdownPreviewer {
     <body>
     ${bodyScripts}    
     <div class="workspace-container">
-    <div class="${dyncClass}">${doc}${innerScripts}</div>
+    <div ${dyncClass}>${doc}${innerScripts}</div>
     <div class="extension" id="extension_info"><div>
     <a href="https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown" target="_blank" style="color: #999;text-decoration: none;">
     <span>${bottomComment}</span>
@@ -740,6 +753,7 @@ export class ShowdownPreviewer {
       }
       browser = await puppeteer.launch({
         executablePath: this.config.chromePath || require('chrome-location').getChromeLocation(),
+        args: ['--enable-experimental-web-platform-features'],
         headless: true
       });
     } else {
@@ -751,6 +765,7 @@ export class ShowdownPreviewer {
         .trim();
       puppeteer = require(path.resolve(globalNodeModulesPath, './puppeteer')); // trim() function here is very necessary.
       browser = await puppeteer.launch({
+        args: ['--enable-experimental-web-platform-features'],
         headless: true
       });
     }
@@ -776,7 +791,30 @@ export class ShowdownPreviewer {
     if (fileType === 'pdf') {
       await page.pdf(puppeteerConfig);
     } else {
-      await page.screenshot({ fullPage: true, ...puppeteerConfig });
+      const scrollHeight = await page.evaluate('document.body.scrollHeight');
+      const viewportHeight = 12280;
+      if (scrollHeight > viewportHeight) {
+        const viewportWidth = page.viewport().width;
+        console.log('viewport width: ', viewportWidth, ' height: ', viewportHeight, ' scroll height: ', scrollHeight);
+        let pos = 0;
+        while (pos < scrollHeight) {
+          let path = pos === 0 ? dest : dest.replace(new RegExp(`.${fileType}$`), `-${pos}.${fileType}`);
+          const remainHeight = scrollHeight - pos;
+          await page.evaluate(`window.scrollTo(0, ${pos})`);
+          await page.screenshot({
+            path: path,
+            clip: {
+              x: 0,
+              y: pos,
+              width: viewportWidth,
+              height: remainHeight < viewportHeight ? remainHeight : viewportHeight
+            }
+          });
+          pos += viewportHeight;
+        }
+      } else {
+        await page.screenshot({ fullPage: true, ...puppeteerConfig });
+      }
     } // <= set to fullPage by default
     browser.close();
     const actionItem = localize(this.config.locale, 'msg.exploredir');
@@ -952,11 +990,13 @@ export class ShowdownPreviewer {
   .workspace-container {
     overflow: hidden;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
-  .workspace-container.main-toc-row {
-    flex-direction: row;
-    justify-content: flex-end;  
+  @media not print {
+    .main-toc-row .total-toc {
+      background-color: var(--vscode-editor-background) !important;
+      border: 1px solid var(--vscode-editorOverviewRuler-addedForeground);
+    }
   }
 </style>
 <link rel="stylesheet" href="${this.changeFileProtocol(
@@ -995,6 +1035,9 @@ window.mdsp = {
     },
     mermaid: ${JSON.stringify(this.options.mermaid).replace(/\\/g, '\\\\')},
     katex: ${JSON.stringify(this.options.katex).replace(/\\/g, '\\\\')},
+    kroki: {
+      serverUrl: "${this.config.krokiWebsite}"
+    },
     vega: ${JSON.stringify(this.options.vega).replace(/\\/g, '\\\\')},
   }
 }
@@ -1030,6 +1073,7 @@ window.mdsp = {
       markdown: Object;
       mermaid: Object;
       katex: Object;
+      kroki: Object;
       vega: Object;
     } = {
       flavor: this.config.flavor,
@@ -1037,12 +1081,16 @@ window.mdsp = {
       markdown: {},
       mermaid: {},
       katex: {},
+      kroki: {},
       vega: {}
     };
     Object.assign(options.markdown, this.config.markdownOptions);
     Object.assign(options.plantuml, {
       renderMode: this.config.plantumlRenderMode,
       umlWebSite: this.config.plantumlWebsite
+    });
+    Object.assign(options.kroki, {
+      serverUrl: this.config.krokiWebsite
     });
     Object.assign(options.mermaid, this.config.mermaidOptions, { theme: this.config.mermaidTheme });
     Object.assign(options.katex, this.config.katexOptions, { mathDelimiters: this.config.mathDelimiters });
@@ -1069,6 +1117,10 @@ window.mdsp = {
           this.options.katex = {};
           Object.assign(this.options.katex, options.katex);
         }
+        if (!this._objectIsEqual(options.kroki, this.options.kroki)) {
+          this.options.kroki = {};
+          Object.assign(this.options.kroki, options.kroki);
+        }
         if (!this._objectIsEqual(options.vega, this.options.vega)) {
           this.options.vega = {};
           Object.assign(this.options.vega, options.vega);
@@ -1080,6 +1132,7 @@ window.mdsp = {
           markdown: {},
           mermaid: {},
           katex: {},
+          kroki: {},
           vega: {}
         };
         Object.assign(this.options, options);

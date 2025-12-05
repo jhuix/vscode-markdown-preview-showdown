@@ -28,6 +28,7 @@ export class PreviewConfig {
   public plantumlTheme: string;
   public plantumlRenderMode: string;
   public plantumlWebsite: string;
+  public krokiWebsite: string;
   public usePuppeteerCore: boolean;
   public puppeteerWaitForTimeout: number;
   public chromePath: string;
@@ -74,6 +75,7 @@ export class PreviewConfig {
       this.markdownOptions = PreviewConfig.getData(config.get('markdown.options'), {});
       this.plantumlRenderMode = PreviewConfig.getData(config.get('plantuml.renderMode'), 'local');
       this.plantumlWebsite = PreviewConfig.getData(config.get('plantuml.website'), 'www.plantuml.com/plantuml');
+      this.krokiWebsite = PreviewConfig.getData(config.get('kroki.website'), 'kroki.io');
       this.chromePath = PreviewConfig.getData(config.get('puppeteer.chromePath'), '');
       this.usePuppeteerCore = PreviewConfig.getData(config.get('puppeteer.useCore'), this.chromePath ? true : false);
       this.puppeteerWaitForTimeout = PreviewConfig.getData(config.get('puppeteer.waitForTimeout'), 0);
@@ -154,6 +156,7 @@ export class PreviewConfig {
       this.plantumlTheme = 'default';
       this.plantumlRenderMode = 'local';
       this.plantumlWebsite = 'www.plantuml.com/plantuml';
+      this.krokiWebsite = "kroki.io";
       this.usePuppeteerCore = false;
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';
