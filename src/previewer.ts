@@ -566,7 +566,7 @@ export class ShowdownPreviewer {
       position: relative;
       font-family: Helvetica Neue, NotoSansHans-Regular, AvenirNext-Regular, arial, Hiragino Sans GB, Microsoft Yahei, WenQuanYi Micro Hei, Arial, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
     }
     .workspace-container {
       overflow-x: hidden;

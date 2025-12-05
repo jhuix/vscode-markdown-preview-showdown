@@ -129,6 +129,11 @@
           },
           "description": "%mdps.katex.mathDelimiters%"
         },
+        "markdown-preview-showdown.kroki.website": {
+          "description": "%mdps.kroki.website%",
+          "default": "kroki.io",
+          "type": "string"
+        },
         "markdown-preview-showdown.mermaid.theme": {
           "description": "%mdps.mermaid.theme%",
           "default": "default",
@@ -177,11 +182,6 @@
           "default": "www.plantuml.com/plantuml",
           "type": "string"
         },
-        "markdown-preview-showdown.kroki.website": {
-          "description": "%mdps.kroki.website%",
-          "default": "kroki.io",
-          "type": "string"
-        },
         "markdown-preview-showdown.puppeteer.useCore": {
           "description": "%mdps.puppeteer.useCore%",
           "default": true,
@@ -204,11 +204,15 @@
   "scripts": {
     "prepare": "npm run package",
     "vscode:prepublish": "npm run package",
-    "compile": "npm run check-types && npm run lint && node esbuild.js && node esbuild-web.js",
+    "compile": "npm run check-types && npm run lint && npm run build:dev && npm run web:dev",
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npm run check-types && npm run lint && node esbuild.js --omit=dev && node esbuild-web.js --omit=dev",
+    "package": "npm run check-types && npm run lint && npm run build && npm run web",
+    "build": "node esbuild.js --omit=dev",
+    "build:dev": "node esbuild.js",
+    "web": "node esbuild-web.js --omit=dev",
+    "web:dev": "node esbuild-web.js",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -220,17 +224,17 @@
     "@types/mkdirp": "^2.0.0",
     "@types/node": "^12.12.58",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/eslint-plugin": "^8.34.1",
-    "@typescript-eslint/parser": "^8.34.1",
-    "esbuild": "^0.25.5",
-    "eslint": "^9.29.0",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
+    "esbuild": "^0.27.1",
+    "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "glob": "^11.0.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.6.0",
     "semver": "^7.7.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@jhuix/showdowns": "^0.6.14",

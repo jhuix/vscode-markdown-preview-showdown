@@ -1,5 +1,17 @@
 # Release Notes
 
+## 1.4.6
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.14:
+
+   - Support kroki api for render diagram.
+   - Update regular expression of toc.
+   - Fixed css of print.
+
+2. Add 'kroki.website' setting.
+
+3. Add 'Export ➝ WEBP' menu of preview page.
+
 ## v1.4.5
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.13:
 
