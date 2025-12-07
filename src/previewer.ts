@@ -8,6 +8,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import fetch from 'cross-fetch';
 import { PreviewConfig } from './config';
 
 const utils = require('./utils');
@@ -294,6 +295,10 @@ export class ShowdownPreviewer {
             case 'renderPlantuml':
               this.renderLocalPlantuml(message.args[0]);
               break;
+            case 'fetch':
+              console.log('message is', message);
+              this.crossFetch(message.args[0], message.args[1], message.args[2]);
+              break;
           }
         },
         null,
@@ -354,6 +359,25 @@ export class ShowdownPreviewer {
       })
       .catch((err: any) => {
         output.log(err);
+      });
+  }
+  public crossFetch(id: string, input: string | URL | Request, init?: RequestInit) {
+    const that = this;
+    fetch(input, init)
+      .then((res) => {       
+        if (res.ok) {
+          return res.text();
+        }
+
+        throw new Error(`HTTP/HTTPS request failed: status: ${res.status} error: ${res.statusText}`);
+      })
+      .then((data) => {
+        const preview = that.getPreview();
+        preview?.webview.postMessage({ command: 'onfetch', id: id, response: data });
+      })
+      .catch((err) => {
+        const preview = that.getPreview();
+        preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
       });
   }
 

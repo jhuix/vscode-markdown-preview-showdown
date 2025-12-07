@@ -109,6 +109,7 @@
 
   <body>
     <script type="text/javascript">
+      let fetch = window.fetch;
       window.mdsp = {
         options: {
           cdnName: 'jsdelivr',
@@ -126,8 +127,7 @@
       // var plantuml_rendermode = 'remote';
       window.addEventListener('showdownsLoaded', function (e) {
         let md = '';
-        window
-          .fetch('https://jhuix.github.io/vscode-markdown-preview-showdown/demo.md')
+        fetch('https://jhuix.github.io/vscode-markdown-preview-showdown/demo.md')
           .then(function (res) {
             if (res.ok) {
               return res.text();

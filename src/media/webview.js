@@ -4,6 +4,16 @@
  */
 
 (function (previewer, options) {
+  function hashString(str) {
+    const seed = 31;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (Math.imul(seed, hash) + char) | 0;
+    }
+    return hash >>> 0;
+  }
+
   function deepMerge(target, source) {
     let output = Object.assign({}, target);
     if (typeof source !== 'object' || !source) {
@@ -431,6 +441,18 @@
       });
     }
 
+    fetch() {
+      const that = this;
+      return function (input, init) {
+        const checksum = hashString(input + (!!init.data ? init.data : ''));
+        const id = `cb-${checksum}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        return new Promise((resolve, reject) => {
+          that.resolveCallbacks[id] = { resolve, reject };
+          that.postMessage('fetch', [id, input, init]);
+        });
+      };
+    }
+
     // Initialize `window` events.
     initWindowEvents() {
       // Keyboard events.
@@ -446,6 +468,9 @@
       window.addEventListener('message', (event) => {
         this.messageEvent(event);
       });
+      if (this.config.vscode) {
+        window.fetch = this.fetch();
+      }
     }
 
     updateMarkdown(markdown, mdOptions) {
@@ -516,6 +541,20 @@
               delete this.resolveCallbacks[message.id];
               if (callback) {
                 callback(message.response);
+              }
+            }
+            break;
+          case 'onfetch':
+            if (this.resolveCallbacks.hasOwnProperty(message.id)) {
+              const callback = this.resolveCallbacks[message.id];
+              delete this.resolveCallbacks[message.id];
+              if (callback) {
+                if (callback.resolve && message.response) {
+                  callback.resolve(message.response);
+                }
+                if (callback.reject && message.error) {
+                  callback.reject(message.error);
+                }
               }
             }
             break;
