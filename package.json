@@ -2,7 +2,7 @@
   "name": "markdown-preview-showdown",
   "displayName": "%mdps.displayname%",
   "description": "%mdps.description%",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "publisher": "jhuix",
   "author": {
     "name": "jhuix"
