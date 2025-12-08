@@ -237,7 +237,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.6.14",
+    "@jhuix/showdowns": "^0.6.15",
     "chrome-location": "^1.2.1",
     "mkdirp": "^3.0.1",
     "plantuml-style-c4": "^1.1.3",

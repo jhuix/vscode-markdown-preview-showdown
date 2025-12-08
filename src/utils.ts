@@ -2,13 +2,43 @@
  * Copyright (c) 2019-present, Jhuix (Hui Jin) <jhuix0117@gmail.com>. All rights reserved.
  * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
  */
+'use strict';
+
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { mkdirp } from 'mkdirp';
 import * as https from 'https';
 
-function getFile(url: string) {
-  return new Promise((resolve, reject) => {
+function requestText(url: string | URL, body: string, options: https.RequestOptions): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const req = https
+      .request(url, options, (res) => {
+        let data = '';
+        if (!res.statusCode || res.statusCode < 200 || res.statusCode > 299) {
+          reject(`Request Failed. Status Code: ${res.statusCode}-${res.statusMessage}`);
+          return;
+        }
+
+        // 接收数据
+        res.on('data', (d) => {
+          data += d;
+        });
+
+        // 完成接收数据
+        res.on('end', () => {
+          resolve(data);
+        });
+      })
+      .on('error', (err) => {
+        reject('Error: ' + err.message);
+      });
+    req.write(body);
+    req.end();
+  });
+}
+
+function getFile(url: string | URL): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     https
       .get(url, (response) => {
         let data = '';
@@ -32,9 +62,12 @@ function getFile(url: string) {
       });
   });
 }
-exports.getFile = getFile;
-function readFile(file: fs.PathLike | number, options: { encoding?: null; flag?: string } | undefined | null) {
-  return new Promise((resolve, reject) => {
+
+function readFile(
+  file: fs.PathLike | number,
+  options: { encoding?: string; flag?: string } | undefined | null
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     fs.readFile(file, options, (error, text) => {
       if (error) {
         return reject(error.toString());
@@ -44,9 +77,9 @@ function readFile(file: fs.PathLike | number, options: { encoding?: null; flag?:
     });
   });
 }
-exports.readFile = readFile;
-function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileOptions) {
-  return new Promise((resolve, reject) => {
+
+function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileOptions): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
     fs.writeFile(file, text, options, (error) => {
       if (error) {
         return reject(error.toString());
@@ -57,8 +90,8 @@ function writeFile(file: fs.PathLike | number, text: any, options: fs.WriteFileO
   });
 }
 exports.writeFile = writeFile;
-function write(fd: number, text: any) {
-  return new Promise((resolve, reject) => {
+function write(fd: number, text: any): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
     fs.write(fd, text, (error) => {
       if (error) {
         return reject(error.toString());
@@ -68,27 +101,35 @@ function write(fd: number, text: any) {
     });
   });
 }
-exports.write = write;
+
 function execFile(
   file: string,
   args: ReadonlyArray<string> | undefined | null,
-  options: childProcess.ExecFileOptionsWithBufferEncoding
-) {
-  return new Promise((resolve, reject) => {
+  options?: childProcess.ExecFileOptionsWithBufferEncoding
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     childProcess.execFile(file, args, options, (error, stdout, stderr) => {
       if (error) {
         return reject(error.toString());
       } else if (stderr) {
-        return reject(stderr);
+        if (typeof stderr === 'string') {
+          return resolve(stderr);
+        }
+
+        return reject(stderr.toString());
       } else {
-        return resolve(stdout);
+        if (typeof stdout === 'string') {
+          return resolve(stdout);
+        }
+
+        return resolve(stdout.toString());
       }
     });
   });
 }
-exports.execFile = execFile;
-function mkdir(dir: string) {
-  return new Promise((resolve, reject) => {
+
+function mkdir(dir: string): Promise<string | void | undefined> {
+  return new Promise<string | void | undefined>((resolve, reject) => {
     mkdirp(dir)
       .then((made) => {
         return resolve(made);
@@ -98,7 +139,7 @@ function mkdir(dir: string) {
       });
   });
 }
-exports.mkdirp = mkdir;
+
 /**
  * open html file in browser or open pdf file in reader ... etc
  * @param filePath string
@@ -120,11 +161,10 @@ function openFile(filePath: string) {
     childProcess.execFile('xdg-open', [filePath]);
   }
 }
-exports.openFile = openFile;
 
 // Available only in win32 platform
-function regQuery(key: string, valueName?: string) {
-  return new Promise((resolve, reject) => {
+function regQuery(key: string, valueName?: string): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     const cmd = `REG QUERY \"${key}\"` + (valueName ? ` /v ${valueName}` : ' /ve');
     childProcess.exec(cmd, (error, stdout, stderr) => {
       if (error) {
@@ -143,4 +183,16 @@ function regQuery(key: string, valueName?: string) {
   });
 }
 
-exports.regQuery = regQuery;
+const utils = {
+  requestText,
+  getFile,
+  readFile,
+  writeFile,
+  write,
+  execFile,
+  mkdirp: mkdir,
+  openFile,
+  regQuery
+};
+
+export default utils;

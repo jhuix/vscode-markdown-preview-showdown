@@ -8,10 +8,9 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import fetch from 'cross-fetch';
 import { PreviewConfig } from './config';
+import utils from './utils';
 
-const utils = require('./utils');
 const output = require('./output');
 const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
@@ -296,7 +295,6 @@ export class ShowdownPreviewer {
               this.renderLocalPlantuml(message.args[0]);
               break;
             case 'fetch':
-              console.log('message is', message);
               this.crossFetch(message.args[0], message.args[1], message.args[2]);
               break;
           }
@@ -361,16 +359,19 @@ export class ShowdownPreviewer {
         output.log(err);
       });
   }
-  public crossFetch(id: string, input: string | URL | Request, init?: RequestInit) {
+  public crossFetch(id: string, input: string | URL, init?: RequestInit) {
     const that = this;
-    fetch(input, init)
-      .then((res) => {       
-        if (res.ok) {
-          return res.text();
-        }
-
-        throw new Error(`HTTP/HTTPS request failed: status: ${res.status} error: ${res.statusText}`);
-      })
+    let data = '';
+    let options = {};
+    if (init) {
+      data = init.body ? init.body.toString() : '';
+      options = {
+        method: init.method,
+        headers: init.headers
+      };
+    }
+    utils
+      .requestText(input, data, options)
       .then((data) => {
         const preview = that.getPreview();
         preview?.webview.postMessage({ command: 'onfetch', id: id, response: data });
