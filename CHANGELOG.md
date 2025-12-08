@@ -1,6 +1,6 @@
 ## 1.4.6
 
-1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.14:
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.15:
 
    - Support kroki api for render diagram.
    - Update regular expression of toc.
