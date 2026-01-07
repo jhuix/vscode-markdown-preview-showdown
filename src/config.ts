@@ -30,18 +30,19 @@ export class PreviewConfig {
   public plantumlWebsite: string;
   public krokiWebsite: string;
   public usePuppeteerCore: boolean;
+  public tocChapterNumber: boolean;
   public puppeteerWaitForTimeout: number;
   public chromePath: string;
   public printBackground: boolean;
   public mathDelimiters: {
     texmath: {
-      display: Array<Object>,
-      inline: Array<Object>
-    },
+      display: Array<Object>;
+      inline: Array<Object>;
+    };
     asciimath: {
-      display: Array<Object>,
-      inline: Array<Object>
-    }
+      display: Array<Object>;
+      inline: Array<Object>;
+    };
   };
   public markdownOptions: Object;
   public mermaidOptions: Object;
@@ -80,11 +81,12 @@ export class PreviewConfig {
       this.usePuppeteerCore = PreviewConfig.getData(config.get('puppeteer.useCore'), this.chromePath ? true : false);
       this.puppeteerWaitForTimeout = PreviewConfig.getData(config.get('puppeteer.waitForTimeout'), 0);
       this.katexOptions = PreviewConfig.getData(config.get('katex.options'), {});
+      this.tocChapterNumber = PreviewConfig.getData(config.get('toc.chapterNumber'), true);
       const mathDelimiters = PreviewConfig.getData(config.get('katex.mathDelimiters'), {
-        latexInline: "",
-        latexDisplay: "",
-        asciiInline: "",
-        asciiDisplay: ""
+        latexInline: '',
+        latexDisplay: '',
+        asciiInline: '',
+        asciiDisplay: ''
       });
       this.mathDelimiters = {
         texmath: {
@@ -102,9 +104,7 @@ export class PreviewConfig {
         this.mathDelimiters.texmath.inline = [];
       }
       if (this.mathDelimiters.texmath.inline.length === 0) {
-        this.mathDelimiters.texmath.inline = [
-          { left: '\\(', right: '\\)' }
-        ];
+        this.mathDelimiters.texmath.inline = [{ left: '\\(', right: '\\)' }];
       }
 
       try {
@@ -116,11 +116,11 @@ export class PreviewConfig {
         this.mathDelimiters.texmath.display = [
           { left: '$$', right: '$$' },
           { left: '\\[', right: '\\]' },
-          { left: "\\begin{equation}", right: "\\end{equation}" },
-          { left: "\\begin{align}", right: "\\end{align}" },
-          { left: "\\begin{alignat}", right: "\\end{alignat}" },
-          { left: "\\begin{gather}", right: "\\end{gather}" },
-          { left: "\\begin{CD}", right: "\\end{CD}" }              
+          { left: '\\begin{equation}', right: '\\end{equation}' },
+          { left: '\\begin{align}', right: '\\end{align}' },
+          { left: '\\begin{alignat}', right: '\\end{alignat}' },
+          { left: '\\begin{gather}', right: '\\end{gather}' },
+          { left: '\\begin{CD}', right: '\\end{CD}' }
         ];
       }
 
@@ -130,9 +130,7 @@ export class PreviewConfig {
         this.mathDelimiters.asciimath.inline = [];
       }
       if (this.mathDelimiters.asciimath.inline.length === 0) {
-        this.mathDelimiters.asciimath.inline = [
-          { left: '\\$', right: '\\$' }
-        ];
+        this.mathDelimiters.asciimath.inline = [{ left: '\\$', right: '\\$' }];
       }
 
       try {
@@ -141,9 +139,7 @@ export class PreviewConfig {
         this.mathDelimiters.asciimath.display = [];
       }
       if (this.mathDelimiters.asciimath.display.length === 0) {
-        this.mathDelimiters.asciimath.display = [
-          { left: '@@', right: '@@' }
-        ];
+        this.mathDelimiters.asciimath.display = [{ left: '@@', right: '@@' }];
       }
     } else {
       this.autoPreview = false;
@@ -156,10 +152,11 @@ export class PreviewConfig {
       this.plantumlTheme = 'default';
       this.plantumlRenderMode = 'local';
       this.plantumlWebsite = 'www.plantuml.com/plantuml';
-      this.krokiWebsite = "kroki.io";
+      this.krokiWebsite = 'kroki.io';
       this.usePuppeteerCore = false;
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';
+      this.tocChapterNumber = true;
       this.mathDelimiters = {
         texmath: {
           display: [],

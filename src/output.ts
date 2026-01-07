@@ -25,21 +25,29 @@ function log(log: string) {
   const date = new Date();
   out.appendLine(
     date.getFullYear() +
-    '/' +
-    padding(date.getMonth(), 2) +
-    '/' +
-    padding(date.getDate(), 2) +
-    ' ' +
-    padding(date.getHours(), 2) +
-    ':' +
-    padding(date.getMinutes(), 2) +
-    ':' +
-    padding(date.getSeconds(), 2) +
-    '.' +
-    padding(date.getMilliseconds(), 3) +
-    ' ' +
-    log
+      '/' +
+      padding(date.getMonth(), 2) +
+      '/' +
+      padding(date.getDate(), 2) +
+      ' ' +
+      padding(date.getHours(), 2) +
+      ':' +
+      padding(date.getMinutes(), 2) +
+      ':' +
+      padding(date.getSeconds(), 2) +
+      '.' +
+      padding(date.getMilliseconds(), 3) +
+      ' ' +
+      log
   );
 }
 
-exports.log = log;
+function info(...logs: string[]) {
+  log(logs.join());
+}
+
+function error(...logs: string[]) {
+  log(logs.join());
+}
+
+export { log, info, error };

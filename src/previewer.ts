@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { PreviewConfig } from './config';
 import utils from './utils';
+import * as texAPI from './tex';
 
 const output = require('./output');
 const { debounce } = require('throttle-debounce');
@@ -142,6 +143,7 @@ export class ShowdownPreviewer {
     mermaid: Object | undefined | null;
     katex: Object | undefined | null;
     kroki: Object | undefined | null;
+    toc: Object | undefined | null;
     vega: Object | undefined | null;
   };
   private currentLine: number;
@@ -171,6 +173,7 @@ export class ShowdownPreviewer {
       mermaid: {},
       katex: {},
       kroki: {},
+      toc: {},
       vega: {}
     };
     this.config = PreviewConfig.getCurrentConfig(context);
@@ -370,6 +373,23 @@ export class ShowdownPreviewer {
         headers: init.headers
       };
     }
+
+    const url = new URL(input.toString()); // validate URL
+    if (url.hostname === 'tex.io') {
+      texAPI
+        .render(id, data)
+        .generateSVG()
+        .then((result) => {
+          const preview = that.getPreview();
+          preview?.webview.postMessage({ command: 'onfetch', id: id, response: result });
+        })
+        .catch((err) => {
+          const preview = that.getPreview();
+          preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
+        });
+      return;
+    }
+
     utils
       .requestText(input, data, options)
       .then((data) => {
@@ -611,8 +631,9 @@ export class ShowdownPreviewer {
       justify-content: center;
       width: 100%;
       bottom: 0;
-      font-size: 80%;
-      height: 15px;
+      font-size: 60%;
+      height: 15px;      
+      border-top: 1px solid #dfdfdf;
     }
     ::-webkit-scrollbar {
       -webkit-appearance: none;
@@ -1012,6 +1033,12 @@ export class ShowdownPreviewer {
     line-height: 1.6;
     padding: 0;
   }
+  svg {
+    stroke: var(--vscode-editor-foreground);
+    path {
+      stroke: var(--vscode-editor-foreground);
+    }
+  }
   .workspace-container {
     overflow: hidden;
     display: flex;
@@ -1019,8 +1046,7 @@ export class ShowdownPreviewer {
   }
   @media not print {
     .main-toc-row .total-toc {
-      background-color: var(--vscode-editor-background) !important;
-      border: 1px solid var(--vscode-editorOverviewRuler-addedForeground);
+      background-color: var(--vscode-minimap-chatEditHighlight) !important;
     }
   }
 </style>
@@ -1063,6 +1089,9 @@ window.mdsp = {
     kroki: {
       serverUrl: "${this.config.krokiWebsite}"
     },
+    toc: {
+      chapterNumber: ${this.config.tocChapterNumber ? 'true' : 'false'}
+    },
     vega: ${JSON.stringify(this.options.vega).replace(/\\/g, '\\\\')},
   }
 }
@@ -1099,6 +1128,7 @@ window.mdsp = {
       mermaid: Object;
       katex: Object;
       kroki: Object;
+      toc: Object;
       vega: Object;
     } = {
       flavor: this.config.flavor,
@@ -1107,6 +1137,7 @@ window.mdsp = {
       mermaid: {},
       katex: {},
       kroki: {},
+      toc: {},
       vega: {}
     };
     Object.assign(options.markdown, this.config.markdownOptions);
@@ -1114,12 +1145,11 @@ window.mdsp = {
       renderMode: this.config.plantumlRenderMode,
       umlWebSite: this.config.plantumlWebsite
     });
-    Object.assign(options.kroki, {
-      serverUrl: this.config.krokiWebsite
-    });
+    Object.assign(options.kroki, { serverUrl: this.config.krokiWebsite });
     Object.assign(options.mermaid, this.config.mermaidOptions, { theme: this.config.mermaidTheme });
     Object.assign(options.katex, this.config.katexOptions, { mathDelimiters: this.config.mathDelimiters });
     Object.assign(options.vega, this.config.vegaOptions, { theme: this.config.vegaTheme });
+    Object.assign(options.toc, { chapterNumber: this.config.tocChapterNumber });
 
     if (!this._objectIsEqual(this.options, options)) {
       if (depth) {
@@ -1146,6 +1176,10 @@ window.mdsp = {
           this.options.kroki = {};
           Object.assign(this.options.kroki, options.kroki);
         }
+        if (!this._objectIsEqual(options.toc, this.options.toc)) {
+          this.options.toc = {};
+          Object.assign(this.options.toc, options.toc);
+        }
         if (!this._objectIsEqual(options.vega, this.options.vega)) {
           this.options.vega = {};
           Object.assign(this.options.vega, options.vega);
@@ -1158,6 +1192,7 @@ window.mdsp = {
           mermaid: {},
           katex: {},
           kroki: {},
+          toc: {},
           vega: {}
         };
         Object.assign(this.options, options);

@@ -50,6 +50,7 @@
       kroki: {
         serverUrl: 'kroki.io'
       },
+      toc: {},
       vega: {}
     };
     return opts ? deepMerge(defOptions, opts) : defOptions;
@@ -190,6 +191,7 @@
           mermaid: options.mermaid,
           katex: options.katex,
           kroki: options.kroki,
+          toc: options.toc,
           vega: options.vega
         }
       };
@@ -209,8 +211,8 @@
         }
       }
       previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
-      this.updateOptions(this.config.options);
       previewer.init(true);
+      this.updateOptions(this.config.options);
       if (!this.config.vscode) {
         window.dispatchEvent(
           new CustomEvent('showdownsLoaded', {
@@ -249,6 +251,9 @@
       }
       if (options.kroki) {
         previewer.setKrokiOptions(options.kroki);
+      }
+      if (options.toc) {
+        previewer.setExtensionOptions('toc', options.toc);
       }
     }
 
@@ -489,20 +494,58 @@
         .then((res) => {
           if (typeof res === 'object') {
             that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res.html);
-            that.scripts = [...res.scripts];
+            that.scripts = [];
             that.cssLinks = [...res.cssLinks];
             previewer.completedHtml(res.scripts, '.showdowns');
-            that.scripts.forEach((script) => {
-              if (script.code && typeof script.code === 'function') {
-                script.code = `(${script.code.toString()})();`;
+            res.scripts.forEach((script) => {
+              const s = {};
+              if (!script.once) {
+                if (script.id) {
+                  s.id = script.id;
+                }
+                if (script.host) {
+                  s.host = script.host;
+                }
+                if (script.code) {
+                  if (typeof script.code === 'function') {
+                    s.code = `(${script.code.toString()})();`;
+                  } else {
+                    s.code = script.code;
+                  }
+                }
               }
               if (script.inner && Array.isArray(script.inner)) {
-                script.inner.forEach((s) => {
-                  if (s.code && typeof s.code === 'function') {
-                    s.code = `(${s.code.toString()})();`;
+                s.inner = [];
+                script.inner.forEach((inner) => {
+                  if (!inner.once) {
+                    const ins = {};
+                    if (inner.id) {
+                      ins.id = inner.id;
+                    }
+                    if (inner.host) {
+                      ins.host = inner.host;
+                    }
+                    if (inner.code) {
+                      if (typeof inner.code === 'function') {
+                        ins.code = `(${inner.code.toString()})();`;
+                      } else {
+                        ins.code = inner.code;
+                      }
+                    }
+                    s.inner.push[ins];
                   }
                 });
               }
+
+              if (script.outer && Array.isArray(script.outer)) {
+                s.outer = [];
+                script.inner.forEach((outer) => {
+                  if (!outer.once) {
+                    s.outer.push(outer);
+                  }
+                });
+              }
+              that.scripts.push(s);
             });
           } else {
             that.scripts = [];

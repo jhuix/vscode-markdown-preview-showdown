@@ -21,5 +21,6 @@
   "mdps.plantuml.website": "当设置项plantuml.renderMode为模式\"remote\"时，需设置的远程渲染网址，默认网址为\"www.plantuml.com/plantuml\"。",
   "mdps.puppeteer.useCore": "若该值为真，则使用当前插件下安装使用puppeteer-core包（插件自身会自动安装）；否则需要使用脚本`npm install -g puppeteer`手动来全局安装使用puppeteer包并。",
   "mdps.puppeteer.waitForTimeout": "在导出文件时，Puppeteer包执行导出过程运行相关进程的等待时间，单位毫秒，默认值为0表示无限等待直到自动完成导出。",
-  "mdps.puppeteer.chromePath": "使用Puppeteer包导出文件时，需设置的Chrome浏览器执行文件（chrome.exe）的文件绝对路径；该值为空时，则表示导出时会自动寻找Chrome浏览器的安装路径。"
+  "mdps.puppeteer.chromePath": "使用Puppeteer包导出文件时，需设置的Chrome浏览器执行文件（chrome.exe）的文件绝对路径；该值为空时，则表示导出时会自动寻找Chrome浏览器的安装路径。",
+  "mdps.toc.chapterNumber": "显示目录章节标题编号，如 \"1.1.\"。"
 }
