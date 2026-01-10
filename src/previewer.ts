@@ -365,7 +365,7 @@ export class ShowdownPreviewer {
   public crossFetch(id: string, input: string | URL, init?: RequestInit) {
     const that = this;
     let data = '';
-    let options = {};
+    let options: any = {};
     if (init) {
       data = init.body ? init.body.toString() : '';
       options = {
@@ -376,8 +376,15 @@ export class ShowdownPreviewer {
 
     const url = new URL(input.toString()); // validate URL
     if (url.hostname === 'tex.io') {
+      const paths = url.pathname.split('/');
+      const buildType = paths.length >= 2 ? paths[1] : 'pdflatex';
+      options.build = buildType;
+      const zoom = url.searchParams.get('zoom');
+      if (zoom) {
+        options.zoom = parseFloat(zoom);
+      }
       texAPI
-        .render(id, data)
+        .render(id, data, options)
         .generateSVG()
         .then((result) => {
           const preview = that.getPreview();
