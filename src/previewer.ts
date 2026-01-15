@@ -438,7 +438,7 @@ export class ShowdownPreviewer {
       }
     }
     const showdowncss = await utils.readFile(
-      path.join(this.context.extensionPath, 'node_modules/@jhuix/showdowns/dist/showdowns.min.css'),
+      path.join(this.context.extensionPath, 'node_modules/@jhuix/showdowns/dist/showdowns.css'),
       {
         encoding: 'utf-8'
       }
@@ -1059,7 +1059,7 @@ export class ShowdownPreviewer {
 </style>
 <link rel="stylesheet" href="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.min.css`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.css`,
       true
     )}">
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
@@ -1100,12 +1100,15 @@ window.mdsp = {
       chapterNumber: ${this.config.tocChapterNumber ? 'true' : 'false'}
     },
     vega: ${JSON.stringify(this.options.vega).replace(/\\/g, '\\\\')},
+    shiki: {
+      theme: "${this.config.codeTheme}"
+    }
   }
 }
 </script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.js`,
       true
     )}"></script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>

@@ -69,17 +69,15 @@ class TexRenderer {
       this.render.on('close', (code: number, signal: string) => {
         output.log(`Tex Renderer Closed: code=${code}, signal=${signal}`);
         // dvisvgm.exe -p- --no-merge --font-format=woff2 --zoom=1.0 -s file.dvi | file.xdv
-        let zoomArg = '';
+        const params: string[] = ['-p-', '--no-merge', '--font-format=woff2'];
         if (this.options.zoom && this.options.zoom > 0) {
-          zoomArg = `--zoom=${this.options.zoom}`;
+          params.push(`--zoom=${this.options.zoom}`);
         }
-        this.render = childProcess.spawn(
-          'dvisvgm',
-          ['-p-', '--no-merge', '--font-format=woff2', zoomArg, '-s', this.dviFile],
-          {
-            cwd: this.texPath
-          }
-        );
+        params.push('-s');
+        params.push(this.dviFile);
+        this.render = childProcess.spawn('dvisvgm', params, {
+          cwd: this.texPath
+        });
 
         this.render.stdout.on('data', (data: Buffer) => {
           this.chunks += data.toString();

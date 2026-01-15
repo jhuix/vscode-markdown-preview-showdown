@@ -23,6 +23,9 @@
     "railroad",
     "showdowns",
     "wavedrom",
+    "kroki",
+    "katex",
+    "tex",
     "MDPS"
   ],
   "icon": "./media/logo.png",
@@ -75,15 +78,15 @@
           "default": false,
           "type": "boolean"
         },
-        "markdown-preview-showdown.fontSize": {
-          "description": "%mdps.fontSize%",
-          "default": 10,
-          "type": "number"
-        },
         "markdown-preview-showdown.autoToc": {
           "description": "%mdps.autoToc%",
           "default": true,
           "type": "boolean"
+        },
+        "markdown-preview-showdown.fontSize": {
+          "description": "%mdps.fontSize%",
+          "default": 10,
+          "type": "number"
         },
         "markdown-preview-showdown.scrollSync": {
           "description": "%mdps.scrollSync%",
@@ -99,6 +102,73 @@
             "ghost",
             "vanilla",
             "original"
+          ]
+        },
+        "markdown-preview-showdown.code.theme": {
+          "description": "%mdps.codeTheme%",
+          "default": "ayu-dark",
+          "type": "string",
+          "enum": [
+            "andromeeda",
+            "aurora-x",
+            "ayu-dark",
+            "catppuccin-frappe",
+            "catppuccin-latte",
+            "catppuccin-macchiato",
+            "catppuccin-mocha",
+            "dark-plus",
+            "dracula",
+            "dracula-soft",
+            "everforest-dark",
+            "everforest-light",
+            "github-dark",
+            "github-dark-default",
+            "github-dark-dimmed",
+            "github-dark-high-contrast",
+            "ithub-light",
+            "github-light-default",
+            "github-light-high-contrast",
+            "gruvbox-dark-hard",
+            "gruvbox-dark-medium",
+            "gruvbox-dark-soft",
+            "gruvbox-light-hard",
+            "gruvbox-light-medium",
+            "gruvbox-light-soft",
+            "houston",
+            "kanagawa-dragon",
+            "kanagawa-lotus",
+            "kanagawa-wave",
+            "laserwave",
+            "light-plus",
+            "material-theme",
+            "material-theme-darker",
+            "material-theme-lighter",
+            "material-theme-ocean",
+            "material-theme-palenight",
+            "min-dark",
+            "min-light",
+            "monokai",
+            "night-owl",
+            "nord",
+            "one-dark-pro",
+            "one-light",
+            "plastic",
+            "poimandres",
+            "red",
+            "rose-pine",
+            "rose-pine-dawn",
+            "rose-pine-moon",
+            "slack-dark",
+            "slack-ochin",
+            "snazzy-light",
+            "solarized-dark",
+            "solarized-light",
+            "synthwave-84",
+            "tokyo-night",
+            "vesper",
+            "vitesse-black",
+            "vitesse-dark",
+            "vitesse-light"
           ]
         },
         "markdown-preview-showdown.katex.mathDelimiters": {
@@ -197,6 +267,11 @@
           "default": "",
           "type": "string",
           "scope": "machine"
+        },
+        "markdown-preview-showdown.toc.chapterNumber": {
+          "description": "%mdps.toc.chapterNumber%",
+          "default": true,
+          "type": "boolean"
         }
       }
     }
@@ -237,7 +312,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.6.15",
+    "@jhuix/showdowns": "^0.6.17",
     "chrome-location": "^1.2.1",
     "mkdirp": "^3.0.1",
     "plantuml-style-c4": "^1.1.3",

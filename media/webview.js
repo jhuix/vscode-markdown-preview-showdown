@@ -48,7 +48,8 @@
           serverUrl: "kroki.io"
         },
         toc: {},
-        vega: {}
+        vega: {},
+        shiki: {}
       };
       return opts ? deepMerge(defOptions, opts) : defOptions;
     }
@@ -239,6 +240,9 @@
         if (options2.toc) {
           previewer.setExtensionOptions("toc", options2.toc);
         }
+        if (options2.shiki) {
+          previewer.setExtensionOptions("shiki", options2.shiki);
+        }
       }
       getOtherStyles() {
         let styles = [];
@@ -380,14 +384,35 @@
         }
         return html.trim();
       }
+      /**
+       * 
+       * @param {string | HTMLElement[]} html 
+       * @returns {string | HTMLElement[]}
+       */
       changeVscodeResourceProtocol(html) {
+        if (typeof html === "string") {
+          if (this.config.vscode) {
+            const resUrl = new URL(options.defScheme);
+            const vscodeResourceScheme = resUrl.origin + "/";
+            html = html.replace(/(\<img.* src=")file:\/\/\//g, "$1" + vscodeResourceScheme);
+            html = html.replace(/(\<img.* src=")\.\//g, "$1" + vscodeResourceScheme + options.uriPath + "/");
+          }
+          return html.trim();
+        }
         if (this.config.vscode) {
           const resUrl = new URL(options.defScheme);
           const vscodeResourceScheme = resUrl.origin + "/";
-          html = html.replace(/(\<img.* src=")file:\/\/\//g, "$1" + vscodeResourceScheme);
-          html = html.replace(/(\<img.* src=")\.\//g, "$1" + vscodeResourceScheme + options.uriPath + "/");
+          const imgs = html[0].querySelectorAll("img");
+          if (imgs && imgs.length > 0) {
+            imgs.forEach((e) => {
+              if (e.src) {
+                e.src = e.src.replace(/^file:\/\/\//g, vscodeResourceScheme);
+                e.src = e.src.replace(/^\.\//g, vscodeResourceScheme + options.uriPath + "/");
+              }
+            });
+          }
         }
-        return html.trim();
+        return html;
       }
       // Post message to parent window
       postMessage(command, args = []) {
@@ -456,61 +481,67 @@
         if (options.autoToc) {
           markdown = "[TOC]\n\n" + markdown;
         }
+        const genScript = (script) => {
+          if (script.once || !script.code) return;
+          const s = {};
+          if (typeof script.code === "function") {
+            s.code = `(${script.code.toString()})();`;
+          } else {
+            s.code = script.code;
+          }
+          if (script.id) {
+            s.id = script.id;
+          }
+          if (script.host) {
+            s.host = script.host;
+          }
+          return s;
+        };
         const that = this;
-        previewer.makeHtml(markdown).then((res) => {
+        previewer.makeHtml({ content: markdown, output: "dom" }).then((res) => {
           if (typeof res === "object") {
-            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res.html);
+            const preview = that.changeVscodeResourceProtocol(res.html);
+            if (typeof preview === "string") {
+              that.previewElement.innerHTML = preview;
+            } else {
+              preview.forEach((e) => {
+                that.previewElement.appendChild(e);
+              });
+            }
             that.scripts = [];
             that.cssLinks = [...res.cssLinks];
             previewer.completedHtml(res.scripts, ".showdowns");
             res.scripts.forEach((script) => {
-              const s = {};
-              if (!script.once) {
-                if (script.id) {
-                  s.id = script.id;
-                }
-                if (script.host) {
-                  s.host = script.host;
-                }
-                if (script.code) {
-                  if (typeof script.code === "function") {
-                    s.code = `(${script.code.toString()})();`;
-                  } else {
-                    s.code = script.code;
-                  }
-                }
-              }
+              let s = genScript(script);
               if (script.inner && Array.isArray(script.inner)) {
-                s.inner = [];
+                const inners = [];
                 script.inner.forEach((inner) => {
-                  if (!inner.once) {
-                    const ins = {};
-                    if (inner.id) {
-                      ins.id = inner.id;
-                    }
-                    if (inner.host) {
-                      ins.host = inner.host;
-                    }
-                    if (inner.code) {
-                      if (typeof inner.code === "function") {
-                        ins.code = `(${inner.code.toString()})();`;
-                      } else {
-                        ins.code = inner.code;
-                      }
-                    }
-                    s.inner.push[ins];
+                  const inScript = genScript(inner);
+                  if (inScript) {
+                    inners.push(inScript);
                   }
                 });
+                if (inners.length > 0) {
+                  s = s ?? {};
+                  s.inner = inners;
+                }
               }
               if (script.outer && Array.isArray(script.outer)) {
-                s.outer = [];
-                script.inner.forEach((outer) => {
-                  if (!outer.once) {
-                    s.outer.push(outer);
+                const outers = [];
+                script.outer.forEach((outer) => {
+                  const outScript = genScript(outer);
+                  if (outScript) {
+                    outers.push(outScript);
                   }
                 });
+                if (outers.length > 0) {
+                  s = s ?? {};
+                  s.outer = outers;
+                }
               }
-              that.scripts.push(s);
+              if (s) {
+                that.scripts.push(s);
+              }
             });
           } else {
             that.scripts = [];

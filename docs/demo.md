@@ -227,61 +227,63 @@ It's supported by [showdown-katex](https://github.com/obedm503/showdown-katex.gi
 
 #### Markdown Syntax
 
-- AsciiMath syntax:
+* AsciiMath syntax:
 
   * Block multiple math
 
-      Multiple math are separated by an empty line.
+    Multiple math are separated by an empty line.
 
-            ```asciimath {"align": "left | center | right", "codeblock": true | false}
-            <code content>
+    ````
 
-            <code content>
-            ```
+        ```asciimath {"align": "left | center | right", "codeblock": true | false}
+        <code content>
+        ```
 
-  * Inline math
-
-      * `\\(...\\)` is delimiters of inline latex math
-      * `\\[...\\]` is delimiters of inline block latex math
-      * `$$...$$` is delimiters of inline block latex math
-
-- LaTex syntax:
-
-  * Block multiple math
-
-      Multiple math are separated by an empty line.
-
-            ```latex {"align": "left | center | right", "codeblock": true | false}
-            <code content>
-
-            <code content>
-            ```
+    ````
 
   * Inline math
 
       * `@@...@@` is delimiters of inline ascii math
       * `\\~...\\~` is delimiters of inline block ascii math
 
-#### LaTex examples
+* LaTex syntax:
 
-```latex
-x=\frac{ -b\pm\sqrt{ b^2-4ac } } {2a}
+  * Block multiple latex
 
-x=\frac{ -b\pm\sqrt{ b^2-4ac } } {2a}
+    Multiple math are separated by an empty line.
+
+    ````
+        ```[katex|math|mathjax] {"align": "left | center | right", "codeblock": true | false}
+        <code content>
+        ```
+    ````
+
+  * Inline latex
+
+      * `\\(...\\)` is delimiters of inline latex math
+      * `\\[...\\]` is delimiters of inline block latex math
+      * `$$...$$` is delimiters of inline block latex math
+
+#### LaTex Math examples
+
+```math
+x=\frac{ -b\pm\sqrt{ b^2-4ac } } {2a} \\\\
+
+x=\frac{ -b\pm\sqrt{ b^2-4ac } } {2a} \\\\
 
 
 
 x=\frac{ -b\pm\sqrt{ b^2-4ac } } {2a}
 ```
 
-```latex {"align":"right"}
+```katex {align="right"}
 x=\frac{ -b\pm\sqrt{ b^2-4ac } } {2a}
 ```
 
 where:
-   
+
 * \\(\sqrt{ b^2-4ac }\\) is inline latex math
-* \\[\sqrt{ b^2-4ac }\\] is inline latex block math
+* \\\[\sqrt{ b^2-4ac }\\] is inline latex block math
 * $$\sqrt{ b^2-4ac }$$ is inline latex block math
 
 #### AsciiMath examples
@@ -302,7 +304,156 @@ delta Q = rho \ c \u
 
 where:
 
-- @@delta Q@@ is the internal heat energy per unit volume \\$(J * m^-3)\\$
+* @@delta Q@@ is the internal heat energy per unit volume \\$(J \* m^-3)\\$
+
+### Code Block Theme
+
+#### Markdown Syntax
+
+
+````
+  ```[js|c|c++|go...] {"theme": "ayu-dark"}
+  <code content>
+  ```
+````
+
+#### Code Block examples
+
+- For JavaScript:
+
+
+```javascript {theme="github-dark"}
+/**
+ * Merge object with deepth
+ *
+ * @param {object} target
+ *     Target object
+ * @param {object[]} sources
+ *     Source object or objects
+ * @returns {object}
+ *     Meraged Object
+ */
+export function deepMerge(target, ...sources) {
+  for (const source of sources) {
+    for (const [key, val] of Object.entries(source)) {
+      // @ts-ignore
+      if (isObject(val) && isObject(target[key])) {
+        // @ts-ignore
+        deepMerge(target[key], val)
+      } else {
+        Object.assign(target, { [key]: val })
+      }
+    }
+  }
+  return target
+}
+```
+
+- For GO:
+
+```go
+package utils
+
+import (
+	"math"
+	"sync"
+)
+
+type levelPool struct {
+	size int
+	pool sync.Pool
+}
+
+func newLevelPool(size int) *levelPool {
+	return &levelPool{
+		size: size,
+		pool: sync.Pool{
+			New: func() interface{} {
+				data := make([]byte, size)
+				return &data
+			},
+		},
+	}
+}
+
+type LimitedPool struct {
+	minSize int
+	maxSize int
+	pools   []*levelPool
+}
+
+func NewLimitedPool(minSize, maxSize int) *LimitedPool {
+	if maxSize < minSize {
+		panic("maxSize can't be less than minSize")
+	}
+	const multiplier = 2
+	var pools []*levelPool
+	curSize := minSize
+	for curSize < maxSize {
+		pools = append(pools, newLevelPool(curSize))
+		curSize *= multiplier
+	}
+	pools = append(pools, newLevelPool(maxSize))
+	return &LimitedPool{
+		minSize: minSize,
+		maxSize: maxSize,
+		pools:   pools,
+	}
+}
+
+func (p *LimitedPool) findPool(size int) *levelPool {
+	if size > p.maxSize {
+		return nil
+	}
+	idx := int(math.Ceil(math.Log2(float64(size) / float64(p.minSize))))
+	if idx < 0 {
+		idx = 0
+	}
+	if idx > len(p.pools)-1 {
+		return nil
+	}
+	return p.pools[idx]
+}
+
+func (p *LimitedPool) findPutPool(size int) *levelPool {
+	if size > p.maxSize {
+		return nil
+	}
+	if size < p.minSize {
+		return nil
+	}
+
+	idx := int(math.Floor(math.Log2(float64(size) / float64(p.minSize))))
+	if idx < 0 {
+		idx = 0
+	}
+	if idx > len(p.pools)-1 {
+		return nil
+	}
+	return p.pools[idx]
+}
+
+func (p *LimitedPool) Get(size int) *[]byte {
+	sp := p.findPool(size)
+	if sp == nil {
+		data := make([]byte, size)
+		return &data
+	}
+	buf := sp.pool.Get().(*[]byte)
+	*buf = (*buf)[:size]
+	return buf
+}
+
+func (p *LimitedPool) Put(b *[]byte) {
+	sp := p.findPutPool(cap(*b))
+	if sp == nil {
+		return
+	}
+	*b = (*b)[:cap(*b)]
+	sp.pool.Put(b)
+}
+
+```
 
 ### Mermaid
 
@@ -1068,4 +1219,57 @@ blockdiag {
 (draw-gap "Unknown bytes" {:min-label-columns 6})
 (draw-bottom)
 
+```
+
+### Tex
+
+Support remote rendering TEX content to SVG code, for example website: [tex.io](https://tex.io).
+
+#### Markdown Syntax
+
+````
+```[tex|latex] {"align": "<align>"}
+<code content>
+```
+````
+
+#### Tex example
+
+```tex
+\documentclass{standalone}
+\usepackage{circuitikz}
+\begin{document}
+
+\begin{circuitikz}[american, voltage shift=0.5]
+\draw (0,0)
+to[isource, l=$I_0$, v=$V_0$] (0,3)
+to[short, -*, i=$I_0$] (2,3)
+to[R=$R_1$, i>_=$i_1$] (2,0) -- (0,0);
+\draw (2,3) -- (4,3)
+to[R=$R_2$, i>_=$i_2$]
+(4,0) to[short, -*] (2,0);
+\end{circuitikz}
+
+\end{document}
+```
+
+```tex {"align":"center"}
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+\begin{tikzpicture}
+\begin{axis}[colormap/viridis]
+\addplot3[
+surf,
+samples=18,
+domain=-3:3
+]
+{exp(-x^2-y^2)*x};
+\end{axis}
+\end{tikzpicture}
+
+\end{document}
 ```

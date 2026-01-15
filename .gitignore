@@ -6,3 +6,4 @@ node_modules
 *-lock.json
 *.mp4
 *.map
+test*

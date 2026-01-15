@@ -1,4 +1,659 @@
-"use strict";(()=>{(function(l,o){function p(r){let t=0;for(let s=0;s<r.length;s++){let n=r.charCodeAt(s);t=Math.imul(31,t)+n|0}return t>>>0}function h(r,e){let t=Object.assign({},r);return typeof e!="object"||!e||Object.keys(e).forEach(s=>{e[s]&&typeof e[s]=="object"?((!t[s]||typeof t[s]!="object")&&(t[s]=Array.isArray(e[s])?[]:{}),t[s]=h(t[s],e[s])):t[s]=e[s]}),t}function f(r){let e={vscode:!1,autoToc:!0,cdnName:"local",defScheme:"",distScheme:"../node_modules/@jhuix/showdowns/dist/",uriPath:"",flavor:"",markdown:{},plantuml:{renderMode:"local",umlWebSite:"www.plantuml.com/plantuml"},mermaid:{},katex:{},kroki:{serverUrl:"kroki.io"},vega:{}};return r?h(e,r):e}o=f(o);class w{constructor(e,t){let s=document.createElement("ul");s.classList.add("context-menu-list"),s.style.top="-50%",s.style.display="none",s.style.zIndex="1",this.menus=s,this.selector=e||document,this.cssLinks=[],this.scripts=[],this.initMenuItem(t),document.body.appendChild(this.menus),this.initWindowEvents()}initWindowEvents(){let e=this;this.selector.addEventListener("contextmenu",t=>{t.preventDefault(),e.show(t.clientX,t.clientY)}),document.addEventListener("click",function(t){e.hide()})}initMenuItem(e){if(!(typeof e!="object"||!e)){if(e.hasOwnProperty("style"))for(let t in e.style)this.menus.style[t]=e.style[t];if(e.hasOwnProperty("items")){let t=this,s=e.items;for(let n in s){let i=s[n],c=document.createElement("li");switch(c.classList.add("context-menu-item"),i.type){case"menu":c.appendChild(document.createElement("span")).appendChild(document.createTextNode(i.title)),i.hasOwnProperty("onclick")&&typeof i.onclick=="function"&&c.addEventListener("click",d=>{i.onclick(d,t.selector),t.hide()}),this.menus.appendChild(c);break;case"submenu":c.classList.add("context-menu-submenu"),c.appendChild(document.createElement("span")).appendChild(document.createTextNode(i.title)),this.menus.appendChild(c);break;case"separator":c.classList.add("context-menu-separator"),this.menus.appendChild(c);break}}}}}show(e,t){this.menus.style.display="block",t+this.menus.clientHeight>window.innerHeight-10&&(t-=this.menus.clientHeight+10),e+this.menus.clientWidth>window.innerWidth-10&&(e-=this.menus.clientWidth+10),e+=window.pageXOffset,t+=window.pageYOffset,this.menus.style.left=e+"px",this.menus.style.top=t+"px"}hide(){this.menus.style.display="none",this.menus.style.top="-50%"}}var u={en:{"menu.browsehtml":"Browse HTML Page","menu.exporthtml":"Export \u279D HTML","menu.exportpdf":"Export \u279D PDF","menu.exportwebp":"Export \u279D WEBP","menu.exportpng":"Export \u279D PNG","menu.exportjpg":"Export \u279D JPG"},"zh-cn":{"menu.browsehtml":"\u7528\u6D4F\u89C8\u5668\u6253\u5F00","menu.exporthtml":"\u5BFC\u51FA\u6587\u4EF6 \u279D HTML","menu.exportpdf":"\u5BFC\u51FA\u6587\u4EF6 \u279D PDF","menu.exportwebp":"\u5BFC\u51FA\u6587\u4EF6 \u279D WEBP","menu.exportpng":"\u5BFC\u51FA\u56FE\u7247 \u279D PNG","menu.exportjpg":"\u5BFC\u51FA\u56FE\u7247 \u279D JPG"}};function a(r){let e=document.children[0].lang;return e||(e="en"),u[e][r]?u[e][r]:""}class g{constructor(e){this.vscodeAPI=null,this.sourceUri="",this.totalLines=0,this.currentLine=-1,this.syncScrollTop=-1,this.resolveCallbacks={},this.config={vscode:e,options:{flavor:o.flavor,markdown:o.markdown,plantuml:o.plantuml,mermaid:o.mermaid,katex:o.katex,kroki:o.kroki,vega:o.vega}};let t=document.createElement("div");t.classList.add("workspace-container","main-toc-row"),this.previewElement=t,document.body.appendChild(this.previewElement),this.initWindowEvents(),this.initMenus();let s="";o.uriPath&&(s="file:///"+o.uriPath,this.config.vscode&&(s=new URL(o.defScheme).origin+"/"+o.uriPath)),l.setCDN(o.cdnName,o.defScheme,o.distScheme,s),this.updateOptions(this.config.options),l.init(!0),this.config.vscode?this.postMessage("webviewLoaded",[document.title]):window.dispatchEvent(new CustomEvent("showdownsLoaded",{detail:{phtml:this}}))}updateOptions(e){e.flavor&&l.setShowdownFlavor(e.flavor),e.markdown&&l.setShowdownOptions(e.markdown),e.vega&&l.setVegaOptions(Object.assign({renderer:"svg"},e.vega)),e.mermaid&&l.setMermaidOptions(e.mermaid),e.plantuml&&(e.plantuml.renderMode==="local"?l.setPlantumlOptions({imageFormat:"svg",svgRender:this.renderPlantuml.bind(this)}):l.setPlantumlOptions({imageFormat:"svg",umlWebSite:e.plantuml.umlWebSite})),e.katex&&l.setKatexOptions(e.katex),e.kroki&&l.setKrokiOptions(e.kroki)}getOtherStyles(){let e=[],t=document.getElementById("vega-embed-style");if(t&&t.tagName.toLowerCase()==="style"){let n=t.innerHTML;n=n.replace(/\<br[\/]?\>/g,""),e.push({id:"vega-embed-style",style:n})}let s=document.getElementById("css-abc-audio");if(s&&s.tagName.toLowerCase()==="style"){let n=s.innerHTML;n=n.replace(/\<br[\/]?\>/g,""),e.push({id:"css-abc-audio",style:n})}return e}initMenus(){let e=this,t={style:{zIndex:"1",display:"none"},items:[{type:"menu",title:a("menu.browsehtml"),onclick:function(s,n){e.postMessage("openInBrowser",[e.changeFileProtocol(n.innerHTML),document.title,e.sourceUri,e.cssLinks,e.getOtherStyles(),e.scripts])}},{type:"menu",title:a("menu.exporthtml"),onclick:function(s,n){e.postMessage("exportHTML",[e.changeFileProtocol(n.innerHTML),document.title,e.sourceUri,e.cssLinks,e.getOtherStyles(),e.scripts])}},{type:"menu",title:a("menu.exportpdf"),onclick:function(s,n){e.postMessage("exportPDF",[e.changeFileProtocol(n.innerHTML),document.title,e.sourceUri,e.cssLinks,e.getOtherStyles(),e.scripts])}},{type:"menu",title:a("menu.exportwebp"),onclick:function(s,n){e.postMessage("exportWEBP",[e.changeFileProtocol(n.innerHTML),document.title,e.sourceUri,e.cssLinks,e.getOtherStyles(),e.scripts])}},{type:"menu",title:a("menu.exportpng"),onclick:function(s,n){e.postMessage("exportPNG",[e.changeFileProtocol(n.innerHTML),document.title,e.sourceUri,e.cssLinks,e.getOtherStyles(),e.scripts])}},{type:"menu",title:a("menu.exportjpg"),onclick:function(s,n){e.postMessage("exportJPEG",[e.changeFileProtocol(n.innerHTML),document.title,e.sourceUri,e.cssLinks,e.getOtherStyles(),e.scripts])}}]};this.contextMenu=new w(this.previewElement,t)}changeFileProtocol(e){return this.config.vscode&&(e=e.replace(new RegExp('(<img.* src=")(.*?vscode-webview.*?)"',"g"),function(t,s,n){let i=new URL(decodeURIComponent(n));return i.protocol="file:",i.host="",n=i.toString(),s+n+'"'}),e=e.replace(new RegExp('"([^"]*?file.*?.vscode-resource.vscode-cdn.net/)(.*?)"',"g"),function(t,s,n){let i=new URL(decodeURIComponent(n));return i.protocol="file:",i.host="",n=i.toString(),'"'+n+'"'})),e.trim()}changeVscodeResourceProtocol(e){if(this.config.vscode){let s=new URL(o.defScheme).origin+"/";e=e.replace(/(\<img.* src=")file:\/\/\//g,"$1"+s),e=e.replace(/(\<img.* src=")\.\//g,"$1"+s+o.uriPath+"/")}return e.trim()}postMessage(e,t=[]){this.config.vscode?(this.vscodeAPI||(this.vscodeAPI=acquireVsCodeApi()),this.vscodeAPI.postMessage({command:e,args:t})):window.parent!==window&&window.parent.postMessage({command:e,args:t},"file://")}renderPlantuml(e,t,s,n){n=n||0;let i=this;return new Promise(c=>{i.resolveCallbacks[e]=c,i.postMessage("renderPlantuml",[{id:e,name:t,code:s,count:n,sourceUri:i.sourceUri}])})}fetch(){let e=this;return function(t,s){let i=`cb-${p(t+(s.data?s.data:""))}-${Date.now()}-${Math.floor(Math.random()*1e4)}`;return new Promise((c,d)=>{e.resolveCallbacks[i]={resolve:c,reject:d},e.postMessage("fetch",[i,t,s])})}}initWindowEvents(){window.addEventListener("keydown",e=>{if(e.shiftKey&&e.ctrlKey&&e.which===83)return this.previewSyncSource()}),window.addEventListener("scroll",e=>{this.scrollEvent(e)}),window.addEventListener("message",e=>{this.messageEvent(e)}),this.config.vscode&&(window.fetch=this.fetch())}updateMarkdown(e,t){t=t||null,t instanceof Object&&(this.config.options=t,this.updateOptions(t)),o.autoToc&&(e=`[TOC]
-
-`+e);let s=this;l.makeHtml(e).then(n=>{typeof n=="object"?(s.previewElement.innerHTML=s.changeVscodeResourceProtocol(n.html),s.scripts=[...n.scripts],s.cssLinks=[...n.cssLinks],l.completedHtml(n.scripts,".showdowns"),s.scripts.forEach(i=>{i.code&&typeof i.code=="function"&&(i.code=`(${i.code.toString()})();`),i.inner&&Array.isArray(i.inner)&&i.inner.forEach(c=>{c.code&&typeof c.code=="function"&&(c.code=`(${c.code.toString()})();`)})})):(s.scripts=[],s.cssLinks=[],s.previewElement.innerHTML=s.changeVscodeResourceProtocol(n))}).catch(n=>{s.scripts=[],s.cssLinks=[],s.previewElement.innerHTML="",console.log(n)})}messageEvent(e){let t=e.data;if(t)switch(t.command){case"updateMarkdown":this.sourceUri=t.uri,this.updateMarkdown(t.markdown,t.options),t.title&&(document.title=t.title),this.totalLines=t.totalLines,this.scrollToLine(t.currentLine);break;case"changeVisibleRanges":let s=parseInt(t.line,10);this.scrollToLine(s);break;case"responsePlantuml":if(this.resolveCallbacks.hasOwnProperty(t.id)){let n=this.resolveCallbacks[t.id];delete this.resolveCallbacks[t.id],n&&n(t.response)}break;case"onfetch":if(this.resolveCallbacks.hasOwnProperty(t.id)){let n=this.resolveCallbacks[t.id];delete this.resolveCallbacks[t.id],n&&(n.resolve&&t.response&&n.resolve(t.response),n.reject&&t.error&&n.reject(t.error))}break}}checkScrollEnd(){this.syncScrollTop=-1,this.endScrollTimeout=null}scrollEvent(e){this.syncScrollTop>=0?(this.endScrollTimeout&&clearTimeout(this.endScrollTimeout),this.endScrollTimeout=setTimeout(this.checkScrollEnd.bind(this),500)):this.previewSyncSource()}previewSyncSource(){let e=0;if(window.scrollY!==0)if(window.scrollY+window.innerHeight>=this.previewElement.scrollHeight)e=this.totalLines;else{let t=window.scrollY+window.innerHeight/2;e=parseInt(t*this.totalLines/this.previewElement.scrollHeight,10)}this.postMessage("revealLine",[this.sourceUri,e])}scrollToLine(e){if(e!==this.currentLine&&this.totalLines){this.currentLine=e;let t=0;e+1===this.totalLines?t=this.previewElement.scrollHeight:t=parseInt(e*this.previewElement.scrollHeight/this.totalLines,10),window.scrollY!==t&&(this.syncScrollTop=window.scrollY,window.scroll({left:0,top:t,behavior:"smooth"}))}}}function m(){window.mdsp.phtml=new g(o.vscode)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",m):m()})(window.showdowns,window.mdsp&&window.mdsp.options?window.mdsp.options:{});})();
+"use strict";
+(() => {
+  // src/media/webview.js
+  (function(previewer, options) {
+    function hashString(str) {
+      const seed = 31;
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = Math.imul(seed, hash) + char | 0;
+      }
+      return hash >>> 0;
+    }
+    function deepMerge(target, source) {
+      let output = Object.assign({}, target);
+      if (typeof source !== "object" || !source) {
+        return output;
+      }
+      Object.keys(source).forEach((key) => {
+        if (source[key] && typeof source[key] === "object") {
+          if (!output[key] || typeof output[key] !== "object") {
+            output[key] = Array.isArray(source[key]) ? [] : {};
+          }
+          output[key] = deepMerge(output[key], source[key]);
+        } else {
+          output[key] = source[key];
+        }
+      });
+      return output;
+    }
+    function initOptions(opts) {
+      const defOptions = {
+        vscode: false,
+        autoToc: true,
+        cdnName: "local",
+        defScheme: "",
+        distScheme: "../node_modules/@jhuix/showdowns/dist/",
+        uriPath: "",
+        flavor: "",
+        markdown: {},
+        plantuml: {
+          renderMode: "local",
+          umlWebSite: "www.plantuml.com/plantuml"
+        },
+        mermaid: {},
+        katex: {},
+        kroki: {
+          serverUrl: "kroki.io"
+        },
+        toc: {},
+        vega: {},
+        shiki: {}
+      };
+      return opts ? deepMerge(defOptions, opts) : defOptions;
+    }
+    options = initOptions(options);
+    class ContextMenu {
+      constructor(selector, menuItems) {
+        const menus = document.createElement("ul");
+        menus.classList.add("context-menu-list");
+        menus.style.top = "-50%";
+        menus.style.display = "none";
+        menus.style.zIndex = "1";
+        this.menus = menus;
+        this.selector = selector ? selector : document;
+        this.cssLinks = [];
+        this.scripts = [];
+        this.initMenuItem(menuItems);
+        document.body.appendChild(this.menus);
+        this.initWindowEvents();
+      }
+      initWindowEvents() {
+        const that = this;
+        this.selector.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          that.show(event.clientX, event.clientY);
+        });
+        document.addEventListener("click", function(e) {
+          that.hide();
+        });
+      }
+      initMenuItem(menuItems) {
+        if (typeof menuItems !== "object" || !menuItems) return;
+        if (menuItems.hasOwnProperty("style")) {
+          for (const key in menuItems["style"]) {
+            this.menus.style[key] = menuItems["style"][key];
+          }
+        }
+        if (menuItems.hasOwnProperty("items")) {
+          const that = this;
+          const items = menuItems.items;
+          for (const index in items) {
+            const item = items[index];
+            const menu = document.createElement("li");
+            menu.classList.add("context-menu-item");
+            switch (item.type) {
+              case "menu":
+                menu.appendChild(document.createElement("span")).appendChild(document.createTextNode(item.title));
+                if (item.hasOwnProperty("onclick") && typeof item.onclick === "function") {
+                  menu.addEventListener("click", (event) => {
+                    item.onclick(event, that.selector);
+                    that.hide();
+                  });
+                }
+                this.menus.appendChild(menu);
+                break;
+              case "submenu":
+                menu.classList.add("context-menu-submenu");
+                menu.appendChild(document.createElement("span")).appendChild(document.createTextNode(item.title));
+                this.menus.appendChild(menu);
+                break;
+              case "separator":
+                menu.classList.add("context-menu-separator");
+                this.menus.appendChild(menu);
+                break;
+            }
+          }
+        }
+      }
+      show(x, y) {
+        this.menus.style.display = "block";
+        if (y + this.menus.clientHeight > window.innerHeight - 10) {
+          y -= this.menus.clientHeight + 10;
+        }
+        if (x + this.menus.clientWidth > window.innerWidth - 10) {
+          x -= this.menus.clientWidth + 10;
+        }
+        x += window.pageXOffset;
+        y += window.pageYOffset;
+        this.menus.style.left = x + "px";
+        this.menus.style.top = y + "px";
+      }
+      hide() {
+        this.menus.style.display = "none";
+        this.menus.style.top = "-50%";
+      }
+    }
+    var localizedMenu = {
+      en: {
+        "menu.browsehtml": "Browse HTML Page",
+        "menu.exporthtml": "Export \u279D HTML",
+        "menu.exportpdf": "Export \u279D PDF",
+        "menu.exportwebp": "Export \u279D WEBP",
+        "menu.exportpng": "Export \u279D PNG",
+        "menu.exportjpg": "Export \u279D JPG"
+      },
+      "zh-cn": {
+        "menu.browsehtml": "\u7528\u6D4F\u89C8\u5668\u6253\u5F00",
+        "menu.exporthtml": "\u5BFC\u51FA\u6587\u4EF6 \u279D HTML",
+        "menu.exportpdf": "\u5BFC\u51FA\u6587\u4EF6 \u279D PDF",
+        "menu.exportwebp": "\u5BFC\u51FA\u6587\u4EF6 \u279D WEBP",
+        "menu.exportpng": "\u5BFC\u51FA\u56FE\u7247 \u279D PNG",
+        "menu.exportjpg": "\u5BFC\u51FA\u56FE\u7247 \u279D JPG"
+      }
+    };
+    function localize(key) {
+      let locale = document.children[0].lang;
+      if (!locale) {
+        locale = "en";
+      }
+      return localizedMenu[locale][key] ? localizedMenu[locale][key] : "";
+    }
+    class PreviewHtml {
+      //This PreviewHtml should be initialized when the html dom is loaded.
+      constructor(isVscode) {
+        this.vscodeAPI = null;
+        this.sourceUri = "";
+        this.totalLines = 0;
+        this.currentLine = -1;
+        this.syncScrollTop = -1;
+        this.resolveCallbacks = {};
+        this.config = {
+          vscode: isVscode,
+          options: {
+            flavor: options.flavor,
+            markdown: options.markdown,
+            plantuml: options.plantuml,
+            mermaid: options.mermaid,
+            katex: options.katex,
+            kroki: options.kroki,
+            toc: options.toc,
+            vega: options.vega
+          }
+        };
+        const previewElement = document.createElement("div");
+        previewElement.classList.add("workspace-container", "main-toc-row");
+        this.previewElement = previewElement;
+        document.body.appendChild(this.previewElement);
+        this.initWindowEvents();
+        this.initMenus();
+        let currPath = "";
+        if (options.uriPath) {
+          currPath = "file:///" + options.uriPath;
+          if (this.config.vscode) {
+            const url = new URL(options.defScheme);
+            currPath = url.origin + "/" + options.uriPath;
+          }
+        }
+        previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
+        previewer.init(true);
+        this.updateOptions(this.config.options);
+        if (!this.config.vscode) {
+          window.dispatchEvent(
+            new CustomEvent("showdownsLoaded", {
+              detail: {
+                phtml: this
+              }
+            })
+          );
+        } else {
+          this.postMessage("webviewLoaded", [document.title]);
+        }
+      }
+      updateOptions(options2) {
+        if (options2.flavor) {
+          previewer.setShowdownFlavor(options2.flavor);
+        }
+        if (options2.markdown) {
+          previewer.setShowdownOptions(options2.markdown);
+        }
+        if (options2.vega) {
+          previewer.setVegaOptions(Object.assign({ renderer: "svg" }, options2.vega));
+        }
+        if (options2.mermaid) {
+          previewer.setMermaidOptions(options2.mermaid);
+        }
+        if (options2.plantuml) {
+          if (options2.plantuml.renderMode === "local") {
+            previewer.setPlantumlOptions({ imageFormat: "svg", svgRender: this.renderPlantuml.bind(this) });
+          } else {
+            previewer.setPlantumlOptions({ imageFormat: "svg", umlWebSite: options2.plantuml.umlWebSite });
+          }
+        }
+        if (options2.katex) {
+          previewer.setKatexOptions(options2.katex);
+        }
+        if (options2.kroki) {
+          previewer.setKrokiOptions(options2.kroki);
+        }
+        if (options2.toc) {
+          previewer.setExtensionOptions("toc", options2.toc);
+        }
+        if (options2.shiki) {
+          previewer.setExtensionOptions("shiki", options2.shiki);
+        }
+      }
+      getOtherStyles() {
+        let styles = [];
+        const elVegaEmbedStyle = document.getElementById("vega-embed-style");
+        if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === "style") {
+          let styleContent = elVegaEmbedStyle.innerHTML;
+          styleContent = styleContent.replace(/\<br[\/]?\>/g, "");
+          styles.push({
+            id: "vega-embed-style",
+            style: styleContent
+          });
+        }
+        const abcAudioStyle = document.getElementById("css-abc-audio");
+        if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === "style") {
+          let styleContent = abcAudioStyle.innerHTML;
+          styleContent = styleContent.replace(/\<br[\/]?\>/g, "");
+          styles.push({
+            id: "css-abc-audio",
+            style: styleContent
+          });
+        }
+        return styles;
+      }
+      initMenus() {
+        const that = this;
+        const menuItems = {
+          style: {
+            zIndex: "1",
+            display: "none"
+          },
+          items: [
+            {
+              type: "menu",
+              title: localize("menu.browsehtml"),
+              onclick: function(e, s) {
+                that.postMessage("openInBrowser", [
+                  that.changeFileProtocol(s.innerHTML),
+                  document.title,
+                  that.sourceUri,
+                  that.cssLinks,
+                  that.getOtherStyles(),
+                  that.scripts
+                ]);
+              }
+            },
+            {
+              type: "menu",
+              title: localize("menu.exporthtml"),
+              onclick: function(e, s) {
+                that.postMessage("exportHTML", [
+                  that.changeFileProtocol(s.innerHTML),
+                  document.title,
+                  that.sourceUri,
+                  that.cssLinks,
+                  that.getOtherStyles(),
+                  that.scripts
+                ]);
+              }
+            },
+            {
+              type: "menu",
+              title: localize("menu.exportpdf"),
+              onclick: function(e, s) {
+                that.postMessage("exportPDF", [
+                  that.changeFileProtocol(s.innerHTML),
+                  document.title,
+                  that.sourceUri,
+                  that.cssLinks,
+                  that.getOtherStyles(),
+                  that.scripts
+                ]);
+              }
+            },
+            {
+              type: "menu",
+              title: localize("menu.exportwebp"),
+              onclick: function(e, s) {
+                that.postMessage("exportWEBP", [
+                  that.changeFileProtocol(s.innerHTML),
+                  document.title,
+                  that.sourceUri,
+                  that.cssLinks,
+                  that.getOtherStyles(),
+                  that.scripts
+                ]);
+              }
+            },
+            {
+              type: "menu",
+              title: localize("menu.exportpng"),
+              onclick: function(e, s) {
+                that.postMessage("exportPNG", [
+                  that.changeFileProtocol(s.innerHTML),
+                  document.title,
+                  that.sourceUri,
+                  that.cssLinks,
+                  that.getOtherStyles(),
+                  that.scripts
+                ]);
+              }
+            },
+            {
+              type: "menu",
+              title: localize("menu.exportjpg"),
+              onclick: function(e, s) {
+                that.postMessage("exportJPEG", [
+                  that.changeFileProtocol(s.innerHTML),
+                  document.title,
+                  that.sourceUri,
+                  that.cssLinks,
+                  that.getOtherStyles(),
+                  that.scripts
+                ]);
+              }
+            }
+          ]
+        };
+        this.contextMenu = new ContextMenu(this.previewElement, menuItems);
+      }
+      changeFileProtocol(html) {
+        if (this.config.vscode) {
+          html = html.replace(new RegExp(`(<img.* src=")(.*?vscode-webview.*?)"`, `g`), function(match, tag, url) {
+            let imgUrl = new URL(decodeURIComponent(url));
+            imgUrl.protocol = "file:";
+            imgUrl.host = "";
+            url = imgUrl.toString();
+            return tag + url + '"';
+          });
+          html = html.replace(
+            new RegExp(`"([^"]*?file.*?.vscode-resource.vscode-cdn.net/)(.*?)"`, `g`),
+            function(match, tag, url) {
+              let imgUrl = new URL(decodeURIComponent(url));
+              imgUrl.protocol = "file:";
+              imgUrl.host = "";
+              url = imgUrl.toString();
+              return '"' + url + '"';
+            }
+          );
+        }
+        return html.trim();
+      }
+      /**
+       * 
+       * @param {string | HTMLElement[]} html 
+       * @returns {string | HTMLElement[]}
+       */
+      changeVscodeResourceProtocol(html) {
+        if (typeof html === "string") {
+          if (this.config.vscode) {
+            const resUrl = new URL(options.defScheme);
+            const vscodeResourceScheme = resUrl.origin + "/";
+            html = html.replace(/(\<img.* src=")file:\/\/\//g, "$1" + vscodeResourceScheme);
+            html = html.replace(/(\<img.* src=")\.\//g, "$1" + vscodeResourceScheme + options.uriPath + "/");
+          }
+          return html.trim();
+        }
+        if (this.config.vscode) {
+          const resUrl = new URL(options.defScheme);
+          const vscodeResourceScheme = resUrl.origin + "/";
+          const imgs = html[0].querySelectorAll("img");
+          if (imgs && imgs.length > 0) {
+            imgs.forEach((e) => {
+              if (e.src) {
+                e.src = e.src.replace(/^file:\/\/\//g, vscodeResourceScheme);
+                e.src = e.src.replace(/^\.\//g, vscodeResourceScheme + options.uriPath + "/");
+              }
+            });
+          }
+        }
+        return html;
+      }
+      // Post message to parent window
+      postMessage(command, args = []) {
+        if (this.config.vscode) {
+          if (!this.vscodeAPI) {
+            this.vscodeAPI = acquireVsCodeApi();
+          }
+          this.vscodeAPI.postMessage({
+            command,
+            args
+          });
+        } else {
+          if (window.parent !== window) {
+            window.parent.postMessage(
+              {
+                command,
+                args
+              },
+              "file://"
+            );
+          }
+        }
+      }
+      renderPlantuml(id, name, code, count) {
+        count = count || 0;
+        const that = this;
+        return new Promise((resolve) => {
+          that.resolveCallbacks[id] = resolve;
+          that.postMessage("renderPlantuml", [{ id, name, code, count, sourceUri: that.sourceUri }]);
+        });
+      }
+      fetch() {
+        const that = this;
+        return function(input, init) {
+          const checksum = hashString(input + (!!init.data ? init.data : ""));
+          const id = `cb-${checksum}-${Date.now()}-${Math.floor(Math.random() * 1e4)}`;
+          return new Promise((resolve, reject) => {
+            that.resolveCallbacks[id] = { resolve, reject };
+            that.postMessage("fetch", [id, input, init]);
+          });
+        };
+      }
+      // Initialize `window` events.
+      initWindowEvents() {
+        window.addEventListener("keydown", (event) => {
+          if (event.shiftKey && event.ctrlKey && event.which === 83) {
+            return this.previewSyncSource();
+          }
+        });
+        window.addEventListener("scroll", (event) => {
+          this.scrollEvent(event);
+        });
+        window.addEventListener("message", (event) => {
+          this.messageEvent(event);
+        });
+        if (this.config.vscode) {
+          window.fetch = this.fetch();
+        }
+      }
+      updateMarkdown(markdown, mdOptions) {
+        mdOptions = mdOptions || null;
+        if (mdOptions instanceof Object) {
+          this.config.options = mdOptions;
+          this.updateOptions(mdOptions);
+        }
+        if (options.autoToc) {
+          markdown = "[TOC]\n\n" + markdown;
+        }
+        const genScript = (script) => {
+          if (script.once || !script.code) return;
+          const s = {};
+          if (typeof script.code === "function") {
+            s.code = `(${script.code.toString()})();`;
+          } else {
+            s.code = script.code;
+          }
+          if (script.id) {
+            s.id = script.id;
+          }
+          if (script.host) {
+            s.host = script.host;
+          }
+          return s;
+        };
+        const that = this;
+        previewer.makeHtml({ content: markdown, output: "dom" }).then((res) => {
+          if (typeof res === "object") {
+            const preview = that.changeVscodeResourceProtocol(res.html);
+            if (typeof preview === "string") {
+              that.previewElement.innerHTML = preview;
+            } else {
+              preview.forEach((e) => {
+                that.previewElement.appendChild(e);
+              });
+            }
+            that.scripts = [];
+            that.cssLinks = [...res.cssLinks];
+            previewer.completedHtml(res.scripts, ".showdowns");
+            res.scripts.forEach((script) => {
+              let s = genScript(script);
+              if (script.inner && Array.isArray(script.inner)) {
+                const inners = [];
+                script.inner.forEach((inner) => {
+                  const inScript = genScript(inner);
+                  if (inScript) {
+                    inners.push(inScript);
+                  }
+                });
+                if (inners.length > 0) {
+                  s = s ?? {};
+                  s.inner = inners;
+                }
+              }
+              if (script.outer && Array.isArray(script.outer)) {
+                const outers = [];
+                script.outer.forEach((outer) => {
+                  const outScript = genScript(outer);
+                  if (outScript) {
+                    outers.push(outScript);
+                  }
+                });
+                if (outers.length > 0) {
+                  s = s ?? {};
+                  s.outer = outers;
+                }
+              }
+              if (s) {
+                that.scripts.push(s);
+              }
+            });
+          } else {
+            that.scripts = [];
+            that.cssLinks = [];
+            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res);
+          }
+        }).catch((err) => {
+          that.scripts = [];
+          that.cssLinks = [];
+          that.previewElement.innerHTML = "";
+          console.log(err);
+        });
+      }
+      messageEvent(event) {
+        const message = event.data;
+        if (message) {
+          switch (message.command) {
+            case "updateMarkdown":
+              this.sourceUri = message.uri;
+              this.updateMarkdown(message.markdown, message.options);
+              if (message.title) {
+                document.title = message.title;
+              }
+              this.totalLines = message.totalLines;
+              this.scrollToLine(message.currentLine);
+              break;
+            case "changeVisibleRanges":
+              const line = parseInt(message.line, 10);
+              this.scrollToLine(line);
+              break;
+            case "responsePlantuml":
+              if (this.resolveCallbacks.hasOwnProperty(message.id)) {
+                const callback = this.resolveCallbacks[message.id];
+                delete this.resolveCallbacks[message.id];
+                if (callback) {
+                  callback(message.response);
+                }
+              }
+              break;
+            case "onfetch":
+              if (this.resolveCallbacks.hasOwnProperty(message.id)) {
+                const callback = this.resolveCallbacks[message.id];
+                delete this.resolveCallbacks[message.id];
+                if (callback) {
+                  if (callback.resolve && message.response) {
+                    callback.resolve(message.response);
+                  }
+                  if (callback.reject && message.error) {
+                    callback.reject(message.error);
+                  }
+                }
+              }
+              break;
+          }
+        }
+      }
+      checkScrollEnd() {
+        this.syncScrollTop = -1;
+        this.endScrollTimeout = null;
+      }
+      scrollEvent(event) {
+        if (this.syncScrollTop >= 0) {
+          if (this.endScrollTimeout) {
+            clearTimeout(this.endScrollTimeout);
+          }
+          this.endScrollTimeout = setTimeout(this.checkScrollEnd.bind(this), 500);
+        } else {
+          this.previewSyncSource();
+        }
+      }
+      previewSyncSource() {
+        let scrollLine = 0;
+        if (window.scrollY !== 0) {
+          if (window.scrollY + window.innerHeight >= this.previewElement.scrollHeight) {
+            scrollLine = this.totalLines;
+          } else {
+            const top = window.scrollY + window.innerHeight / 2;
+            scrollLine = parseInt(top * this.totalLines / this.previewElement.scrollHeight, 10);
+          }
+        }
+        this.postMessage("revealLine", [this.sourceUri, scrollLine]);
+      }
+      scrollToLine(line) {
+        if (line !== this.currentLine) {
+          if (this.totalLines) {
+            this.currentLine = line;
+            let scrollTop = 0;
+            if (line + 1 === this.totalLines) {
+              scrollTop = this.previewElement.scrollHeight;
+            } else {
+              scrollTop = parseInt(line * this.previewElement.scrollHeight / this.totalLines, 10);
+            }
+            if (window.scrollY !== scrollTop) {
+              this.syncScrollTop = window.scrollY;
+              window.scroll({
+                left: 0,
+                top: scrollTop,
+                behavior: "smooth"
+              });
+            }
+          }
+        }
+      }
+    }
+    function onLoad() {
+      window.mdsp.phtml = new PreviewHtml(options.vscode);
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", onLoad);
+    } else {
+      onLoad();
+    }
+  })(window.showdowns, window.mdsp && window.mdsp.options ? window.mdsp.options : {});
+})();
 //# sourceMappingURL=webview.js.map

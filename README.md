@@ -33,7 +33,7 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 When local rendering plantuml requires `Java` support, so [Java environment (JDK or JRE)](https://www.oracle.com/technetwork/java/javase/downloads/index.html) needs to be installed and the Java executor directory needs to be set to the global path environment variable for the extension to work: 
 
 - JAVA_HOME: Java SDK installed directory (must have a bin sub-directory)
-- Windows example: C:\Program Files\Java\jdk1.8.0_101)
+- Windows example: C:\Program Files\Java\jdk1.8.0_101
 - macOS example: /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home
 - PATH: the global path environment variable
 - Windows example: PATH=%PATH%;%JAVA_HOME%\bin
@@ -46,6 +46,17 @@ If you want to use PlantUML's functionality that requires [GraphViz](https://www
 - macOS example: /usr/local/Cellar/graphviz/2.38.0_1/bin/dot
 
 After setting these environment variables you need to restart VSCode for the extension to work.
+
+### For local rendering tex
+
+LaTeX need get going with on a machine. Generally speaking it involves downloading a Latex distribution, of which there are a few, although the big three tend to be:
+
+- [TeX Live (Linux/Windows)](https://www.tug.org/texlive/quickinstall.html)
+- [MikTeX (Windows)](https://miktex.org)
+- [MacTeX (macOS)](https://www.tug.org/mactex/mactex-download.html)
+
+These distributions have installers, and the way they need to be installed is platform specific. Generally they are large monolithic downloads. 
+After installation, it is necessary to set the corresponding exe(pdflatex, dvisvgm) files path to the `PATH` environment variable.
 
 ### For export PDF or PNG or JPEG:
 
@@ -85,6 +96,10 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.scrollSync`:
 
     Automatic scroll sync, default true, it is experimental.
+
+* `markdown-preview-showdown.codeTheme`:
+
+    Code block theme for shiki, default 'ayu-dark'.
 
 * `markdown-preview-showdown.katex.mathDelimiters`:
 
@@ -135,6 +150,10 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.puppeteer.chromePath`:
 
     Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically `(only for windows)`.
+
+* `markdown-preview-showdown.toc.chapterNumber`:
+
+    Show chapter number of TOC such as \"1.1.\", default true.
 
 ## Keybindings
 

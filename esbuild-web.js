@@ -19,8 +19,8 @@ const esbuildProblemMatcherPlugin = {
       files.forEach((file) => {
         const deletedFile = path.join(__dirname, 'media', file);
         if (fs.existsSync(deletedFile)) {
-          fs.unlinkSync(deletedFile);
-          console.log('[watch] deleted file:', deletedFile);
+          fs.rmSync(deletedFile);
+          // console.log('[watch] deleted file:', deletedFile);
         }
       });
     });
@@ -30,11 +30,11 @@ const esbuildProblemMatcherPlugin = {
       files.forEach((file) => {
         const destPath = path.join(__dirname, 'docs', 'media', file);
         if (fs.existsSync(destPath)) {
-          fs.unlinkSync(destPath);
+          fs.rmSync(destPath);
         }
         const srcPath = path.join(__dirname, 'media', file);
         fs.copyFileSync(srcPath, destPath);
-        console.log('[watch] copied file from', srcPath, 'to', destPath);
+        // console.log('[watch] copied file from', srcPath, 'to', destPath);
       });
       result.errors.forEach(({ text, location }) => {
         console.error(`✘ [ERROR] ${text}`);

@@ -1,3 +1,23 @@
+## 1.4.7
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.17:
+
+   - Add chapterNumber etc. options of toc.
+   - Add showdowns-tex extension.
+   - Add showdowns-shiki extension.
+   - Add showdowns-mathjax extension.
+   - Optimize toc extension and other codes.
+
+2. Add 'toc.chapterNumber' setting.
+
+3. Add 'code.theme' setting.
+
+4. Support local rendering TEX content.
+
+5. Surpport theme of code block.
+
+6. Surpport defaul engine of inline math is mathjax.
+
 ## 1.4.6
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.15:

@@ -19,10 +19,11 @@ export class PreviewConfig {
 
   public locale: string;
   public autoPreview: boolean;
-  public fontSize: number;
   public autoToc: boolean;
+  public fontSize: number;
   public scrollSync: boolean;
   public flavor: string;
+  public codeTheme: string;
   public mermaidTheme: string;
   public vegaTheme: string;
   public plantumlTheme: string;
@@ -67,6 +68,7 @@ export class PreviewConfig {
       this.scrollSync = PreviewConfig.getData(config.get('scrollSync'), true);
       this.autoToc = PreviewConfig.getData(config.get('autoToc'), true);
       this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
+      this.codeTheme = PreviewConfig.getData(config.get('codeTheme'), 'ayu-dark');
       this.mermaidTheme = PreviewConfig.getData(config.get('mermaid.theme'), 'default');
       this.mermaidOptions = PreviewConfig.getData(config.get('mermaid.options'), {});
       this.vegaTheme = PreviewConfig.getData(config.get('vega.theme'), 'vox');
@@ -147,6 +149,7 @@ export class PreviewConfig {
       this.autoToc = true;
       this.scrollSync = true;
       this.flavor = 'github';
+      this.codeTheme = 'ayu-dark';
       this.mermaidTheme = 'default';
       this.vegaTheme = 'vox';
       this.plantumlTheme = 'default';
