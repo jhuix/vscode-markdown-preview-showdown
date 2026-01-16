@@ -4,16 +4,6 @@
  */
 
 (function (previewer, options) {
-  function hashString(str) {
-    const seed = 31;
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (Math.imul(seed, hash) + char) | 0;
-    }
-    return hash >>> 0;
-  }
-
   function deepMerge(target, source) {
     let output = Object.assign({}, target);
     if (typeof source !== 'object' || !source) {
@@ -52,6 +42,7 @@
       },
       toc: {},
       vega: {},
+      tex: {},
       shiki: {}
     };
     return opts ? deepMerge(defOptions, opts) : defOptions;
@@ -193,7 +184,9 @@
           katex: options.katex,
           kroki: options.kroki,
           toc: options.toc,
-          vega: options.vega
+          vega: options.vega,
+          tex: options.tex,
+          shiki: options.shiki
         }
       };
 
@@ -211,6 +204,8 @@
           currPath = url.origin + '/' + options.uriPath;
         }
       }
+      this.config.options.kroki.svgRender = this.renderKroki.bind(this);
+      this.config.options.tex.svgRender = this.renderTex.bind(this);
       previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
       previewer.init(true);
       this.updateOptions(this.config.options);
@@ -259,6 +254,9 @@
       if (options.shiki) {
         previewer.setExtensionOptions('shiki', options.shiki)
       }
+      if (options.tex) {
+        previewer.setExtensionOptions('tex', options.tex)
+      }
     }
 
     getOtherStyles() {
@@ -281,6 +279,20 @@
           style: styleContent
         });
       }
+
+      const mjxStyles = document.querySelectorAll(`[id^="MJX-"]`);
+      if (mjxStyles.length > 0) {
+        Array.from(mjxStyles).forEach((style) => {
+          if (style.tagName.toLowerCase() === 'style') {
+            let styleContent = style.innerHTML;
+            styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
+            styles.push({
+              id: style.id,
+              style: styleContent
+            });
+          }
+        })
+      }
       return styles;
     }
 
@@ -297,7 +309,7 @@
             title: localize('menu.browsehtml'),
             onclick: function (e, s) {
               that.postMessage('openInBrowser', [
-                that.changeFileProtocol(s.innerHTML),
+                that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.cssLinks,
@@ -311,7 +323,7 @@
             title: localize('menu.exporthtml'),
             onclick: function (e, s) {
               that.postMessage('exportHTML', [
-                that.changeFileProtocol(s.innerHTML),
+                that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.cssLinks,
@@ -325,7 +337,7 @@
             title: localize('menu.exportpdf'),
             onclick: function (e, s) {
               that.postMessage('exportPDF', [
-                that.changeFileProtocol(s.innerHTML),
+                that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.cssLinks,
@@ -339,7 +351,7 @@
             title: localize('menu.exportwebp'),
             onclick: function (e, s) {
               that.postMessage('exportWEBP', [
-                that.changeFileProtocol(s.innerHTML),
+                that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.cssLinks,
@@ -353,7 +365,7 @@
             title: localize('menu.exportpng'),
             onclick: function (e, s) {
               that.postMessage('exportPNG', [
-                that.changeFileProtocol(s.innerHTML),
+                that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.cssLinks,
@@ -367,7 +379,7 @@
             title: localize('menu.exportjpg'),
             onclick: function (e, s) {
               that.postMessage('exportJPEG', [
-                that.changeFileProtocol(s.innerHTML),
+                that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
                 that.cssLinks,
@@ -406,6 +418,12 @@
       return html.trim();
     }
 
+    getPreviewContent(html) {
+      const content = this.changeFileProtocol(html);
+      const mjxCache = document.getElementById('MJX-SVG-global-cache');
+      return mjxCache ? mjxCache.outerHTML + content : content;
+    }
+
     /**
      * 
      * @param {string | HTMLElement[]} html 
@@ -431,6 +449,7 @@
             if (e.src) {
               e.src = e.src.replace(/^file:\/\/\//g, vscodeResourceScheme);
               e.src = e.src.replace(/^\.\//g, vscodeResourceScheme + options.uriPath + '/');
+              e.src = e.src.replace(/^vscode-webview:\/\/[^\/\s]+\//g, vscodeResourceScheme + options.uriPath + '/');
             }
           });
         }
@@ -463,25 +482,28 @@
       }
     }
 
-    renderPlantuml(id, name, code, count) {
-      count = count || 0;
+    renderPlantuml(id, code, options) {
       const that = this;
-      return new Promise((resolve) => {
-        that.resolveCallbacks[id] = resolve;
-        that.postMessage('renderPlantuml', [{ id, name, code, count, sourceUri: that.sourceUri }]);
+      return new Promise((resolve, reject) => {
+        that.resolveCallbacks[id] = { resolve, reject };
+        that.postMessage('renderPlantuml', [{ id, code, options, sourceUri: that.sourceUri }]);
       });
     }
 
-    fetch() {
+    renderKroki(id, code, options) {
       const that = this;
-      return function (input, init) {
-        const checksum = hashString(input + (!!init.data ? init.data : ''));
-        const id = `cb-${checksum}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-        return new Promise((resolve, reject) => {
-          that.resolveCallbacks[id] = { resolve, reject };
-          that.postMessage('fetch', [id, input, init]);
-        });
-      };
+      return new Promise((resolve, reject) => {
+        that.resolveCallbacks[id] = { resolve, reject };
+        that.postMessage('renderKroki', [{ id, code, options, sourceUri: that.sourceUri }]);
+      });
+    }
+
+    renderTex(id, code, options) {
+      const that = this
+      return new Promise((resolve, reject) => {
+        that.resolveCallbacks[id] = { resolve, reject };
+        that.postMessage('renderTex', [{ id, code, options, sourceUri: that.sourceUri }]);
+      });
     }
 
     // Initialize `window` events.
@@ -499,9 +521,6 @@
       window.addEventListener('message', (event) => {
         this.messageEvent(event);
       });
-      if (this.config.vscode) {
-        window.fetch = this.fetch();
-      }
     }
 
     updateMarkdown(markdown, mdOptions) {
@@ -529,6 +548,9 @@
         if (script.host) {
           s.host = script.host;
         }
+        if (script.module) {
+          s.module = script.module;
+        }
         return s;
       };
       const that = this;
@@ -540,6 +562,7 @@
             if (typeof preview === 'string') {
               that.previewElement.innerHTML = preview;
             } else {
+              that.previewElement.replaceChildren();
               preview.forEach((e) => {
                 that.previewElement.appendChild(e);
               });
@@ -566,10 +589,7 @@
               if (script.outer && Array.isArray(script.outer)) {
                 const outers = [];
                 script.outer.forEach((outer) => {
-                  const outScript = genScript(outer);
-                  if (outScript) {
-                    outers.push(outScript);
-                  }
+                  outers.push(outer);
                 });
                 if (outers.length > 0) {
                   s = s ?? {};
@@ -612,15 +632,8 @@
             this.scrollToLine(line);
             break;
           case 'responsePlantuml':
-            if (this.resolveCallbacks.hasOwnProperty(message.id)) {
-              const callback = this.resolveCallbacks[message.id];
-              delete this.resolveCallbacks[message.id];
-              if (callback) {
-                callback(message.response);
-              }
-            }
-            break;
-          case 'onfetch':
+          case 'responseKroki':
+          case 'responseTex':
             if (this.resolveCallbacks.hasOwnProperty(message.id)) {
               const callback = this.resolveCallbacks[message.id];
               delete this.resolveCallbacks[message.id];

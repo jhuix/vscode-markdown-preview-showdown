@@ -2,12 +2,15 @@
 
 ## 1.4.7
 
-1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.17:
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.18:
 
    - Add chapterNumber etc. options of toc.
    - Add showdowns-tex extension.
    - Add showdowns-shiki extension.
    - Add showdowns-mathjax extension.
+   - Add local render for kroki and tex extension.
+   - Update @viz-js/viz is 3.24.0.
+   - Add module attribute of the output script.
    - Optimize toc extension and other codes.
 
 2. Add 'toc.chapterNumber' setting.

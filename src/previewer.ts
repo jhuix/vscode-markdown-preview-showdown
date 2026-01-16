@@ -28,14 +28,16 @@ interface cssStyle {
 }
 
 interface outerScript {
-  name: string | undefined | null;
-  src: string | undefined | null;
+  name: string;
+  src: string;
+  module?: string | boolean;
 }
 
 interface innerScript {
   id: string | undefined | null;
   code: string | undefined | null;
   host: string | undefined | null;
+  module?: boolean;
 }
 
 interface showdownScript extends innerScript {
@@ -45,6 +47,31 @@ interface showdownScript extends innerScript {
 
 interface localizedInfo {
   [key: string]: string;
+}
+
+interface PlantumlRendererOptions {
+  count?: number;
+}
+
+interface KrokiRendererOptions {
+  diagramType?: string;
+  imageFormat?: string;
+}
+
+interface TexRendererOptions {
+  build?: string;
+  zoom?: number;
+  width?: string;
+  height?: string;
+}
+
+type RenderOptions = PlantumlRendererOptions & KrokiRendererOptions & TexRendererOptions;
+
+interface LocalRenderData {
+  id: string;
+  code: string;
+  options?: RenderOptions;
+  sourceUri?: string;
 }
 
 const localizedMessage: {
@@ -297,8 +324,11 @@ export class ShowdownPreviewer {
             case 'renderPlantuml':
               this.renderLocalPlantuml(message.args[0]);
               break;
-            case 'fetch':
-              this.crossFetch(message.args[0], message.args[1], message.args[2]);
+            case 'renderKroki':
+              this.renderLocalKroki(message.args[0]);
+              break;
+            case 'renderTex':
+              this.renderLocalTex(message.args[0]);
               break;
           }
         },
@@ -334,80 +364,115 @@ export class ShowdownPreviewer {
     }
   }
 
-  public renderLocalPlantuml(data: any) {
-    const uri: vscode.Uri = vscode.Uri.parse(data.sourceUri);
-    data.context = this;
-    plantumlAPI
-      .render(
-        data.count,
-        data.code,
+  public renderLocalPlantuml(data: LocalRenderData) {
+    let filePath = '';
+    if (data.sourceUri) {
+      const uri: vscode.Uri = vscode.Uri.parse(data.sourceUri);
+      filePath =
         path.dirname(uri.fsPath) +
-          path.delimiter +
-          path.resolve(__dirname, '../media/plantuml') +
-          path.delimiter +
-          path.resolve(__dirname, '../node_modules/plantuml-style-c4'),
-        this.config.plantumlTheme
-      )
+        path.delimiter +
+        path.resolve(__dirname, '../media/plantuml') +
+        path.delimiter +
+        path.resolve(__dirname, '../node_modules/plantuml-style-c4');
+    }
+    const count = data.options?.count ?? 0;
+    const that = this;
+    plantumlAPI
+      .render(count, data.code, filePath, that.config.plantumlTheme)
       .then((svg: string) => {
-        if (data.context.webpanel) {
-          data.context.webpanel.webview.postMessage({
-            command: 'responsePlantuml',
-            id: data.id,
-            name: data.name,
-            response: svg
-          });
-        }
+        that.webpanel?.webview.postMessage({ command: 'responsePlantuml', id: data.id, response: svg });
       })
       .catch((err: any) => {
         output.log(err);
       });
   }
-  public crossFetch(id: string, input: string | URL, init?: RequestInit) {
+
+  public renderLocalKroki(data: LocalRenderData) {
+    const id = data.id;
+    const code = data.code;
     const that = this;
-    let data = '';
-    let options: any = {};
-    if (init) {
-      data = init.body ? init.body.toString() : '';
-      options = {
-        method: init.method,
-        headers: init.headers
-      };
-    }
+    if (!data.options || !data.options.diagramType) return;
 
-    const url = new URL(input.toString()); // validate URL
-    if (url.hostname === 'tex.io') {
-      const paths = url.pathname.split('/');
-      const buildType = paths.length >= 2 ? paths[1] : 'pdflatex';
-      options.build = buildType;
-      const zoom = url.searchParams.get('zoom');
-      if (zoom) {
-        options.zoom = parseFloat(zoom);
-      }
-      texAPI
-        .render(id, data, options)
-        .generateSVG()
-        .then((result) => {
-          const preview = that.getPreview();
-          preview?.webview.postMessage({ command: 'onfetch', id: id, response: result });
-        })
-        .catch((err) => {
-          const preview = that.getPreview();
-          preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
-        });
-      return;
-    }
-
+    const imageFormat = data.options?.imageFormat ?? 'svg';
+    const input = `https://${this.config.krokiWebsite}/${data.options.diagramType}/${imageFormat}`;
     utils
-      .requestText(input, data, options)
+      .requestText(input, code, {
+        method: 'POST',
+        headers: { Accept: `*/*`, 'Content-Type': 'text/plain; charset=utf-8' }
+      })
       .then((data) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'onfetch', id: id, response: data });
+        preview?.webview.postMessage({ command: 'responseKroki', id: id, response: data });
       })
       .catch((err) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
+        preview?.webview.postMessage({ command: 'responseKroki', id: id, error: err.toString() });
       });
   }
+
+  public renderLocalTex(data: LocalRenderData) {
+    const id = data.id;
+    const code = data.code;
+    const that = this;
+    texAPI
+      .render(id, code, data.options as texAPI.TexRenderOptions)
+      .generateSVG()
+      .then((result) => {
+        const preview = that.getPreview();
+        preview?.webview.postMessage({ command: 'responseTex', id: id, response: result });
+      })
+      .catch((err) => {
+        const preview = that.getPreview();
+        preview?.webview.postMessage({ command: 'responseTex', id: id, error: err.toString() });
+      });
+  }
+
+  // public crossFetch(id: string, input: string | URL, init?: RequestInit) {
+  //   const that = this;
+  //   let data = '';
+  //   let options: any = {};
+  //   if (init) {
+  //     data = init.body ? init.body.toString() : '';
+  //     options = {
+  //       method: init.method,
+  //       headers: init.headers
+  //     };
+  //   }
+
+  //   const url = new URL(input.toString()); // validate URL
+  //   if (url.hostname === 'tex.io') {
+  //     const paths = url.pathname.split('/');
+  //     const buildType = paths.length >= 2 ? paths[1] : 'pdflatex';
+  //     options.build = buildType;
+  //     const zoom = url.searchParams.get('zoom');
+  //     if (zoom) {
+  //       options.zoom = parseFloat(zoom);
+  //     }
+  //     texAPI
+  //       .render(id, data, options)
+  //       .generateSVG()
+  //       .then((result) => {
+  //         const preview = that.getPreview();
+  //         preview?.webview.postMessage({ command: 'onfetch', id: id, response: result });
+  //       })
+  //       .catch((err) => {
+  //         const preview = that.getPreview();
+  //         preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
+  //       });
+  //     return;
+  //   }
+
+  //   utils
+  //     .requestText(input, data, options)
+  //     .then((data) => {
+  //       const preview = that.getPreview();
+  //       preview?.webview.postMessage({ command: 'onfetch', id: id, response: data });
+  //     })
+  //     .catch((err) => {
+  //       const preview = that.getPreview();
+  //       preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
+  //     });
+  // }
 
   public async saveLocalHtml(
     htmlPath: string,
@@ -438,7 +503,7 @@ export class ShowdownPreviewer {
       }
     }
     const showdowncss = await utils.readFile(
-      path.join(this.context.extensionPath, 'node_modules/@jhuix/showdowns/dist/showdowns.css'),
+      path.join(this.context.extensionPath, 'node_modules/@jhuix/showdowns/dist/showdowns.min.css'),
       {
         encoding: 'utf-8'
       }
@@ -534,18 +599,39 @@ export class ShowdownPreviewer {
               script.outer = [script.outer];
             }
             script.outer.forEach((o) => {
-              const src = o.src?.replace('vscode-webview:', 'https:');
-              const name = o.name?.toLocaleLowerCase();
-              outerScripts += `<script id='script-${name}' src='${src}'></script>\n`;
+              const src = o.src.replace('vscode-webview:', 'https:');
+              const name = o.name.toLocaleLowerCase();
+              if (o.module) {
+                if (typeof o.module === 'string' && o.module === 'import') {
+                  outerScripts += `<script id='script-${name}' type='module'>
+  import * as ${name} from '${src}';
+  if (!('${o.name}' in window)) {
+    if ('default' in ${name} && ${name}['default']) {
+      window['${o.name}'] = ${name}['default']
+    } else {
+      window['${o.name}'] = ${name};
+    }
+  }
+</script>\n`;
+                } else {
+                  outerScripts += `<script id='script-${name}' type='module' src='${src}'></script>\n`;
+                }
+              } else {
+                outerScripts += `<script id='script-${name}' src='${src}'></script>\n`;
+              }
             });
           }
 
           if (script.hasOwnProperty('code') && script.code) {
+            let id = '';
+            let module = '';
             if (script.id) {
-              bodyScripts = `<script id='script-${script.id}'>${script.code}</script>\n`;
-            } else {
-              bodyScripts = `<script>${script.code}</script>\n`;
+              id = ` id='script-${script.id}'`;
             }
+            if (script.module) {
+              module = ` type='module'`;
+            }
+            bodyScripts += `<script${id}${module}>${script.code}</script>\n`;
           }
 
           if (script.hasOwnProperty('inner') && script.inner) {
@@ -554,11 +640,15 @@ export class ShowdownPreviewer {
             }
             script.inner.forEach((s) => {
               if (s.code) {
+                let id = '';
+                let module = '';
                 if (s.id) {
-                  innerScripts += `<script id='script-${s.id}'>${s.code}</script>\n`;
-                } else {
-                  innerScripts += `<script>${s.code}</script>\n`;
+                  id = ` id='script-${s.id}'`;
                 }
+                if (s.module) {
+                  module = ` type='module'`;
+                }
+                innerScripts += `<script${id}${module}>${s.code}</script>\n`;
               }
             });
           }
@@ -1040,8 +1130,8 @@ export class ShowdownPreviewer {
     line-height: 1.6;
     padding: 0;
   }
-  svg {
-    stroke: var(--vscode-editor-foreground);
+  .tex>svg {
+    fill: var(--vscode-editor-foreground);
     path {
       stroke: var(--vscode-editor-foreground);
     }
@@ -1059,7 +1149,7 @@ export class ShowdownPreviewer {
 </style>
 <link rel="stylesheet" href="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.css`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.min.css`,
       true
     )}">
 <link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
@@ -1108,7 +1198,7 @@ window.mdsp = {
 </script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(
       webview,
-      `node_modules/@jhuix/showdowns/dist/showdowns.js`,
+      `node_modules/@jhuix/showdowns/dist/showdowns.min.js`,
       true
     )}"></script>
 <script nonce="${this.getNonce()}" src="${this.changeFileProtocol(webview, `media/webview.js`, true)}"></script>
