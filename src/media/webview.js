@@ -43,7 +43,8 @@
       toc: {},
       vega: {},
       tex: {},
-      shiki: {}
+      shiki: {},
+      gnuplot: {}
     };
     return opts ? deepMerge(defOptions, opts) : defOptions;
   }
@@ -186,7 +187,8 @@
           toc: options.toc,
           vega: options.vega,
           tex: options.tex,
-          shiki: options.shiki
+          shiki: options.shiki,
+          gnuplot: options.gnuplot
         }
       };
 
@@ -206,6 +208,7 @@
       }
       this.config.options.kroki.svgRender = this.renderKroki.bind(this);
       this.config.options.tex.svgRender = this.renderTex.bind(this);
+      this.config.options.gnuplot.svgRender = this.renderGnuplot.bind(this);
       previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
       previewer.init(true);
       this.updateOptions(this.config.options);
@@ -252,10 +255,13 @@
         previewer.setExtensionOptions('toc', options.toc);
       }
       if (options.shiki) {
-        previewer.setExtensionOptions('shiki', options.shiki)
+        previewer.setExtensionOptions('shiki', options.shiki);
       }
       if (options.tex) {
-        previewer.setExtensionOptions('tex', options.tex)
+        previewer.setExtensionOptions('tex', options.tex);
+      }
+      if (options.gnuplot) {
+        previewer.setExtensionOptions('gnuplot', options.gnuplot);
       }
     }
 
@@ -506,6 +512,14 @@
       });
     }
 
+    renderGnuplot(id, code) {
+      const that = this
+      return new Promise((resolve, reject) => {
+        that.resolveCallbacks[id] = { resolve, reject };
+        that.postMessage('renderGnuplot', [{ id, code, sourceUri: that.sourceUri }]);
+      });
+    }
+
     // Initialize `window` events.
     initWindowEvents() {
       // Keyboard events.
@@ -546,7 +560,11 @@
           s.id = script.id;
         }
         if (script.host) {
-          s.host = script.host;
+          if (typeof script.host === 'string') {
+            s.host = script.host;
+          } else {
+            s.host = script.host.id;
+          }
         }
         if (script.module) {
           s.module = script.module;
@@ -632,6 +650,7 @@
             this.scrollToLine(line);
             break;
           case 'responsePlantuml':
+          case 'responseGnuplot':
           case 'responseKroki':
           case 'responseTex':
             if (this.resolveCallbacks.hasOwnProperty(message.id)) {

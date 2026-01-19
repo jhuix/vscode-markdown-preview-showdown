@@ -11,6 +11,7 @@ import * as vscode from 'vscode';
 import { PreviewConfig } from './config';
 import utils from './utils';
 import * as texAPI from './tex';
+import * as gnuplotAPI from './gnuplot';
 
 const output = require('./output');
 const { debounce } = require('throttle-debounce');
@@ -330,6 +331,9 @@ export class ShowdownPreviewer {
             case 'renderTex':
               this.renderLocalTex(message.args[0]);
               break;
+            case 'renderGnuplot':
+              this.renderLocalGnuplot(message.args[0]);
+              break;
           }
         },
         null,
@@ -344,18 +348,6 @@ export class ShowdownPreviewer {
         null,
         this.context.subscriptions
       );
-
-      // Deprecated: Do not use, it be replaced by `webviewLoaded` custom message.
-      // Update the content based on view changes
-      // previewPanel.onDidChangeViewState(
-      //   (e) => {
-      //     if (previewPanel.visible) {
-      //       this.updateCurrentView();
-      //     }
-      //   },
-      //   null,
-      //   this.context.subscriptions
-      // );
     }
 
     this.generateHTML();
@@ -427,52 +419,22 @@ export class ShowdownPreviewer {
       });
   }
 
-  // public crossFetch(id: string, input: string | URL, init?: RequestInit) {
-  //   const that = this;
-  //   let data = '';
-  //   let options: any = {};
-  //   if (init) {
-  //     data = init.body ? init.body.toString() : '';
-  //     options = {
-  //       method: init.method,
-  //       headers: init.headers
-  //     };
-  //   }
-
-  //   const url = new URL(input.toString()); // validate URL
-  //   if (url.hostname === 'tex.io') {
-  //     const paths = url.pathname.split('/');
-  //     const buildType = paths.length >= 2 ? paths[1] : 'pdflatex';
-  //     options.build = buildType;
-  //     const zoom = url.searchParams.get('zoom');
-  //     if (zoom) {
-  //       options.zoom = parseFloat(zoom);
-  //     }
-  //     texAPI
-  //       .render(id, data, options)
-  //       .generateSVG()
-  //       .then((result) => {
-  //         const preview = that.getPreview();
-  //         preview?.webview.postMessage({ command: 'onfetch', id: id, response: result });
-  //       })
-  //       .catch((err) => {
-  //         const preview = that.getPreview();
-  //         preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
-  //       });
-  //     return;
-  //   }
-
-  //   utils
-  //     .requestText(input, data, options)
-  //     .then((data) => {
-  //       const preview = that.getPreview();
-  //       preview?.webview.postMessage({ command: 'onfetch', id: id, response: data });
-  //     })
-  //     .catch((err) => {
-  //       const preview = that.getPreview();
-  //       preview?.webview.postMessage({ command: 'onfetch', id: id, error: err.toString() });
-  //     });
-  // }
+  public renderLocalGnuplot(data: LocalRenderData) {
+    const id = data.id;
+    const code = data.code;
+    const that = this;
+    gnuplotAPI
+      .render(id, code)
+      .generateSVG()
+      .then((result) => {
+        const preview = that.getPreview();
+        preview?.webview.postMessage({ command: 'responseGnuplot', id: id, response: result });
+      })
+      .catch((err) => {
+        const preview = that.getPreview();
+        preview?.webview.postMessage({ command: 'responseGnuplot', id: id, error: err.toString() });
+      });
+  }
 
   public async saveLocalHtml(
     htmlPath: string,
@@ -1130,11 +1092,14 @@ export class ShowdownPreviewer {
     line-height: 1.6;
     padding: 0;
   }
-  .tex>svg {
+  .tex > svg {
     fill: var(--vscode-editor-foreground);
     path {
       stroke: var(--vscode-editor-foreground);
     }
+  }
+  .gnuplot > svg {
+    background-color: var(--vscode-editor-foreground);
   }
   .workspace-container {
     overflow: hidden;

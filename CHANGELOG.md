@@ -1,3 +1,16 @@
+## 1.4.8
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.19:
+
+   - Add showdowns-plotly extension.
+   - Add showdowns-gnuplot extension.
+   - Add cache for plantuml render.
+   - Update host attribute type of output script is 'string | HTMLElement'.
+
+2. Support rendering plotly.
+
+3. Support local rendering gnuplot.
+
 ## 1.4.7
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.18:

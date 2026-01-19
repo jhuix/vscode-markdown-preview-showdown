@@ -94,7 +94,7 @@ class TexRenderer {
           output.log(`DVI to SVG Converter Closed: code=${code}, signal=${signal}`);
           const svgData = this.chunks;
           this.render = null;
-          fs.rmdirSync(this.texPath, { recursive: true });
+          fs.rmSync(this.texPath, { recursive: true });
           this.closeRender();
           resolve(svgData);
         });

@@ -65,7 +65,7 @@ function getFile(url: string | URL): Promise<string> {
 
 function readFile(
   file: fs.PathLike | number,
-  options: { encoding?: string; flag?: string } | undefined | null
+  options: { encoding: BufferEncoding; flag?: string | undefined } | BufferEncoding
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     fs.readFile(file, options, (error, text) => {
