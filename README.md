@@ -10,6 +10,9 @@ A excellent markdown preview vscode extension with [showdowns](https://github.co
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps2.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps3.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps4.png" alt="markdown-preview-showdown"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdp5.png" alt="markdown-preview-showdown"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps6.png" alt="markdown-preview-showdown"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps7.png" alt="markdown-preview-showdown"></a></p>
 
 ## Features
 
