@@ -58,6 +58,14 @@ LaTeX need get going with on a machine. Generally speaking it involves downloadi
 These distributions have installers, and the way they need to be installed is platform specific. Generally they are large monolithic downloads. 
 After installation, it is necessary to set the corresponding exe(pdflatex, dvisvgm) files path to the `PATH` environment variable.
 
+### For local rendering gnuplot
+
+Gnuplot need get going with on a machine. For more information, please refer to [Gnuplot](http://www.gnuplot.info/).
+
+Dowload websit is [gnuplot download](https://sourceforge.net/projects/gnuplot/files/gnuplot/).
+
+After installation, it is necessary to set the corresponding exe(gnuplot) files path to the `PATH` environment variable.
+
 ### For export PDF or PNG or JPEG:
 
   When `markdown-preview-showdown.puppeteer.useCore` setting is true, this extension require puppeteer-core package (It has been integrated into the MDPS extension) and google chrome browser or chrome-location package, and `chrome.exe` program path is set to `markdown-preview-showdown.puppeteer.chromePath`. The chrome-location package also already exists in the extension, but it can also be globally installed by npm:
