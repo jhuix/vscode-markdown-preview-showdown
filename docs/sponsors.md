@@ -1,8 +1,8 @@
 # How to become a sponsor
 
-You can join them in supporting [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) development by [微信支付 Wechat Pay](./sponsors.md) :
+You can join them in supporting [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) development by [Wechat Pay(微信支付)](./sponsors.md) :
 
-![微信支付 Wechat Pay](./screenshot/wechatpay.png). 
+![Wechat Pay(微信支付)](./screenshot/wechatpay.png). 
 
 
 当您捐款后，请邮件我（ [jhuix0117@gmail.com](mailto:jhuix0117@gmail.com) ）或者留言以下内容。您的名字将会被保留在 [赞助者](#sponsors-list) 名单中。非常感谢您的支持！

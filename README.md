@@ -8,7 +8,7 @@ A excellent markdown preview vscode extension with [showdowns](https://github.co
 
 ## Supporting this project
 
-Its ongoing development is made possible thanks to the support by these awesome [sponsors](./docs/sponsors.md). You can help make [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) project better by supporting it on [微信支付 Wechat Pay](./docs/sponsors.md). Thank you!
+Its ongoing development is made possible thanks to the support by these awesome [sponsors](./docs/sponsors.md). You can help make [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) project better by supporting it on [Wechat Pay(微信支付)](./docs/sponsors.md). Thank you!
 
 
 ## Example image
@@ -24,7 +24,7 @@ Its ongoing development is made possible thanks to the support by these awesome 
 
 ## Features
 
-[Markdown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTeX math and AsciiMath, TOC, export HTML, export PDF etc.
+[Markdown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTex, plotly, gnuplot, abcjs, echarts, wavedrom, railroad, vega, biz, code block theme, LaTeX math and AsciiMath, TOC, export HTML, export PDF etc.
 
 MDPS converte markdown content to html that using the [@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package. See to [Demo Features](https://jhuix.github.io/vscode-markdown-preview-showdown):
 
