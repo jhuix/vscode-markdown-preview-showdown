@@ -3,7 +3,15 @@
 
 A excellent markdown preview vscode extension with [showdowns](https://github.com/jhuix/showdowns) that converte markdown content to preview html.
 
-> If you think the vscode extension can help you or also hope to encourage the author, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️.
+> If you think the vscode extension can help you or also hope to encourage the author, click on the top right corner to give me a [Star](https://github.com/jhuix/vscode-markdown-preview-showdown)⭐️. 
+
+
+## Supporting this project
+
+Its ongoing development is made possible thanks to the support by these awesome [sponsors](./docs/sponsors.md). You can help make [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) project better by supporting it on [微信支付 Wechat Pay](./docs/sponsors.md). Thank you!
+
+
+## Example image
 
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps0.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps1.png" alt="markdown-preview-showdown"></a></p>
