@@ -83,6 +83,11 @@
           "default": true,
           "type": "boolean"
         },
+        "markdown-preview-showdown.debounceDelay": {
+          "description": "%mdps.debounceDelay%",
+          "default": 5000,
+          "type": "number"
+        },
         "markdown-preview-showdown.fontSize": {
           "description": "%mdps.fontSize%",
           "default": 10,
@@ -298,6 +303,7 @@
     "@types/glob": "^9.0.0",
     "@types/mkdirp": "^2.0.0",
     "@types/node": "^25.0.9",
+    "@types/throttle-debounce": "^5.0.2",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",

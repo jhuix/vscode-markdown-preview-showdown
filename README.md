@@ -21,10 +21,11 @@ Its ongoing development is made possible thanks to the support by these awesome 
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps5.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps6.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps7.png" alt="markdown-preview-showdown"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps8.png" alt="markdown-preview-showdown"></a></p>
 
 ## Features
 
-[Markdown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as plantuml, mermaid, LaTex, plotly, gnuplot, abcjs, echarts, wavedrom, railroad, vega, biz, code block theme, LaTeX math and AsciiMath, TOC, export HTML, export PDF etc.
+[Markdown-Preview-Showdown(MDPS)](https://marketplace.visualstudio.com/items?itemName=jhuix.markdown-preview-showdown) is an vscode extension that preview markdown content as HTML and provides you with many useful functionalities such as `antv infographic`, `plantuml`, `mermaid`, `LaTex`, `plotly`, `gnuplot`, `abcjs`, `echarts`, `wavedrom`, `railroad`, `vega`, `viz`, `code block theme`, `LaTeX math and AsciiMath`, `TOC`, `export HTML`, `export PDF` etc.
 
 MDPS converte markdown content to html that using the [@jhuix/showdowns](https://www.npmjs.com/package/@jhuix/showdowns) npm package. See to [Demo Features](https://jhuix.github.io/vscode-markdown-preview-showdown):
 
@@ -108,6 +109,14 @@ This extension contributes the following settings:
 
     Automatic generate the total table of content of the markdown file, default true.
 
+* `markdown-preview-showdown.codeTheme`:
+
+    Code block theme for shiki, default 'ayu-dark'.
+
+* `markdown-preview-showdown.codeTheme`:
+
+    Code block theme for shiki, default 'ayu-dark'.
+
 * `markdown-preview-showdown.fontSize`:
 
     Custom font size of preview page, default "10" px.
@@ -115,10 +124,6 @@ This extension contributes the following settings:
 * `markdown-preview-showdown.scrollSync`:
 
     Automatic scroll sync, default true, it is experimental.
-
-* `markdown-preview-showdown.codeTheme`:
-
-    Code block theme for shiki, default 'ayu-dark'.
 
 * `markdown-preview-showdown.katex.mathDelimiters`:
 

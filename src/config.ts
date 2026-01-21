@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 export class PreviewConfig {
   public static packageName: string;
   public static defaultFontSize = 10;
+  public static defaultDebounceDelay = 5000;
 
   public static getCurrentConfig(context: vscode.ExtensionContext) {
     return new PreviewConfig(context);
@@ -20,6 +21,7 @@ export class PreviewConfig {
   public locale: string;
   public autoPreview: boolean;
   public autoToc: boolean;
+  public debounceDelay: number;
   public fontSize: number;
   public scrollSync: boolean;
   public flavor: string;
@@ -67,6 +69,8 @@ export class PreviewConfig {
       this.autoPreview = PreviewConfig.getData(config.get('autoPreview'), true);
       this.scrollSync = PreviewConfig.getData(config.get('scrollSync'), true);
       this.autoToc = PreviewConfig.getData(config.get('autoToc'), true);
+      const debounceDelay = PreviewConfig.getData(config.get('debounceDelay'), PreviewConfig.defaultDebounceDelay);
+      this.debounceDelay = debounceDelay < 100 ? 100 : debounceDelay;
       this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
       this.codeTheme = PreviewConfig.getData(config.get('codeTheme'), 'ayu-dark');
       this.mermaidTheme = PreviewConfig.getData(config.get('mermaid.theme'), 'default');
@@ -145,6 +149,7 @@ export class PreviewConfig {
       }
     } else {
       this.autoPreview = false;
+      this.debounceDelay = PreviewConfig.defaultDebounceDelay;
       this.fontSize = PreviewConfig.defaultFontSize;
       this.autoToc = true;
       this.scrollSync = true;

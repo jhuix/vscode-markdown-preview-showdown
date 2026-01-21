@@ -12,9 +12,9 @@ import { PreviewConfig } from './config';
 import utils from './utils';
 import * as texAPI from './tex';
 import * as gnuplotAPI from './gnuplot';
+import { debounce } from 'throttle-debounce';
 
 const output = require('./output');
-const { debounce } = require('throttle-debounce');
 const zlibcodec = require('./zlib-codec.js');
 const plantumlAPI = require('./plantuml');
 
@@ -180,14 +180,8 @@ export class ShowdownPreviewer {
   private editor: vscode.TextEditor | undefined = undefined;
   private webpanel: vscode.WebviewPanel | undefined = undefined;
   private uri: vscode.Uri | undefined = undefined;
-  private debounceUpdatePreview = debounce(5 * 5 * 10, (that: ShowdownPreviewer, uri: vscode.Uri) => {
-    that.updatePreview(uri);
-  });
-  private debouncePostMessage = debounce(3 * 5 * 10, (webView: vscode.Webview, message: any) => {
-    if (message.command !== 'breakMessage') {
-      webView.postMessage(message);
-    }
-  });
+  private debounceUpdatePreview: debounce<(that: ShowdownPreviewer, uri: vscode.Uri) => void>;
+  private debouncePostMessage: debounce<(webView: vscode.Webview, message: any) => void>;
 
   public constructor(context: vscode.ExtensionContext) {
     this.context = context;
@@ -205,6 +199,14 @@ export class ShowdownPreviewer {
       vega: {}
     };
     this.config = PreviewConfig.getCurrentConfig(context);
+    this.debounceUpdatePreview = debounce(this.config.debounceDelay, (that: ShowdownPreviewer, uri: vscode.Uri) => {
+      that.updatePreview(uri);
+    });
+    this.debouncePostMessage = debounce(this.config.debounceDelay, (webView: vscode.Webview, message: any) => {
+      if (message.command !== 'breakMessage') {
+        webView.postMessage(message);
+      }
+    });
     this._getChangedOptions(false);
     output.log('Showdown Previewer is created.');
   }
