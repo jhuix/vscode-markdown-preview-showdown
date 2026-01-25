@@ -28,7 +28,7 @@
     "tex",
     "MDPS"
   ],
-  "icon": "./media/logo.png",
+  "icon": "media/logo.png",
   "activationEvents": [
     "onLanguage:markdown"
   ],
