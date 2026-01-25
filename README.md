@@ -123,9 +123,13 @@ This extension contributes the following settings:
 
     Code block theme for shiki, default 'ayu-dark'.
 
+* `markdown-preview-showdown.debounceDelay`:
+
+    Debounce delay time in milliseconds, min 100ms and default 5s.
+
 * `markdown-preview-showdown.fontSize`:
 
-    Custom font size of preview page, default "10" px.
+    Custom font size of preview page, default "13" px.
 
 * `markdown-preview-showdown.scrollSync`:
 
