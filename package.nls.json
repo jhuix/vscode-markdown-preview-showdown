@@ -1,7 +1,7 @@
 {
   "mdps.displayname": "Markdown Preview Showdown (MDPS)",
   "mdps.description": "A excellent markdown preview extension for Visual Studio Code",
-  "mdps.debounceDelay": "Debounce delay time in milliseconds, min 100ms and default 5s.",
+  "mdps.debounceDelay": "Debounce delay time in milliseconds, min 100ms and default 2s.",
   "mdps.title": "MDPS — Markdown Preview Showdown",
   "mdps.openPreview": "Preview MD File",
   "mdps.autoPreview": "Automatic preview markdown file.",

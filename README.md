@@ -125,7 +125,7 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.debounceDelay`:
 
-    Debounce delay time in milliseconds, min 100ms and default 5s.
+    Debounce delay time in milliseconds, min 100ms and default 2s.
 
 * `markdown-preview-showdown.fontSize`:
 
