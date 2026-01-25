@@ -8,6 +8,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as glob from 'glob';
 import { PreviewConfig } from './config';
 import utils from './utils';
 import * as texAPI from './tex';
@@ -73,6 +74,12 @@ interface LocalRenderData {
   code: string;
   options?: RenderOptions;
   sourceUri?: string;
+}
+
+interface ImageSource {
+  id: string;
+  src: string;
+  sourceUri: string;
 }
 
 const localizedMessage: {
@@ -202,7 +209,7 @@ export class ShowdownPreviewer {
     this.debounceUpdatePreview = debounce(this.config.debounceDelay, (that: ShowdownPreviewer, uri: vscode.Uri) => {
       that.updatePreview(uri);
     });
-    this.debouncePostMessage = debounce(this.config.debounceDelay, (webView: vscode.Webview, message: any) => {
+    this.debouncePostMessage = debounce(150, (webView: vscode.Webview, message: any) => {
       if (message.command !== 'breakMessage') {
         webView.postMessage(message);
       }
@@ -319,7 +326,7 @@ export class ShowdownPreviewer {
               );
               break;
             case 'webviewLoaded':
-              this.updateCurrentView();
+              this.updateCurrentView(true);
               break;
             case 'revealLine':
               this.revealLine(message.args[0], message.args[1]);
@@ -335,6 +342,9 @@ export class ShowdownPreviewer {
               break;
             case 'renderGnuplot':
               this.renderLocalGnuplot(message.args[0]);
+              break;
+            case 'resetImagePath':
+              this.resetImagePath(message.args[0]);
               break;
           }
         },
@@ -358,6 +368,24 @@ export class ShowdownPreviewer {
     }
   }
 
+  public resetImagePath(data: ImageSource) {
+    const that = this;
+    let src = data.src;
+    if (src) {
+      const srcUri = vscode.Uri.parse(data.sourceUri);
+      let dest = path.dirname(srcUri.path);
+      const files = glob.globSync('**/' + src, { cwd: 'file://' + dest });
+      if (files.length > 0) {
+        if (process.platform === 'win32') {
+          src = path.posix.format(path.parse(files[0]));
+        } else {
+          src = files[0];
+        }
+      }
+    }
+    that.webpanel?.webview.postMessage({ command: 'onResetImagePath', id: data.id, response: src });
+  }
+
   public renderLocalPlantuml(data: LocalRenderData) {
     let filePath = '';
     if (data.sourceUri) {
@@ -374,7 +402,7 @@ export class ShowdownPreviewer {
     plantumlAPI
       .render(count, data.code, filePath, that.config.plantumlTheme)
       .then((svg: string) => {
-        that.webpanel?.webview.postMessage({ command: 'responsePlantuml', id: data.id, response: svg });
+        that.webpanel?.webview.postMessage({ command: 'onRenderPlantuml', id: data.id, response: svg });
       })
       .catch((err: any) => {
         output.log(err);
@@ -396,11 +424,11 @@ export class ShowdownPreviewer {
       })
       .then((data) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'responseKroki', id: id, response: data });
+        preview?.webview.postMessage({ command: 'onRenderKroki', id: id, response: data });
       })
       .catch((err) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'responseKroki', id: id, error: err.toString() });
+        preview?.webview.postMessage({ command: 'onRenderKroki', id: id, error: err.toString() });
       });
   }
 
@@ -413,11 +441,11 @@ export class ShowdownPreviewer {
       .generateSVG()
       .then((result) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'responseTex', id: id, response: result });
+        preview?.webview.postMessage({ command: 'onRenderTex', id: id, response: result });
       })
       .catch((err) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'responseTex', id: id, error: err.toString() });
+        preview?.webview.postMessage({ command: 'onRenderTex', id: id, error: err.toString() });
       });
   }
 
@@ -430,11 +458,11 @@ export class ShowdownPreviewer {
       .generateSVG()
       .then((result) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'responseGnuplot', id: id, response: result });
+        preview?.webview.postMessage({ command: 'onRenderGnuplot', id: id, response: result });
       })
       .catch((err) => {
         const preview = that.getPreview();
-        preview?.webview.postMessage({ command: 'responseGnuplot', id: id, error: err.toString() });
+        preview?.webview.postMessage({ command: 'onRenderGnuplot', id: id, error: err.toString() });
       });
   }
 
@@ -655,7 +683,6 @@ export class ShowdownPreviewer {
     }
     html {
       font-size: ${this.config.fontSize}px;
-      line-height: 1.6;
       overflow: initial;
       box-sizing: border-box;
       word-wrap: break-word;
@@ -670,9 +697,9 @@ export class ShowdownPreviewer {
       background: #f9f9f9;
       min-height: 100%;
       position: relative;
+      font-size: ${this.config.fontSize}px;
       font-family: Helvetica Neue, NotoSansHans-Regular, AvenirNext-Regular, arial, Hiragino Sans GB, Microsoft Yahei, WenQuanYi Micro Hei, Arial, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
-      font-size: 1.5rem;
     }
     .workspace-container {
       overflow-x: hidden;
@@ -951,10 +978,14 @@ export class ShowdownPreviewer {
     this.editor = undefined;
     this.firstPreview = false;
   }
-  public previewPostMessage(message: any) {
+  public previewPostMessage(message: any, force?: boolean) {
     const preview = this.getPreview();
     if (preview) {
-      this.debouncePostMessage(preview.webview, message);
+      if (force) {
+        preview.webview.postMessage(message);
+      } else {
+        this.debouncePostMessage(preview.webview, message);
+      }
     }
   }
   public isSameUri(uri: vscode.Uri) {
@@ -963,17 +994,17 @@ export class ShowdownPreviewer {
     }
     return this.uri.fsPath === uri.fsPath;
   }
-  public updatePreview(uri: vscode.Uri) {
+  public updatePreview(uri: vscode.Uri, force?: boolean) {
     const previewPanel = this.getPreview();
     if (previewPanel) {
-      this.refreshPreview(previewPanel, uri);
+      this.refreshPreview(previewPanel, uri, force);
     }
   }
   public update(uri: vscode.Uri) {
     this.debounceUpdatePreview(this, uri);
   }
-  public updateCurrentView() {
-    if (this.uri) this.updatePreview(this.uri);
+  public updateCurrentView(focre?: boolean) {
+    if (this.uri) this.updatePreview(this.uri, focre);
   }
   public updateConfiguration() {
     const newConfig = PreviewConfig.getCurrentConfig(this.context);
@@ -1090,9 +1121,8 @@ export class ShowdownPreviewer {
     font-size: ${this.config.fontSize}px;
   }
   body {
-    font-size: 1.4rem;
-    line-height: 1.6;
     padding: 0;
+    font-size: ${this.config.fontSize}px;
   }
   .tex > svg {
     fill: var(--vscode-editor-foreground);
@@ -1270,7 +1300,7 @@ window.mdsp = {
     return null;
   }
 
-  private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri) {
+  private async refreshPreview(previewPanel: vscode.WebviewPanel, uri: vscode.Uri, focre?: boolean) {
     const editor = this.getEditor();
     if (previewPanel && editor && editor.document && ShowdownPreviewer.isMarkdownFile(editor.document)) {
       let initialLine = this.currentLine;
@@ -1293,15 +1323,18 @@ window.mdsp = {
       const caption = path.basename(uri.fsPath, path.extname(uri.fsPath));
       const text = editor.document.getText();
 
-      this.previewPostMessage({
-        command: 'updateMarkdown',
-        options: this._getChangedOptions(true),
-        uri: uri.toString(),
-        title: caption,
-        totalLines: lines,
-        currentLine: initialLine,
-        markdown: text
-      });
+      this.previewPostMessage(
+        {
+          command: 'updateMarkdown',
+          options: this._getChangedOptions(true),
+          uri: uri.toString(),
+          title: caption,
+          totalLines: lines,
+          currentLine: initialLine,
+          markdown: text
+        },
+        focre
+      );
     }
   }
   private revealLine(uri: string, line: number) {

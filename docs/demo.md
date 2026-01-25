@@ -146,6 +146,93 @@ It's implemented in showdown-footnotes.js, use for reference the [showdown-footn
 
 [^1]: The explanation.
 
+### CSS Defined
+
+Support css be defined. 
+
+#### Markdown Syntax
+
+```
+
+[](css:<css-href>)
+
+OR
+
+<a href="css:<css-href>" />
+
+```
+
+Which will be append a link element to head as:
+
+```
+
+<link rel="stylesheet" href="<css-href>">
+
+```
+
+\<css-href> support format:
+
+    http(s)://jhuix.github.io/showdowns/dist/showdowns.min.css
+
+    file:///i:/showdowns.min.css
+
+    ../dist/showdowns.min.css
+
+#### CSS defined examples
+
+```
+[](css:https://jhuix.github.io/showdowns/dist/showdowns.min.css)
+```
+
+Which will be append a link element to head as:
+
+```
+
+<link rel="stylesheet" href="https://jhuix.github.io/showdowns/dist/showdowns.min.css">
+
+```
+
+### Inline Image
+
+Support inline image be defined, including the image path can be reset using a reset event.
+
+Its markdown syntax format Its grammatical format is the same as that of obsidian-style image links.
+
+#### Markdown Syntax
+
+```
+
+![[<image path>]]
+
+OR
+
+![[<image path>]]{<image attributes>}
+
+
+```
+
+Which will be append a image element as:
+
+```
+
+<img class="inline-image" src="<image path>" <image attributes> />
+
+```
+
+#### Inline Image examples
+
+```
+![[logo.png]]{ width="64" heigth="64" }
+```
+
+Which will be append a image element ![[logo.png]]{ width="64" heigth="64" } as:
+
+```
+
+<img class="inline-image" src="logo.png" width="64" heigth="64" />
+
+```
+
 ### Container
 
 It's implemented in showdown-container.js, allows you to create block level containers.
@@ -1318,6 +1405,7 @@ domain=-3:3
 
 \end{document}
 ```
+
 ### Plotly
 
 Support svg for plotly, for example website: [plotly.com](https://plotly.com/javascript/).
@@ -1556,4 +1644,119 @@ set label 2 "set contourfill cbtics\nsplot with contourfill"
 set contourfill cbtics
 
 splot f(x,y) with contourfill fs border lc "black" lw 0.5
+```
+
+### AntV Infographic
+
+Support rendering svg of [AntV Infographic](https://github.com/antvis/Infographic).
+
+[AntV Infographic](https://github.com/antvis/Infographic) is AntV's next-generation declarative infographic visualization engine. With a carefully designed infographic syntax, it can quickly and flexibly render high-quality infographics, making information presentation more efficient and data storytelling simpler.
+
+Infographic options see [InfographicOptions](https://infographic.antv.vision/reference/infographic-options).
+
+#### Markdown Syntax
+
+````
+```infographic {"align": "<align>", “options": "<InfographicOptions>"}
+<code content>
+```
+````
+
+#### AntV Infographic example
+
+````
+```infographic
+
+infographic list-row-simple-horizontal-arrow
+data
+  lists
+    - label Step 1
+      desc Start
+    - label Step 2
+      desc In Progress
+    - label Step 3
+      desc Complete
+
+
+```
+````
+
+```infographic
+
+infographic list-row-simple-horizontal-arrow
+data
+  lists
+    - label Step 1
+      desc Start
+    - label Step 2
+      desc In Progress
+    - label Step 3
+      desc Complete
+
+
+```
+
+### ZenUML
+
+Support rendering svg of [ZenUML](https://github.com/mermaid-js/zenuml-core).
+
+[ZenUML](https://github.com/mermaid-js/zenuml-core). is a family of diagramming tools operated by P&D Vision Pty Ltd. It works on Atlassian Confluence, any modern browser, JetBrains Intellij IDE. It is featured as a leading diagram-as-code solution for sequence diagrams. Extra capabilities are provided on different platforms.
+
+ZenUML language guide see [Language Guide](https://zenuml.com/docs/category/language-guide/).
+
+ZenUML options see [ZenumlOptions](https://github.com/mermaid-js/zenuml-core/blob/main/TUTORIAL.md#configuration).
+
+#### Markdown Syntax
+
+````
+```zenuml {"align": "<align>", “options": "<ZenumlOptions>"}
+<code content>
+```
+````
+
+#### ZenUML example
+
+```zenuml
+A B C D
+
+A->B.method() {
+  ret0_assign_rtl =C.method_long_to_give_space {
+    @return C->D: ret1_annotation_ltr
+    ret5_assign_ltr = B.method
+    if(x) {
+      ret0_assign_rtl =C.method_long_to_give_space {
+        @return C->D: ret1_annotation_ltr
+        ret5_assign_ltr = B.method
+      }
+    }
+    B.method2 {
+      return ret2_return_ltr
+    }
+  }
+
+  return ret2_return_rtl
+  @return B->A: ret4_annotation_rtl
+}
+```
+
+
+```zenuml { "options": {"theme":"theme-woolworths"} }
+// An example for a RESTful endpoint<br>
+// Go to the "Cheat sheet" tab or https://docs.zenuml.com
+// to find all syntax<br>
+// `POST /v1/book/{id}/borrow`
+BookLibService.Borrow(id) {
+  User = Session.GetUser()
+  if(User.isActive) {
+    try {
+      BookRepository.Update(id, onLoan, User)
+      receipt = new Receipt(id, dueDate)
+    } catch (BookNotFoundException) {
+      ErrorService.onException(BookNotFoundException)
+    } finally {
+      Connection.close()
+    }
+  }
+  return receipt
+}
 ```

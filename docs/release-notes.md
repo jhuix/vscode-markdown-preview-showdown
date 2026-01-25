@@ -1,5 +1,24 @@
 # Release Notes
 
+## 1.4.9
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.0:
+
+   - Add showdown-antv extension for AntV's Infographic.
+   - Add showdown-zenuml extension for ZenUML.
+   - Add showdown-image extension for inline image links across directories
+   - Update showdown-shiki extension for code block toolbar.
+
+2. Add 'markdown-preview-showdown.debounceDelay' setting for throttle-debounce input, default 2000.
+
+3. Support AntV's Infographic rendering.
+
+4. Support ZenUML rendering.
+
+5. Support inline image links across directories be the same as Obsidian-style `![[...]]`.
+
+6. Update code block toolbar that has been redesigned to be intuitive and streamlined‌.
+
 ## 1.4.8
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.19:
@@ -32,9 +51,9 @@
 
 4. Support local rendering TEX content.
 
-5. Surpport theme of code block.
+5. Support theme of code block.
 
-6. Surpport defaul engine of inline math is mathjax.
+6. Support defaul engine of inline math is mathjax.
 
 ## 1.4.6
 

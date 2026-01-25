@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 export class PreviewConfig {
   public static packageName: string;
   public static defaultFontSize = 10;
-  public static defaultDebounceDelay = 5000;
+  public static defaultDebounceDelay = 1000;
 
   public static getCurrentConfig(context: vscode.ExtensionContext) {
     return new PreviewConfig(context);

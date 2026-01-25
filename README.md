@@ -8,7 +8,11 @@ A excellent markdown preview vscode extension with [showdowns](https://github.co
 
 ## Supporting this project
 
-Its ongoing development is made possible thanks to the support by these awesome [sponsors](./docs/sponsors.md). You can help make [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) project better by supporting it on [Wechat Pay(微信支付)](./docs/sponsors.md). Thank you!
+As you know, [Markdown-Preview-Showdown(MDPS)](https://github.com/jhuix/vscode-markdown-preview-showdown) is a free extension and it will remain free forever. However, maintaining and improving the extension costs time and money.
+
+If you like our work and find our extension useful, please donate through [Wechat Pay(微信支付)](./docs/sponsors.md)! Your contribution will be greatly appreciated and help me continue to develop this awesome extension. 
+
+Its ongoing development is made possible thanks to the support by these awesome [sponsors](./docs/sponsors.md). 
 
 
 ## Example image
@@ -22,6 +26,8 @@ Its ongoing development is made possible thanks to the support by these awesome 
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps6.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps7.png" alt="markdown-preview-showdown"></a></p>
 <p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps8.png" alt="markdown-preview-showdown"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps9.png" alt="markdown-preview-showdown"></a></p>
+<p align="center"><a href="https://jhuix.github.io/vscode-markdown-preview-showdown" target="_blank" rel="noopener noreferrer"><img src="./docs/screenshot/vscode-mdps10.png" alt="markdown-preview-showdown"></a></p>
 
 ## Features
 

@@ -210,6 +210,7 @@
       this.config.options.tex.svgRender = this.renderTex.bind(this);
       this.config.options.gnuplot.svgRender = this.renderGnuplot.bind(this);
       previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
+      previewer.onEvent('resetImagePath', this.resetImagePath.bind(this));
       previewer.init(true);
       this.updateOptions(this.config.options);
       if (!this.config.vscode) {
@@ -441,7 +442,7 @@
           const resUrl = new URL(options.defScheme);
           const vscodeResourceScheme = resUrl.origin + '/';
           html = html.replace(/(\<img.* src=")file:\/\/\//g, '$1' + vscodeResourceScheme);
-          html = html.replace(/(\<img.* src=")\.\//g, '$1' + vscodeResourceScheme + options.uriPath + '/');
+          html = html.replace(/(\<img.* src=")(?![0-9a-zA-Z\-]+\:\/\/)/g, '$1' + vscodeResourceScheme + options.uriPath + '/');
         }
         return html.trim();
       }
@@ -452,10 +453,15 @@
         const imgs = html[0].querySelectorAll('img');
         if (imgs && imgs.length > 0) {
           imgs.forEach((e) => {
-            if (e.src) {
-              e.src = e.src.replace(/^file:\/\/\//g, vscodeResourceScheme);
-              e.src = e.src.replace(/^\.\//g, vscodeResourceScheme + options.uriPath + '/');
-              e.src = e.src.replace(/^vscode-webview:\/\/[^\/\s]+\//g, vscodeResourceScheme + options.uriPath + '/');
+            let result = e.outerHTML.match(/^\<img.* src="((?<![0-9a-zA-Z\-]+\:\/\/)[^"\:\s]+)"/);
+            if (result && result.length > 1) {
+              e.src = vscodeResourceScheme + options.uriPath + '/' + result[1];
+              return;
+            }
+
+            result = e.outerHTML.match(/^\<img.* src="file:\/\/\/([^"]*)"/);
+            if (result && result.length > 1) {
+              e.src = vscodeResourceScheme + result[1];
             }
           });
         }
@@ -486,6 +492,11 @@
           );
         }
       }
+    }
+
+    resetImagePath(id, src, callback) {
+      this.resolveCallbacks[id] = callback;
+      this.postMessage('resetImagePath', [{ id: id, src: src, sourceUri: this.sourceUri }])
     }
 
     renderPlantuml(id, code, options) {
@@ -649,10 +660,19 @@
             const line = parseInt(message.line, 10);
             this.scrollToLine(line);
             break;
-          case 'responsePlantuml':
-          case 'responseGnuplot':
-          case 'responseKroki':
-          case 'responseTex':
+          case 'onResetImagePath':
+            if (this.resolveCallbacks.hasOwnProperty(message.id)) {
+              const callback = this.resolveCallbacks[message.id];
+              delete this.resolveCallbacks[message.id];
+              if (callback) {
+                callback(message.response);
+              }
+            }
+            break;
+          case 'onRenderPlantuml':
+          case 'onRenderGnuplot':
+          case 'onRenderKroki':
+          case 'onRenderTex':
             if (this.resolveCallbacks.hasOwnProperty(message.id)) {
               const callback = this.resolveCallbacks[message.id];
               delete this.resolveCallbacks[message.id];

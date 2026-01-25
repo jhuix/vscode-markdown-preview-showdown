@@ -36,7 +36,7 @@ async function main() {
     outbase: 'src',
     outdir: 'dist',
     allowOverwrite: true,
-    external: ['vscode', 'dom', 'chrome-location', 'mkdirp', 'puppeteer-core', 'throttle-debounce'],
+    external: ['vscode', 'dom', 'chrome-location', 'mkdirp', 'puppeteer-core', 'throttle-debounce', 'glob'],
     logLevel: 'silent',
     plugins: [
       /* add to the end of plugins array */
