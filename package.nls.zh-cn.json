@@ -2,6 +2,7 @@
   "mdps.displayname": "Markdown文件预览(MDPS)",
   "mdps.description": "一款优秀的Markdown预览的VSCODE扩展",
   "mdps.debounceDelay": "防抖延迟时间，单位：毫秒；最小100毫秒，默认为2秒。",
+  "mdps.export.showPageLabel": "在预览标签页显示页面标签，如\"该页面是由XXX生成\"。",
   "mdps.title": "MDPS — Markdown文件预览",
   "mdps.openPreview": "预览MD文件",
   "mdps.autoPreview": "自动预览markdown文件。",

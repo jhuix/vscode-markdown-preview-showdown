@@ -88,6 +88,11 @@
           "default": 2000,
           "type": "number"
         },
+        "markdown-preview-showdown.export.showPageLabel": {
+          "description": "%mdps.export.showPageLabel%",
+          "default": true,
+          "type": "boolean"
+        },
         "markdown-preview-showdown.fontSize": {
           "description": "%mdps.fontSize%",
           "default": 13,
@@ -316,7 +321,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@jhuix/showdowns": "^0.7.0",
+    "@jhuix/showdowns": "^0.7.1",
     "chrome-location": "^1.2.1",
     "glob": "^13.0.0",
     "mkdirp": "^3.0.1",

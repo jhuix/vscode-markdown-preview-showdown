@@ -1,3 +1,20 @@
+## 1.5.0
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.1:
+
+   - Change showdown-container to showdown-directive extension.
+   - Support container of admonitions style.
+   - Support container of rST style.
+   - Support container of row, col mode.
+   - Support leaf directive and text directive, event of leafDirective and textDirective be created.
+   - Update tester of toc to support [[_TOC_]] etc. format.
+   - Fixed don't show toc tools when no header.
+   - Add zenuml, mindmap and elk layout plugin of meimaid.
+
+2. Add 'markdown-preview-showdown.export.showPageLabel' setting for show page label in exported file, default true.
+
+3. Fixed don't show toc tools when no header.
+
 ## 1.4.9
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.0:

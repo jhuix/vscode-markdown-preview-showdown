@@ -32,6 +32,7 @@ export class PreviewConfig {
   public plantumlRenderMode: string;
   public plantumlWebsite: string;
   public krokiWebsite: string;
+  public showPageLabel: boolean;
   public usePuppeteerCore: boolean;
   public tocChapterNumber: boolean;
   public puppeteerWaitForTimeout: number;
@@ -71,6 +72,7 @@ export class PreviewConfig {
       this.autoToc = PreviewConfig.getData(config.get('autoToc'), true);
       const debounceDelay = PreviewConfig.getData(config.get('debounceDelay'), PreviewConfig.defaultDebounceDelay);
       this.debounceDelay = debounceDelay < 100 ? 100 : debounceDelay;
+      this.showPageLabel = PreviewConfig.getData(config.get('export.showPageLabel'), true);
       this.fontSize = PreviewConfig.getData(config.get('fontSize'), Math.pow(8, 5));
       this.codeTheme = PreviewConfig.getData(config.get('codeTheme'), 'ayu-dark');
       this.mermaidTheme = PreviewConfig.getData(config.get('mermaid.theme'), 'default');
@@ -161,6 +163,7 @@ export class PreviewConfig {
       this.plantumlRenderMode = 'local';
       this.plantumlWebsite = 'www.plantuml.com/plantuml';
       this.krokiWebsite = 'kroki.io';
+      this.showPageLabel = true;
       this.usePuppeteerCore = false;
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';
