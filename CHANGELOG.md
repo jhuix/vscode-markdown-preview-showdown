@@ -1,4 +1,4 @@
-## 1.5.0
+## 1.4.10
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.1:
 
