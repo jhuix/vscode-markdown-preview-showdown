@@ -9,7 +9,7 @@
    - Support container of rST style.
    - Support container of row, col mode.
    - Support leaf directive and text directive, event of leafDirective and textDirective be created.
-   - Update tester of toc to support [[_TOC_]] etc. format.
+   - Update tester of toc to support [[\_TOC\_]] etc. format.
    - Fixed don't show toc tools when no header.
    - Add zenuml, mindmap and elk layout plugin of meimaid.
 
