@@ -25,5 +25,9 @@
   "mdps.puppeteer.useCore": "If set to true, then locally installed puppeteer-core will be required. Otherwise, the puppeteer globally installed by `npm install -g puppeteer` will be required.",
   "mdps.puppeteer.waitForTimeout": "Puppeteer waits for a certain timeout in milliseconds before the document export.",
   "mdps.puppeteer.chromePath": "Chrome executable path, which is used for Puppeteer export. Leaving it empty means the path will be found automatically.",
-  "mdps.toc.chapterNumber": "Show chapter number of TOC such as \"1.1.\"."
+  "mdps.toc.chapterNumber": "Show chapter number of TOC such as \"1.1.\".",
+  "mdps.toc.compatible": "Compatible mode for TOC placeholder, true is expressed that the TOC placeholder be used in the elements p and h, false is expressed that the TOC placeholder be only used in the elements h. default is false.",
+  "mdps.toc.expand": "Expand all the levels of TOC, default is false which means collapsed TOC.",
+  "mdps.toc.title": "Custom title of TOC, default is empty string which means the internal default string -- 'Table of Contents'.",
+  "mdps.toc.toc": "Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:[\\[【](?:Table[ -]Of[ -]Contents|目录|TOC)[\\]】])|(?:(?:\\{\\{|\\[\\[|【)[_]?TOC[_]?(?:\\}\\}|\\]\\]|】)))$'."
 }

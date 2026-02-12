@@ -184,9 +184,9 @@
         "markdown-preview-showdown.katex.mathDelimiters": {
           "type": "object",
           "default": {
-            "latexInline": " { \"left\": \"$\", \"right\": \"$\" },{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" }",
+            "latexInline": "{ \"left\": \"\\\\(\", \"right\": \"\\\\)\" }",
             "latexDisplay": "{ \"left\": \"$$\", \"right\": \"$$\" },{ \"left\": \"\\\\[\", \"right\": \"\\\\]\" }",
-            "asciiInline": "{ \"left\": \"@ \", \"right\": \" @\" },{ \"left\": \"~ \", \"right\": \" ~\" }",
+            "asciiInline": "{ \"left\": \"\\\\$\", \"right\": \"\\\\$\" }",
             "asciiDisplay": "{ \"left\": \"@@\", \"right\": \"@@\" }"
           },
           "properties": {
@@ -282,6 +282,26 @@
           "description": "%mdps.toc.chapterNumber%",
           "default": true,
           "type": "boolean"
+        },
+        "markdown-preview-showdown.toc.compatible": {
+          "description": "%mdps.toc.compatible%",
+          "default": false,
+          "type": "boolean"
+        },
+        "markdown-preview-showdown.toc.expand": {
+          "description": "%mdps.toc.expand%",
+          "default": false,
+          "type": "boolean"
+        },
+        "markdown-preview-showdown.toc.title": {
+          "description": "%mdps.toc.title%",
+          "default": "",
+          "type": "string"
+        },
+        "markdown-preview-showdown.toc.toc": {
+          "description": "%mdps.toc.toc%",
+          "default": "",
+          "type": "string"
         }
       }
     }

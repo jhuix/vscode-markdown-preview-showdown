@@ -844,7 +844,7 @@ export class ShowdownPreviewer {
     }
   }
 
-    public async exportChrome(
+  public async exportChrome(
     doc: { type: string; content: string } | string,
     title: string,
     uri: string,
@@ -1197,7 +1197,11 @@ window.mdsp = {
       serverUrl: "${this.config.krokiWebsite}"
     },
     toc: {
-      chapterNumber: ${this.config.tocChapterNumber ? 'true' : 'false'}
+      chapterNumber: ${this.config.tocChapterNumber ? 'true' : 'false'},
+      compatible: ${this.config.tocCompatible ? 'true' : 'false'},
+      expand: ${this.config.tocExpand ? 'true' : 'false'},
+      title: "${this.config.tocTitle}",
+      toc: "${this.config.tocToc}"
     },
     vega: ${JSON.stringify(this.options.vega).replace(/\\/g, '\\\\')},
     shiki: {
@@ -1259,7 +1263,13 @@ window.mdsp = {
     Object.assign(options.mermaid, this.config.mermaidOptions, { theme: this.config.mermaidTheme });
     Object.assign(options.katex, this.config.katexOptions, { mathDelimiters: this.config.mathDelimiters });
     Object.assign(options.vega, this.config.vegaOptions, { theme: this.config.vegaTheme });
-    Object.assign(options.toc, { chapterNumber: this.config.tocChapterNumber });
+    Object.assign(options.toc, {
+      chapterNumber: this.config.tocChapterNumber,
+      compatible: this.config.tocCompatible,
+      expand: this.config.tocExpand,
+      title: this.config.tocTitle,
+      toc: this.config.tocToc
+    });
 
     if (!this._objectIsEqual(this.options, options)) {
       if (depth) {

@@ -35,6 +35,10 @@ export class PreviewConfig {
   public showPageLabel: boolean;
   public usePuppeteerCore: boolean;
   public tocChapterNumber: boolean;
+  public tocCompatible: boolean;
+  public tocExpand: boolean;
+  public tocTitle: string;
+  public tocToc: string;
   public puppeteerWaitForTimeout: number;
   public chromePath: string;
   public printBackground: boolean;
@@ -90,6 +94,10 @@ export class PreviewConfig {
       this.puppeteerWaitForTimeout = PreviewConfig.getData(config.get('puppeteer.waitForTimeout'), 0);
       this.katexOptions = PreviewConfig.getData(config.get('katex.options'), {});
       this.tocChapterNumber = PreviewConfig.getData(config.get('toc.chapterNumber'), true);
+      this.tocCompatible = PreviewConfig.getData(config.get('toc.compatible'), false);
+      this.tocExpand = PreviewConfig.getData(config.get('toc.expand'), false);
+      this.tocTitle = PreviewConfig.getData(config.get('toc.title'), '');
+      this.tocToc = PreviewConfig.getData(config.get('toc.toc'), '');
       const mathDelimiters = PreviewConfig.getData(config.get('katex.mathDelimiters'), {
         latexInline: '',
         latexDisplay: '',
@@ -168,6 +176,10 @@ export class PreviewConfig {
       this.puppeteerWaitForTimeout = 0;
       this.chromePath = '';
       this.tocChapterNumber = true;
+      this.tocCompatible = false;
+      this.tocExpand = false;
+      this.tocTitle = '';
+      this.tocToc = '';
       this.mathDelimiters = {
         texmath: {
           display: [],

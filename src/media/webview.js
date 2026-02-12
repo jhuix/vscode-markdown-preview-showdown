@@ -555,7 +555,7 @@
         this.updateOptions(mdOptions);
       }
       if (options.autoToc) {
-        markdown = '[TOC]\n\n' + markdown;
+        markdown = '# [TOC]\n\n' + markdown;
       }
 
       const genScript = (script) => {
