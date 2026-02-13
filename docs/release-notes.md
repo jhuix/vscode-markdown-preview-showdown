@@ -1,5 +1,14 @@
 # Release Notes
 
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.2:
+
+   - Fiexd leaf directive regex and css effects of container.
+   - Add export actions of mermaid diagram.
+   - Add compatible and expand setting of toc config.
+   - Update directives content in showdowns-features.md.
+
+2. Add compatible,expand,title,toc settings of toc.
+
 ## 1.4.10
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.1:
