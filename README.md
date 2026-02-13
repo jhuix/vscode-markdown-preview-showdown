@@ -189,6 +189,22 @@ This extension contributes the following settings:
 
     Show chapter number of TOC such as \"1.1.\", default true.
 
+* `markdown-preview-showdown.toc.compatible`:
+ 
+    Compatible mode for TOC placeholder, true is expressed that the TOC placeholder be used in the elements p and h, false is expressed that the TOC placeholder be only used in the elements h. default is false.
+
+* `markdown-preview-showdown.toc.expand`:
+
+    Expand all the levels of TOC, default is false which means collapsed TOC.
+
+* `markdown-preview-showdown.toc.title`:
+
+    Custom title of TOC, default is empty string which means the internal default string -- 'Table of Contents'.
+
+* `markdown-preview-showdown.toc.toc`:
+
+    Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:[\\[【](?:Table[ -]Of[ -]Contents|目录|TOC)[\\]】])|(?:(?:\\{\\{|\\[\\[|【)[_]?TOC[_]?(?:\\}\\}|\\]\\]|】)))$'.
+
 ## Keybindings
 
 |OS|Key|Command|
