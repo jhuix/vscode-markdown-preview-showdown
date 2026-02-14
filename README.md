@@ -203,7 +203,7 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.toc.toc`:
 
-    Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:[\\[【](?:Table[ -]Of[ -]Contents|目录|TOC)[\\]】])|(?:(?:\\{\\{|\\[\\[|【)[_]?TOC[_]?(?:\\}\\}|\\]\\]|】)))$'.
+    Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:\\[(?:Table[ -]Of[ -]Contents|目录|TOC)\\])|(?:【(?:Table[ -]Of[ -]Contents|目录|TOC|_TOC_)】)|(?:\\{\\{([_]?)TOC\\2\\}\\})|(?:\\[\\[([_]?)TOC\\3\\]\\]))$'.
 
 ## Keybindings
 

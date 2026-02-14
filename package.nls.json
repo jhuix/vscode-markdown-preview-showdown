@@ -29,5 +29,5 @@
   "mdps.toc.compatible": "Compatible mode for TOC placeholder, true is expressed that the TOC placeholder be used in the elements p and h, false is expressed that the TOC placeholder be only used in the elements h. default is false.",
   "mdps.toc.expand": "Expand all the levels of TOC, default is false which means collapsed TOC.",
   "mdps.toc.title": "Custom title of TOC, default is empty string which means the internal default string -- 'Table of Contents'.",
-  "mdps.toc.toc": "Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:[\\[【](?:Table[ -]Of[ -]Contents|目录|TOC)[\\]】])|(?:(?:\\{\\{|\\[\\[|【)[_]?TOC[_]?(?:\\}\\}|\\]\\]|】)))$'."
+  "mdps.toc.toc": "Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:\\[(?:Table[ -]Of[ -]Contents|目录|TOC)\\])|(?:【(?:Table[ -]Of[ -]Contents|目录|TOC|_TOC_)】)|(?:\\{\\{([_]?)TOC\\2\\}\\})|(?:\\[\\[([_]?)TOC\\3\\]\\]))$'."
 }

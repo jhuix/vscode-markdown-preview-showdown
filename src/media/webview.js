@@ -266,40 +266,90 @@
       }
     }
 
+    getOtherLinks() {
+      const links = [];
+      document.head.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+        if (!link.id || (link.id[0] !== '_' && !link.id.startsWith('css-'))) {
+          const oLink = {
+            link: link.href
+          }
+          if (link.id) {
+            oLink.id = link.id;
+          }
+          links.push(oLink);
+        }
+      });
+      return links;
+    }
+
     getOtherStyles() {
-      let styles = [];
-      const elVegaEmbedStyle = document.getElementById('vega-embed-style');
-      if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
-        let styleContent = elVegaEmbedStyle.innerHTML;
-        styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
-        styles.push({
-          id: 'vega-embed-style',
-          style: styleContent
-        });
-      }
-      const abcAudioStyle = document.getElementById('css-abc-audio');
-      if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
-        let styleContent = abcAudioStyle.innerHTML;
-        styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
-        styles.push({
-          id: 'css-abc-audio',
-          style: styleContent
-        });
+      function getStyleSheetContent(styleElement) {
+        // get style sheet object of element
+        const sheet = styleElement.sheet;
+        if (!sheet) return '';
+
+        // get cssRules of style sheet
+        const rules = sheet.cssRules;
+        let cssContent = '';
+        // concat css text of each rule
+        for (let i = 0; i < rules.length; i++) {
+          cssContent += rules[i].cssText;
+        }
+        return cssContent;
       }
 
-      const mjxStyles = document.querySelectorAll(`[id^="MJX-"]`);
-      if (mjxStyles.length > 0) {
-        Array.from(mjxStyles).forEach((style) => {
-          if (style.tagName.toLowerCase() === 'style') {
-            let styleContent = style.innerHTML;
-            styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
-            styles.push({
-              id: style.id,
-              style: styleContent
-            });
+      const styles = [];
+      document.head.querySelectorAll('style').forEach((style) => {
+        if (!style.id || style.id[0] !== '_') {
+          let content = style.innerHTML;
+          if (!content) {
+            content = getStyleSheetContent(style);
+            if (!content) {
+              return;
+            }
           }
-        })
-      }
+          content = content.replace(/\<br[\/]?\>/g, '');
+          const oStyle = {
+            style: content
+          }
+          if (style.id) {
+            oStyle.id = style.id;
+          }
+          styles.push(oStyle);
+        }
+      });
+      // const elVegaEmbedStyle = document.getElementById('vega-embed-style');
+      // if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
+      //   let styleContent = elVegaEmbedStyle.innerHTML;
+      //   styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
+      //   styles.push({
+      //     id: 'vega-embed-style',
+      //     style: styleContent
+      //   });
+      // }
+      // const abcAudioStyle = document.getElementById('css-abc-audio');
+      // if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
+      //   let styleContent = abcAudioStyle.innerHTML;
+      //   styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
+      //   styles.push({
+      //     id: 'css-abc-audio',
+      //     style: styleContent
+      //   });
+      // }
+
+      // const mjxStyles = document.querySelectorAll(`[id^="MJX-"]`);
+      // if (mjxStyles.length > 0) {
+      //   Array.from(mjxStyles).forEach((style) => {
+      //     if (style.tagName.toLowerCase() === 'style') {
+      //       let styleContent = style.innerHTML;
+      //       styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
+      //       styles.push({
+      //         id: style.id,
+      //         style: styleContent
+      //       });
+      //     }
+      //   })
+      // }
       return styles;
     }
 
@@ -319,7 +369,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                that.cssLinks,
+                [...that.cssLinks, ...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -333,7 +383,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                that.cssLinks,
+                [...that.cssLinks, ...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -347,7 +397,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                that.cssLinks,
+                [...that.cssLinks, ...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -361,7 +411,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                that.cssLinks,
+                [...that.cssLinks, ...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -375,7 +425,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                that.cssLinks,
+                [...that.cssLinks, ...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -389,7 +439,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                that.cssLinks,
+                [...that.cssLinks, ...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);

@@ -519,7 +519,7 @@ export class ShowdownPreviewer {
       }
 
       if (id) {
-        return `<style id="${id}" type="text/css">${content}</style>\n`;
+        return `<style id="${id.replace(/"/g, '&quot;')}" type="text/css">${content}</style>\n`;
       }
 
       return `<style type="text/css">${content}</style>\n`;
@@ -528,6 +528,8 @@ export class ShowdownPreviewer {
     let cssContents = '';
     if (cssLinks && cssLinks.length > 0) {
       for (let css of cssLinks) {
+        if (!css || !css.link) continue;
+
         try {
           const url = new URL(css.link);
           if (url.protocol === 'https:' || url.protocol === 'http:') {
@@ -574,11 +576,12 @@ export class ShowdownPreviewer {
     }
     if (cssStyles && cssStyles.length > 0) {
       for (let css of cssStyles) {
+        if (!css || !css.style) continue;
+        let id = '';
         if (css.id) {
-          cssContents += `<style id="${css.id}" type="text/css">${css.style}</style>\n`;
-        } else {
-          cssContents += `<style type="text/css">${css.style}</style>\n`;
+          id = `id="${css.id}" `;
         }
+        cssContents += `<style ${id}type="text/css">${css.style}</style>\n`;
       }
     }
 
@@ -761,6 +764,9 @@ export class ShowdownPreviewer {
     a:hover,
     a:focus {
       color: rgb(0, 137, 255);
+    }
+    i {
+      color: currentColor;
     }
     code {
       background-color: #f8f8f8;
@@ -1129,7 +1135,7 @@ export class ShowdownPreviewer {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
-<style type="text/css">
+<style id="_baseStyles" type="text/css">
   html {
     font-size: ${this.config.fontSize}px;
   }
@@ -1157,13 +1163,13 @@ export class ShowdownPreviewer {
     }
   }
 </style>
-<link rel="stylesheet" href="${this.changeFileProtocol(
+<link id="_showdownsLink" rel="stylesheet" href="${this.changeFileProtocol(
       webview,
       `node_modules/@jhuix/showdowns/dist/showdowns.min.css`,
       true
     )}">
-<link rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
-<style type="text/css">
+<link id="_menuLink" rel="stylesheet" href="${this.changeFileProtocol(webview, `media/contextmenu.css`, true)}">
+<style id="_extStyles" type="text/css">
   a {
     color: #569cd6;
   }
