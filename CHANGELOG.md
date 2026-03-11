@@ -1,11 +1,35 @@
+## 1.5.1
+
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.4:
+
+   - Add details-summary of directives.
+   - Add simple style for admonitions.
+   - Support mermaid code of azure syntax.
+   - Support obsidian callout syntax.
+   - Support admonition syntax of mkdocs-material.
+   - Fixed export actions of mermaid.
+   - Fixed tools icon of shiki.
+   - Default not load speech of mathjax.
+   - Update tester of toc and css of td.
+
+   - Add content tabs extension
+   - Add page tabs extension
+   - Add title of code block;
+   - Add option of default markdown code theme for shiki extension
+   - Update footnotes extension
+   - Fixed inline image and directive extension
+   - Fixed code css
+   - Fixed show theme name of shiki
+
+
 ## 1.5.0
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.2:
 
-   - Fiexd leaf directive regex and css effects of container.
-   - Add export actions of mermaid diagram.
-   - Add compatible and expand setting of toc config.
-   - Update directives content in showdowns-features.md.
+    - Fiexd leaf directive regex and css effects of container.
+    - Add export actions of mermaid diagram.
+    - Add compatible and expand setting of toc config.
+    - Update directives content in showdowns-features.md.
 
 2. Add compatible,expand,title,toc settings of toc.
 
@@ -14,14 +38,14 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.1:
 
-   - Change showdown-container to showdown-directive extension.
-   - Support container of admonitions style.
-   - Support container of rST style.
-   - Support container of row, col mode.
-   - Support leaf directive and text directive, event of leafDirective and textDirective be created.
-   - Update tester of toc to support [[\_TOC\_]] etc. format.
-   - Fixed don't show toc tools when no header.
-   - Add zenuml, mindmap and elk layout plugin of meimaid.
+    - Change showdown-container to showdown-directive extension.
+    - Support container of admonitions style.
+    - Support container of rST style.
+    - Support container of row, col mode.
+    - Support leaf directive and text directive, event of leafDirective and textDirective be created.
+    - Update tester of toc to support [[\_TOC\_]] etc. format.
+    - Fixed don't show toc tools when no header.
+    - Add zenuml, mindmap and elk layout plugin of meimaid.
 
 2. Add 'markdown-preview-showdown.export.showPageLabel' setting for show page label in exported file, default true.
 
@@ -31,10 +55,10 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.0:
 
-   - Add showdown-antv extension for AntV's Infographic.
-   - Add showdown-zenuml extension for ZenUML.
-   - Add showdown-image extension for inline image links across directories
-   - Update showdown-shiki extension for code block toolbar.
+    - Add showdown-antv extension for AntV's Infographic.
+    - Add showdown-zenuml extension for ZenUML.
+    - Add showdown-image extension for inline image links across directories
+    - Update showdown-shiki extension for code block toolbar.
 
 2. Add 'markdown-preview-showdown.debounceDelay' setting for throttle-debounce input, default 2000.
 
@@ -50,10 +74,10 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.19:
 
-   - Add showdowns-plotly extension.
-   - Add showdowns-gnuplot extension.
-   - Add cache for plantuml render.
-   - Update host attribute type of output script is 'string | HTMLElement'.
+    - Add showdowns-plotly extension.
+    - Add showdowns-gnuplot extension.
+    - Add cache for plantuml render.
+    - Update host attribute type of output script is 'string | HTMLElement'.
 
 2. Support rendering plotly.
 
@@ -63,14 +87,14 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.18:
 
-   - Add chapterNumber etc. options of toc.
-   - Add showdowns-tex extension.
-   - Add showdowns-shiki extension.
-   - Add showdowns-mathjax extension.
-   - Add local render for kroki and tex extension.
-   - Update @viz-js/viz is 3.24.0.
-   - Add module attribute of the output script.
-   - Optimize toc extension and other codes.
+    - Add chapterNumber etc. options of toc.
+    - Add showdowns-tex extension.
+    - Add showdowns-shiki extension.
+    - Add showdowns-mathjax extension.
+    - Add local render for kroki and tex extension.
+    - Update @viz-js/viz is 3.24.0.
+    - Add module attribute of the output script.
+    - Optimize toc extension and other codes.
 
 2. Add 'toc.chapterNumber' setting.
 
@@ -86,9 +110,9 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.15:
 
-   - Support kroki api for render diagram.
-   - Update regular expression of toc.
-   - Fixed css of print.
+    - Support kroki api for render diagram.
+    - Update regular expression of toc.
+    - Fixed css of print.
 
 2. Add 'kroki.website' setting.
 
@@ -97,32 +121,32 @@
 ## v1.4.5
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.13:
 
-   - Update css of toc.
+    - Update css of toc.
 
 2. Preview html with generator's annotation.
 
 ## v1.4.4
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.12:
 
-   - Update title of showdows-toc displays the text in the current language.
+    - Update title of showdows-toc displays the text in the current language.
 
-   - Fixed to fliter duplicate definitions of total toc.
+    - Fixed to fliter duplicate definitions of total toc.
 
 2. Add 'autoToc' setting.
 
 ## v1.4.3
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.11:
 
-   - Add vertical divider for vertical total toc.
+    - Add vertical divider for vertical total toc.
 
 2. Optimize the loading order of output CSS and scripts.
 
 ## v1.4.2
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.6.10:
 
-   - Add css defined extension.
+    - Add css defined extension.
 
-   - Add cssLinks output attribute.
+    - Add cssLinks output attribute.
 
 2. Update other dependencies to new version.
 
@@ -162,9 +186,9 @@
 ## v1.3.6
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.5:
 
-   - Fixed failed to mark CSS link related to render only inline katex math.
+    - Fixed failed to mark CSS link related to render only inline katex math.
 
-   - Add a additional delimiters format of katex options.
+    - Add a additional delimiters format of katex options.
 
 2. Adjust the name of all settings;
 
@@ -176,9 +200,9 @@
 ## v1.3.4
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.3:
 
-   - Optimize showdown and converter objects of markdown parse, add flavor setting features.
+    - Optimize showdown and converter objects of markdown parse, add flavor setting features.
 
-   - Add delimiters setting of katex math features.
+    - Add delimiters setting of katex math features.
 
 2. Add delimiters setting of katex math features.
 
@@ -189,15 +213,15 @@
 ## v1.3.3
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.2:
 
-   - Update asciimath to latex that be based on ASCIIMathTeXImg.js, latest version.
+    - Update asciimath to latex that be based on ASCIIMathTeXImg.js, latest version.
 
-   - Fixed method removeAsyncExtension and removeExtension of showdowns could not remove related extensions.
+    - Fixed method removeAsyncExtension and removeExtension of showdowns could not remove related extensions.
 
-   - Update mermaid deps new version 8.8.2.
+    - Update mermaid deps new version 8.8.2.
 
-   - Inline LaTex math syntax compatible with [KaTex default delimiters](https://katex.org/docs/autorender.html#api), and inline ascii math syntax is changed to `@@...@@` or `\~...\~`.
+    - Inline LaTex math syntax compatible with [KaTex default delimiters](https://katex.org/docs/autorender.html#api), and inline ascii math syntax is changed to `@@...@@` or `\~...\~`.
 
-   - Support multiple math are separated by an empty line in block math code.
+    - Support multiple math are separated by an empty line in block math code.
 
 2. Fixed [Issue #3](https://github.com/jhuix/vscode-markdown-preview-showdown/issues/3), [Issue #6](https://github.com/jhuix/vscode-markdown-preview-showdown/issues/6).
 
@@ -218,8 +242,8 @@
 ## v1.3.0
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.5.0:
 
-   - Add showdown-container extension.
-   - Expand the table syntax to implement headerless and colspan or rowspan merge.
+    - Add showdown-container extension.
+    - Expand the table syntax to implement headerless and colspan or rowspan merge.
 
 2. Update plantuml jar v1.2020.16.
 
@@ -244,7 +268,7 @@
 ## v1.2.0
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.4.0:
 
-   - Add render diagram mode is asynchronous using promise-resolve, but exclude showdown-sequence.
+    - Add render diagram mode is asynchronous using promise-resolve, but exclude showdown-sequence.
 
 2. When rendering a diagram (exclude js-sequence diagram), the page diagram does not flicker.
 
@@ -256,7 +280,7 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.8:
 
-   - Update check css types extension.
+    - Update check css types extension.
 
 2. Continue to fixed the preview scrolls to top when editing markdown file.
 
@@ -276,13 +300,13 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.6:
 
-   - Fixed no dynamic loaded katex library, and reducing release file size.
+    - Fixed no dynamic loaded katex library, and reducing release file size.
 
-   - Add codeblock field of json in syntax language attribute.
+    - Add codeblock field of json in syntax language attribute.
 
-   - Add removeExtension and addExtension functions, delete addExtensions function.
+    - Add removeExtension and addExtension functions, delete addExtensions function.
 
-   - Update defaultExtensions of property is object of extensions.
+    - Update defaultExtensions of property is object of extensions.
 
 2. Update short key of preview is 'ctrl+shift+v ctrl+shift+v'.
 
@@ -290,9 +314,9 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.3:
 
-   - Support align field of more diagrams that vaule is selected empty("left") or "center" or "right" in code language attribute.
+    - Support align field of more diagrams that vaule is selected empty("left") or "center" or "right" in code language attribute.
 
-   - Support render svg format for vega and vega-lite diagrams.
+    - Support render svg format for vega and vega-lite diagrams.
 
 2. Update new logo image of extension.
 
@@ -304,7 +328,7 @@
 
 1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.3.2:
 
-   - Support [Vega and Vega-Lite](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#vega-and-vega-lite)
+    - Support [Vega and Vega-Lite](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#vega-and-vega-lite)
 
 2. Add `mermaidTheme` settings, range of values: ['default', 'forest', 'dark', 'neutral'], default `default` string.
 
@@ -321,21 +345,21 @@
 
 1.  Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) version >= 0.3.0, Support more diagrams extensions:
   
-    - Support [LaTeX math and AsciiMath](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#latex-math-and-asciimath)
+     - Support [LaTeX math and AsciiMath](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#latex-math-and-asciimath)
 
-    - Support [Mermaid](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#mermaid)
+     - Support [Mermaid](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#mermaid)
 
-    - Support [Plantuml](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#plantuml)
+     - Support [Plantuml](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#plantuml)
 
-    - Support [Flowchart](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#flowchart)
+     - Support [Flowchart](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#flowchart)
 
-    - Support [Network Sequence](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#network-sequence)
+     - Support [Network Sequence](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#network-sequence)
 
-    - Support [Graphviz's dot](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#graphviz-s-dot)
+     - Support [Graphviz's dot](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#graphviz-s-dot)
 
-    - Support [Railroad diagrams](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#railroad-diagrams)
+     - Support [Railroad diagrams](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#railroad-diagrams)
 
-    - Support [WaveDrom](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#wavedrom)
+     - Support [WaveDrom](https://github.com/jhuix/showdowns/blob/master/docs/showdowns-features.md#wavedrom)
 
 2.  Can export html page to PNG and JPG images.
 3.  Add `maxContenSize` settings, default `32768(32K)` Bytes.

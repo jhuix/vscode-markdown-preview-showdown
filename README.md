@@ -39,7 +39,7 @@ MDPS converte markdown content to html that using the [@jhuix/showdowns](https:/
 
 [@jhuix/showdowns](https://github.com/jhuix/showdowns) is a lib that make markdown to html with some extensions of [showdown.js](https://github.com/showdownjs/showdown). And showdown.js is a Javascript Markdown to HTML converter, based on the original works by John Gruber. For more information, refer to the following document:
 
-- [Showdowns Features Syntax](https://github.com/jhuix/showdowns/blob/master/public/showdowns-features.md) and [Preview HTML](https://jhuix.github.io/showdowns/demo/index.html)
+- [Showdowns Features Syntax](https://jhuix.github.io/showdowns)
 - [Showdowns Readme](https://github.com/jhuix/showdowns/blob/master/README.md)
 - [Showdown's Markdown Syntax](https://github.com/showdownjs/showdown/wiki/Showdown's-Markdown-syntax)
 - [Showdown Options](https://github.com/showdownjs/showdown/wiki/Showdown-options)
@@ -203,7 +203,7 @@ This extension contributes the following settings:
 
 * `markdown-preview-showdown.toc.toc`:
 
-    Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:\\[(?:Table[ -]Of[ -]Contents|目录|TOC)\\])|(?:【(?:Table[ -]Of[ -]Contents|目录|TOC|_TOC_)】)|(?:\\{\\{([_]?)TOC\\2\\}\\})|(?:\\[\\[([_]?)TOC\\3\\]\\]))$'.
+    Custom regular expression string for matching the TOC placeholder, default is empty string which means the internal default regular expression string '^((?:\\[(?:Table[ -]Of[ -]Contents|目录|TOC)\\])|(?:【(?:Table[ -]Of[ -]Contents|目录|TOC|_TOC_)】)|(?:\\{\\{([\_]?)TOC\\2\\}\\})|(?:\\[\\[([\_]?)TOC\\3\\]\\]))$'.
 
 ## Keybindings
 

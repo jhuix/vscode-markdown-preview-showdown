@@ -193,7 +193,7 @@
       };
 
       const previewElement = document.createElement('div');
-      previewElement.classList.add('workspace-container', 'main-toc-row');
+      previewElement.classList.add('vscode-workspace-container', 'main-toc-row');
       this.previewElement = previewElement;
       document.body.appendChild(this.previewElement);
       this.initWindowEvents();
@@ -318,38 +318,6 @@
           styles.push(oStyle);
         }
       });
-      // const elVegaEmbedStyle = document.getElementById('vega-embed-style');
-      // if (elVegaEmbedStyle && elVegaEmbedStyle.tagName.toLowerCase() === 'style') {
-      //   let styleContent = elVegaEmbedStyle.innerHTML;
-      //   styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
-      //   styles.push({
-      //     id: 'vega-embed-style',
-      //     style: styleContent
-      //   });
-      // }
-      // const abcAudioStyle = document.getElementById('css-abc-audio');
-      // if (abcAudioStyle && abcAudioStyle.tagName.toLowerCase() === 'style') {
-      //   let styleContent = abcAudioStyle.innerHTML;
-      //   styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
-      //   styles.push({
-      //     id: 'css-abc-audio',
-      //     style: styleContent
-      //   });
-      // }
-
-      // const mjxStyles = document.querySelectorAll(`[id^="MJX-"]`);
-      // if (mjxStyles.length > 0) {
-      //   Array.from(mjxStyles).forEach((style) => {
-      //     if (style.tagName.toLowerCase() === 'style') {
-      //       let styleContent = style.innerHTML;
-      //       styleContent = styleContent.replace(/\<br[\/]?\>/g, '');
-      //       styles.push({
-      //         id: style.id,
-      //         style: styleContent
-      //       });
-      //     }
-      //   })
-      // }
       return styles;
     }
 
@@ -493,6 +461,8 @@
           const vscodeResourceScheme = resUrl.origin + '/';
           html = html.replace(/(\<img.* src=")file:\/\/\//g, '$1' + vscodeResourceScheme);
           html = html.replace(/(\<img.* src=")(?![0-9a-zA-Z\-]+\:\/\/)/g, '$1' + vscodeResourceScheme + options.uriPath + '/');
+          html = html.replace(/(\<a.* href=")file:\/\/\//g, "$1" + vscodeResourceScheme);
+          html = html.replace(/(\<a.* href=")(?![0-9a-zA-Z\-]+\:\/\/)/g, "$1" + vscodeResourceScheme + options.uriPath + "/");
         }
         return html.trim();
       }
@@ -512,6 +482,31 @@
             result = e.outerHTML.match(/^\<img.* src="file:\/\/\/([^"]*)"/);
             if (result && result.length > 1) {
               e.src = vscodeResourceScheme + result[1];
+              return;
+            }
+          });
+        }
+        const links = html[0].querySelectorAll('a');
+        if (links && links.length > 0) {
+          links.forEach((e) => {
+            let result = e.outerHTML.match(/^\<a.* href="((?<![0-9a-zA-Z\-]+\:\/\/)[^"\:\s]+)"/);
+            if (result && result.length > 1) {
+              if (result[1] === '.' || result[1] === './') {
+                e.href = 'javascript:void(0)';
+                e.onclick = function () {
+                  window.mdsp.phtml.refresh();
+                }
+                return;
+              }
+
+              e.href = vscodeResourceScheme + options.uriPath + "/" + result[1];
+              return;
+            }
+
+            result = e.outerHTML.match(/^\<a.* href="file:\/\/\/([^"]*)"/);
+            if (result && result.length > 1) {
+              e.href = vscodeResourceScheme + result[1];
+              return;
             }
           });
         }
@@ -542,6 +537,10 @@
           );
         }
       }
+    }
+
+    refresh() {
+      this.postMessage('refresh');
     }
 
     resetImagePath(id, src, callback) {
