@@ -245,7 +245,7 @@
       this.config.options.kroki.svgRender = this.renderKroki.bind(this);
       this.config.options.tex.svgRender = this.renderTex.bind(this);
       this.config.options.gnuplot.svgRender = this.renderGnuplot.bind(this);
-      this.config.options.pagetabs.pageRender = this.renderPage.bind(this);
+      // this.config.options.pagetabs.pageRender = this.renderPage.bind(this);
       previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
       previewer.onEvent('resetImagePath', this.resetImagePath.bind(this));
       previewer.init(true).preprocessHtml(function (_, html) {
@@ -479,7 +479,7 @@
           new RegExp(`"([^"]*?file.*?\.vscode-resource\.vscode-cdn\.net\/)(.*?)"`, `g`),
           function (match, prefix, url) {
             if (url.startsWith(options.uriPath)) {
-              url = url.substring(options.uriPath.length+1);
+              url = url.substring(options.uriPath.length + 1);
             } else {
               url = 'file://' + url;
             }
@@ -647,9 +647,10 @@
     }
 
     renderPage(id) {
-      const pages = document.querySelector(`#${id}`);
-      if (!pages) return;
-      const links = pages.querySelectorAll('.nav-item>.nav-link');
+      const pageSide = document.querySelector(`#${id}`);
+      if (!pageSide) return;
+      const links = pageSide.querySelectorAll('.nav-item>.nav-link');
+      const pages = pageSide.parentNode;
       const pageDoc = pages.querySelector('.page-doc');
       const that = this;
       links.forEach((link) => {
@@ -773,7 +774,7 @@
 
       const that = this;
       previewer
-        .makeHtml({ content: markdown, output: 'dom' })
+        .makeHtml({ content: markdown, output: 'dom', pageRender: that.renderPage.bind(that) })
         .then((res) => {
           if (typeof res === 'object') {
             const preview = res.html;
