@@ -21,6 +21,40 @@
     });
     return output;
   }
+  function hashString(str) {
+    const seed = 31;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (Math.imul(seed, hash) + char) | 0; // 使用32位整数运算
+    }
+    return hash >>> 0; // 确保无符号整数
+  }
+  function genScript(script) {
+    if (script.once || !script.code) return;
+
+    const s = {}
+    if (typeof script.code === 'function') {
+      s.code = `(${script.code.toString()})();`;
+    } else {
+      s.code = script.code;
+    }
+    if (script.id) {
+      s.id = script.id;
+    }
+    if (script.host) {
+      if (typeof script.host === 'string') {
+        s.host = script.host;
+      } else {
+        s.host = script.host.id;
+      }
+    }
+    if (script.module) {
+      s.module = script.module;
+    }
+    return s;
+  }
+
   function initOptions(opts) {
     const defOptions = {
       vscode: false,
@@ -44,7 +78,8 @@
       vega: {},
       tex: {},
       shiki: {},
-      gnuplot: {}
+      gnuplot: {},
+      pagetabs: {}
     };
     return opts ? deepMerge(defOptions, opts) : defOptions;
   }
@@ -188,7 +223,8 @@
           vega: options.vega,
           tex: options.tex,
           shiki: options.shiki,
-          gnuplot: options.gnuplot
+          gnuplot: options.gnuplot,
+          pagetabs: options.pagetabs
         }
       };
 
@@ -209,9 +245,12 @@
       this.config.options.kroki.svgRender = this.renderKroki.bind(this);
       this.config.options.tex.svgRender = this.renderTex.bind(this);
       this.config.options.gnuplot.svgRender = this.renderGnuplot.bind(this);
+      this.config.options.pagetabs.pageRender = this.renderPage.bind(this);
       previewer.setCDN(options.cdnName, options.defScheme, options.distScheme, currPath);
       previewer.onEvent('resetImagePath', this.resetImagePath.bind(this));
-      previewer.init(true);
+      previewer.init(true).preprocessHtml(function (_, html) {
+        return this.changeVscodeResourceProtocol(html);
+      }.bind(this));
       this.updateOptions(this.config.options);
       if (!this.config.vscode) {
         window.dispatchEvent(
@@ -264,17 +303,24 @@
       if (options.gnuplot) {
         previewer.setExtensionOptions('gnuplot', options.gnuplot);
       }
+      if (options.pagetabs) {
+        previewer.setExtensionOptions('page-tabs', options.pagetabs);
+      }
     }
 
     getOtherLinks() {
       const links = [];
       document.head.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-        if (!link.id || (link.id[0] !== '_' && !link.id.startsWith('css-'))) {
+        if (!link.id || link.id[0] !== '_') {
           const oLink = {
-            link: link.href
+            link: decodeURIComponent(link.href)
           }
           if (link.id) {
             oLink.id = link.id;
+          }
+          const prefix = 'https://file+.vscode-resource.vscode-cdn.net/';
+          if (oLink.link.startsWith(prefix)) {
+            oLink.link = 'file:///' + oLink.link.substring(prefix.length);
           }
           links.push(oLink);
         }
@@ -337,7 +383,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                [...that.cssLinks, ...that.getOtherLinks()],
+                [...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -351,7 +397,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                [...that.cssLinks, ...that.getOtherLinks()],
+                [...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -365,7 +411,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                [...that.cssLinks, ...that.getOtherLinks()],
+                [...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -379,7 +425,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                [...that.cssLinks, ...that.getOtherLinks()],
+                [...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -393,7 +439,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                [...that.cssLinks, ...that.getOtherLinks()],
+                [...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -407,7 +453,7 @@
                 that.getPreviewContent(s.innerHTML),
                 document.title,
                 that.sourceUri,
-                [...that.cssLinks, ...that.getOtherLinks()],
+                [...that.getOtherLinks()],
                 that.getOtherStyles(),
                 that.scripts
               ]);
@@ -421,21 +467,22 @@
 
     changeFileProtocol(html) {
       if (this.config.vscode) {
+        const that = this;
         html = html.replace(new RegExp(`(\<img.* src=")(.*?vscode-webview.*?)"`, `g`), function (match, tag, url) {
           let imgUrl = new URL(decodeURIComponent(url));
           imgUrl.protocol = 'file:';
           imgUrl.host = '';
-          // url = imgUrl.toString().toLowerCase().replace("file:///" + uriPath.toLowerCase(), ".");
           url = imgUrl.toString();
           return tag + url + '"';
         });
         html = html.replace(
           new RegExp(`"([^"]*?file.*?\.vscode-resource\.vscode-cdn\.net\/)(.*?)"`, `g`),
-          function (match, tag, url) {
-            let imgUrl = new URL(decodeURIComponent(url));
-            imgUrl.protocol = 'file:';
-            imgUrl.host = '';
-            url = imgUrl.toString();
+          function (match, prefix, url) {
+            if (url.startsWith(options.uriPath)) {
+              url = url.substring(options.uriPath.length+1);
+            } else {
+              url = 'file://' + url;
+            }
             return '"' + url + '"';
           }
         );
@@ -444,9 +491,12 @@
     }
 
     getPreviewContent(html) {
-      const content = this.changeFileProtocol(html);
+      let content = this.changeFileProtocol(html);
       const mjxCache = document.getElementById('MJX-SVG-global-cache');
-      return mjxCache ? mjxCache.outerHTML + content : content;
+      if (mjxCache) content = mjxCache.outerHTML + content;
+      const svgsCache = document.getElementById('showdowns-global-svgs');
+      if (svgsCache) content = svgsCache.outerHTML + content;
+      return content;
     }
 
     /**
@@ -462,7 +512,7 @@
           html = html.replace(/(\<img.* src=")file:\/\/\//g, '$1' + vscodeResourceScheme);
           html = html.replace(/(\<img.* src=")(?![0-9a-zA-Z\-]+\:\/\/)/g, '$1' + vscodeResourceScheme + options.uriPath + '/');
           html = html.replace(/(\<a.* href=")file:\/\/\//g, "$1" + vscodeResourceScheme);
-          html = html.replace(/(\<a.* href=")(?![0-9a-zA-Z\-]+\:\/\/)/g, "$1" + vscodeResourceScheme + options.uriPath + "/");
+          html = html.replace(/(\<a.* href=")(?![0-9a-zA-Z\-]+\:\/\/|#)/g, "$1" + vscodeResourceScheme + options.uriPath + "/");
         }
         return html.trim();
       }
@@ -491,11 +541,10 @@
           links.forEach((e) => {
             let result = e.outerHTML.match(/^\<a.* href="((?<![0-9a-zA-Z\-]+\:\/\/)[^"\:\s]+)"/);
             if (result && result.length > 1) {
+              if (result[1][0] === '#') return;
+
               if (result[1] === '.' || result[1] === './') {
-                e.href = 'javascript:void(0)';
-                e.onclick = function () {
-                  window.mdsp.phtml.refresh();
-                }
+                e.href = 'javascript:if(window.mdsp){window.mdsp.phtml.refresh();}else{window.location.reload();}';
                 return;
               }
 
@@ -548,6 +597,23 @@
       this.postMessage('resetImagePath', [{ id: id, src: src, sourceUri: this.sourceUri }])
     }
 
+    getFileContent(id, src, callback) {
+      this.resolveCallbacks[id] = callback;
+      this.postMessage('getFileContent', [{ id: id, src: src, sourceUri: this.sourceUri }])
+    }
+
+    getLocalPage(id, src) {
+      const that = this;
+      if (this.config.vscode) {
+        const srcUrl = new URL(src);
+        src = 'file://' + srcUrl.pathname;
+      }
+      return new Promise((resolve, reject) => {
+        that.resolveCallbacks[id] = { resolve, reject };
+        that.postMessage('getFileContent', [{ id, src, sourceUri: that.sourceUri }]);
+      });
+    }
+
     renderPlantuml(id, code, options) {
       const that = this;
       return new Promise((resolve, reject) => {
@@ -580,6 +646,45 @@
       });
     }
 
+    renderPage(id) {
+      const pages = document.querySelector(`#${id}`);
+      if (!pages) return;
+      const links = pages.querySelectorAll('.nav-item>.nav-link');
+      const pageDoc = pages.querySelector('.page-doc');
+      const that = this;
+      links.forEach((link) => {
+        if (!link.href || !link.href.endsWith('.md')) return;
+        const id = hashString(link.id + '-' + Math.floor(Math.random() * 10000) + '-' + link.href);
+        this.getLocalPage(id, link.href).then((md) => {
+          const page = document.createElement('div');
+          page.classList.add('page-content', 'main-toc-row');
+          page.id = link.id + '-content';
+          pageDoc.appendChild(page);
+          previewer
+            .makeHtml({ content: md, output: 'dom', exclusive: true })
+            .then(res => {
+              if (typeof res === 'string') {
+                page.innerHTML = res;
+              } else if (Array.isArray(res.html)) {
+                res.html.forEach((e) => {
+                  page.appendChild(e);
+                })
+                previewer.completedHtml(res.scripts, res.html[0]);
+                res.cssLinks.forEach((link) => {
+                  that.addCssLink(link);
+                })
+                res.scripts.forEach((script) => {
+                  that.addScript(script);
+                });
+              }
+            }).catch(err => {
+              page.innerText = err;
+              console.error(err);
+            });
+        })
+      })
+    }
+
     // Initialize `window` events.
     initWindowEvents() {
       // Keyboard events.
@@ -597,6 +702,65 @@
       });
     }
 
+    hasCssLink(id) {
+      if (!this.cssLinks || !this.cssLinks.length) return false;
+
+      for (const link of this.cssLinks) {
+        if (link.id && link.id === id) return true;
+      }
+
+      return false;
+    }
+
+    addCssLink(link) {
+      if (link.id && this.hasCssLink(link.id)) return;
+
+      this.cssLinks.push(link);
+    }
+
+    hasScript(id) {
+      if (!this.scripts || !this.scripts.length) return false;
+
+      for (const script of this.scripts) {
+        if (script.id && script.id === id) return true;
+      }
+
+      return false;
+    }
+
+    addScript(script) {
+      if (script.id && this.hasScript(script.id)) return;
+
+      let s = genScript(script);
+      if (script.inner && Array.isArray(script.inner)) {
+        const inners = [];
+        script.inner.forEach((inner) => {
+          const inScript = genScript(inner);
+          if (inScript) {
+            inners.push(inScript);
+          }
+        });
+        if (inners.length > 0) {
+          s = s ?? {};
+          s.inner = inners;
+        }
+      }
+
+      if (script.outer && Array.isArray(script.outer)) {
+        const outers = [];
+        script.outer.forEach((outer) => {
+          outers.push(outer);
+        });
+        if (outers.length > 0) {
+          s = s ?? {};
+          s.outer = outers;
+        }
+      }
+      if (s) {
+        this.scripts.push(s);
+      }
+    }
+
     updateMarkdown(markdown, mdOptions) {
       mdOptions = mdOptions || null;
       if (mdOptions instanceof Object) {
@@ -607,36 +771,12 @@
         markdown = '# [TOC]\n\n' + markdown;
       }
 
-      const genScript = (script) => {
-        if (script.once || !script.code) return;
-
-        const s = {}
-        if (typeof script.code === 'function') {
-          s.code = `(${script.code.toString()})();`;
-        } else {
-          s.code = script.code;
-        }
-        if (script.id) {
-          s.id = script.id;
-        }
-        if (script.host) {
-          if (typeof script.host === 'string') {
-            s.host = script.host;
-          } else {
-            s.host = script.host.id;
-          }
-        }
-        if (script.module) {
-          s.module = script.module;
-        }
-        return s;
-      };
       const that = this;
       previewer
         .makeHtml({ content: markdown, output: 'dom' })
         .then((res) => {
           if (typeof res === 'object') {
-            const preview = that.changeVscodeResourceProtocol(res.html);
+            const preview = res.html;
             if (typeof preview === 'string') {
               that.previewElement.innerHTML = preview;
             } else {
@@ -649,39 +789,12 @@
             that.cssLinks = [...res.cssLinks];
             previewer.completedHtml(res.scripts, '.showdowns');
             res.scripts.forEach((script) => {
-              let s = genScript(script);
-              if (script.inner && Array.isArray(script.inner)) {
-                const inners = [];
-                script.inner.forEach((inner) => {
-                  const inScript = genScript(inner);
-                  if (inScript) {
-                    inners.push(inScript);
-                  }
-                });
-                if (inners.length > 0) {
-                  s = s ?? {};
-                  s.inner = inners;
-                }
-              }
-
-              if (script.outer && Array.isArray(script.outer)) {
-                const outers = [];
-                script.outer.forEach((outer) => {
-                  outers.push(outer);
-                });
-                if (outers.length > 0) {
-                  s = s ?? {};
-                  s.outer = outers;
-                }
-              }
-              if (s) {
-                that.scripts.push(s);
-              }
+              that.addScript(script);
             });
           } else {
             that.scripts = [];
             that.cssLinks = [];
-            that.previewElement.innerHTML = that.changeVscodeResourceProtocol(res);
+            that.previewElement.innerHTML = res;
           }
         })
         .catch((err) => {
@@ -710,11 +823,21 @@
             this.scrollToLine(line);
             break;
           case 'onResetImagePath':
+          case 'onGetFileContent':
             if (this.resolveCallbacks.hasOwnProperty(message.id)) {
               const callback = this.resolveCallbacks[message.id];
               delete this.resolveCallbacks[message.id];
               if (callback) {
-                callback(message.response);
+                if (typeof callback === 'function') {
+                  callback(message.response);
+                } else {
+                  if (callback.resolve && message.response) {
+                    callback.resolve(message.response);
+                  }
+                  if (callback.reject && message.error) {
+                    callback.reject(message.error);
+                  }
+                }
               }
             }
             break;
