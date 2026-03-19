@@ -1,25 +1,40 @@
 ## 1.5.1
 
-1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.4:
+1. Update [@jhuix/showdowns](https://github.com/jhuix/showdowns) v0.7.5.
 
-   - Add details-summary of directives.
-   - Add simple style for admonitions.
-   - Support mermaid code of azure syntax.
-   - Support obsidian callout syntax.
-   - Support admonition syntax of mkdocs-material.
-   - Fixed export actions of mermaid.
-   - Fixed tools icon of shiki.
-   - Default not load speech of mathjax.
-   - Update tester of toc and css of td.
+2. Add details-summary of directives.
 
-   - Add content tabs extension
-   - Add page tabs extension
-   - Add title of code block;
-   - Add option of default markdown code theme for shiki extension
-   - Update footnotes extension
-   - Fixed inline image and directive extension
-   - Fixed code css
-   - Fixed show theme name of shiki
+3. Add simple style for admonitions.
+
+4. Add content tabs.
+
+5. Add page tabs.
+
+6. Support title of code block.
+
+7. Support mermaid code of azure syntax.
+
+8. Support obsidian callout syntax.
+
+9. Support admonition syntax of mkdocs-material.
+
+10. Support option of default markdown code theme.
+
+11. Update footnotes extension.
+
+12. Update tester of toc and css of td.
+
+13. Default not load speech of mathjax.
+
+14. Fixed export actions of mermaid.
+
+15. Fixed tools icon of shiki.
+
+16. Fixed inline image and directives.
+
+17. Fixed code css.
+
+18. Fixed show theme name of shiki.
 
 
 ## 1.5.0
